@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Model — One signal above the waterline, eight below</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="landing.css" />
+  <link rel="stylesheet" href="light.css" />
+</head>
+<body>
+
+  <header class="topnav" data-screen-label="The Model">
+    <div class="topnav__inner">
+      <a href="index.html" class="brand">
+        <span class="mark"></span>
+        <span>Fit Beyond Interest<small>The model</small></span>
+      </a>
+      <nav class="topnav__links">
+        <a href="index.html">Home</a>
+        <a href="dimensions.html">What we measure</a>
+        <a href="models.html">How we predict</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="topnav__cta">
+        <a href="survey.html" class="btn btn--primary">Take the Survey<span class="arrow">→</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Header -->
+  <section class="section section--tight" id="top">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta">
+          <span class="num">01</span><span class="dot" style="background: var(--purple); box-shadow: 0 0 12px var(--purple);"></span>
+          The model · visual
+        </div>
+        <h1 class="h1">One signal above the waterline.<br />Eight below.</h1>
+        <p class="body-l">Interest is the visible part of major fit — and the only thing surface quizzes see. The rest of the iceberg is what actually decides whether you stay. Tap each glowing dot under the water to uncover a hidden signal.</p>
+      </div>
+
+      <div class="iceberg-wrap">
+        <div class="iceberg-frame" id="iceberg-mount" role="img" aria-label="Animated iceberg: interest above the waterline, eight deeper signals below."></div>
+
+        <aside class="iceberg-side">
+          <div class="card">
+            <div class="card__label"><span class="pip"></span>Above the waterline</div>
+            <h4 class="h3" style="margin-bottom: 8px;">Interest</h4>
+            <p class="body" style="margin: 0;">Subject attraction. The only thing surface-level quizzes see — and a weak predictor of whether you'll stay on its own.</p>
+          </div>
+
+          <div class="card card--hot" id="iceberg-discover">
+            <div class="card__label">
+              <span class="pip purple"></span>
+              <span>Below the waterline · 8 signals</span>
+              <span style="margin-left: auto; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.1em;">
+                <span id="iceberg-count">0</span> / 8 revealed
+              </span>
+            </div>
+
+            <div class="legend-lock" id="iceberg-lock">
+              <div class="legend-lock__pips">
+                <span class="lockpip" data-key="workload-fit" style="--c: var(--blue);"></span>
+                <span class="lockpip" data-key="stress-tolerance" style="--c: var(--purple);"></span>
+                <span class="lockpip" data-key="motivation-quality" style="--c: var(--purple);"></span>
+                <span class="lockpip" data-key="behavioral-engagement" style="--c: var(--blue-bright);"></span>
+                <span class="lockpip" data-key="belonging" style="--c: var(--pink);"></span>
+                <span class="lockpip" data-key="identity-fit" style="--c: var(--pink);"></span>
+                <span class="lockpip" data-key="resilience" style="--c: var(--green);"></span>
+                <span class="lockpip" data-key="switch-risk" style="--c: var(--yellow);"></span>
+              </div>
+              <p class="legend-lock__hint">Tap each glowing dot beneath the water to uncover a hidden signal. Reveal all eight to unlock the full model.</p>
+            </div>
+
+            <div class="legend">
+              <div class="legend__item" data-key="workload-fit"><span class="pip" style="background: var(--blue);"></span><span class="legend__name">Workload fit</span></div>
+              <div class="legend__item" data-key="stress-tolerance"><span class="pip" style="background: var(--purple);"></span><span class="legend__name">Stress tolerance</span></div>
+              <div class="legend__item" data-key="motivation-quality"><span class="pip" style="background: var(--purple);"></span><span class="legend__name">Motivation quality</span></div>
+              <div class="legend__item" data-key="behavioral-engagement"><span class="pip" style="background: var(--blue-bright);"></span><span class="legend__name">Behavioral engagement</span></div>
+              <div class="legend__item" data-key="belonging"><span class="pip" style="background: var(--pink);"></span><span class="legend__name">Belonging</span></div>
+              <div class="legend__item" data-key="identity-fit"><span class="pip" style="background: var(--pink);"></span><span class="legend__name">Identity fit</span></div>
+              <div class="legend__item" data-key="resilience"><span class="pip" style="background: var(--green);"></span><span class="legend__name">Resilience</span></div>
+              <div class="legend__item" data-key="switch-risk"><span class="pip" style="background: var(--yellow);"></span><span class="legend__name">Switch risk</span></div>
+            </div>
+
+            <button type="button" id="iceberg-reveal-all" class="iceberg-reveal-all">
+              <span>Reveal all eight</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Above / Below explanation -->
+  <section class="section section--dark">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta"><span class="num">02</span><span class="dot"></span>Why the surface lies</div>
+        <h2 class="h1">Liking a major and surviving it<br />are two different problems.</h2>
+        <p class="body-l">A student can love the subject and still leave — because the day-to-day environment doesn't match how they handle workload, stress, motivation, and belonging. Here's how that gap shows up.</p>
+      </div>
+
+      <div class="split">
+        <div class="split__col split__col--like">
+          <h3 class="split__title"><span class="badge badge--blue">Interest profile</span></h3>
+          <p class="split__sub">What pulled them in</p>
+          <div class="chips">
+            <span class="chip"><span class="dot"></span>Likes the subject</span>
+            <span class="chip"><span class="dot"></span>Strong in related classes</span>
+            <span class="chip"><span class="dot"></span>"It sounds like me"</span>
+            <span class="chip"><span class="dot"></span>Good career on paper</span>
+          </div>
+          <div style="margin-top: 32px; display: flex; align-items: center; gap: 10px;">
+            <span class="badge badge--blue">Quiz verdict</span>
+            <span class="body" style="font-size: 13.5px;">→ High match</span>
+          </div>
+        </div>
+
+        <div class="split__col split__col--real">
+          <h3 class="split__title"><span class="badge badge--yellow">Real environment</span></h3>
+          <p class="split__sub">What they actually meet</p>
+          <div class="chips">
+            <span class="chip chip--warn"><span class="dot"></span>60-hour weeks</span>
+            <span class="chip chip--warn"><span class="dot"></span>Weed-out courses</span>
+            <span class="chip chip--warn"><span class="dot"></span>Competitive culture</span>
+            <span class="chip chip--warn"><span class="dot"></span>Money &amp; hours worked</span>
+            <span class="chip chip--risk"><span class="dot"></span>Few people like them</span>
+            <span class="chip chip--risk"><span class="dot"></span>Burnout by sophomore year</span>
+            <span class="chip chip--risk"><span class="dot"></span>Quietly considers switching</span>
+          </div>
+          <div style="margin-top: 32px; display: flex; align-items: center; gap: 10px;">
+            <span class="badge badge--red">Real outcome</span>
+            <span class="body" style="font-size: 13.5px;">→ Likes it. Still switches out.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="conclusion">
+        <div class="conclusion__icon">!</div>
+        <p class="conclusion__text">High interest doesn't guarantee you'll stay. <em>The environment has to match the student — not just the subject.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta__bg" aria-hidden="true"></div>
+    <div class="cta__inner">
+      <h2>See your own iceberg.</h2>
+      <p>Answer eight short sections and get a read on all eight signals — above and below the waterline — for your actual major.</p>
+      <div class="cta__buttons">
+        <a href="survey.html" class="btn btn--primary" style="padding: 14px 22px; font-size: 15px;">Take the Survey<span class="arrow">→</span></a>
+        <a href="dimensions.html" class="btn btn--ghost">What each signal means</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Survey nudge — interior pages only -->
+  <aside class="nudge" id="nudge" role="complementary" aria-label="Take the survey">
+    <button class="nudge__close" id="nudge-close" type="button" aria-label="Dismiss">×</button>
+    <p class="nudge__eyebrow"><span class="nudge__pip"></span>Still deciding?</p>
+    <p class="nudge__title">See whether your major <span class="grad">actually fits.</span></p>
+    <p class="nudge__body">Eight signals, an honest read on staying or switching. About 6 minutes — no sign-up.</p>
+    <a href="survey.html" class="btn btn--primary nudge__cta">Take the survey<span class="arrow">→</span></a>
+  </aside>
+  <script>
+    (function () {
+      var nudge = document.getElementById('nudge');
+      var closeBtn = document.getElementById('nudge-close');
+      if (!nudge) return;
+      var KEY = 'fbi-nudge-dismissed';
+      try { if (sessionStorage.getItem(KEY)) { nudge.remove(); return; } } catch (e) {}
+      var t = setTimeout(function () { nudge.classList.add('show'); }, 1100);
+      function dismiss() {
+        clearTimeout(t);
+        nudge.classList.remove('show');
+        try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+        setTimeout(function () { if (nudge.parentNode) nudge.remove(); }, 450);
+      }
+      closeBtn.addEventListener('click', dismiss);
+    })();
+  </script>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="animations.jsx"></script>
+  <script type="text/babel">
+    window.Animations = { Stage, Sprite, useTime, useTimeline, useSprite, interpolate, animate, Easing, TextSprite, ImageSprite, RectSprite };
+  </script>
+  <script type="text/babel" src="iceberg.jsx"></script>
+
+  <!-- Iceberg discovery interaction -->
+  <script>
+    (function () {
+      const countEl = document.getElementById('iceberg-count');
+      const revealAllBtn = document.getElementById('iceberg-reveal-all');
+      const card = document.getElementById('iceberg-discover');
+      if (!countEl || !card) return;
+      const TOTAL = 8;
+      const found = new Set();
+      function update() {
+        countEl.textContent = String(found.size);
+        if (found.size >= TOTAL) {
+          card.classList.add('all-revealed');
+          if (revealAllBtn) revealAllBtn.style.display = 'none';
+          card.querySelectorAll('.legend__item').forEach((it, i) => {
+            it.classList.add('legend__item--just-revealed');
+            setTimeout(() => it.classList.remove('legend__item--just-revealed'), 700 + i * 40);
+          });
+        }
+      }
+      window.addEventListener('iceberg:discover', (e) => {
+        const key = e.detail && e.detail.key;
+        if (!key || found.has(key)) return;
+        found.add(key);
+        const lp = card.querySelector('.lockpip[data-key="' + key + '"]');
+        if (lp) lp.classList.add('lit');
+        update();
+      });
+      if (revealAllBtn) revealAllBtn.addEventListener('click', () => window.dispatchEvent(new CustomEvent('iceberg:revealAll')));
+    })();
+  </script>
+</body>
+</html>

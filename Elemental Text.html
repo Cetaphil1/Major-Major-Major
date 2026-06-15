@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elemental Text</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#08080b;
+    --ink:#ECE6DA;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; }
+  body{
+    background:
+      radial-gradient(120% 90% at 50% -10%, #101015 0%, var(--bg) 60%) fixed,
+      var(--bg);
+    color:var(--ink);
+    font-family:"Newsreader", Georgia, serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:7vh 6vw;
+    overflow-x:hidden;
+  }
+
+  /* Particle layer sits above the text; pure glows use additive blend so they never hide glyphs */
+  #fx-canvas{
+    position:fixed; inset:0;
+    width:100vw; height:100vh;
+    pointer-events:none;
+    z-index:2;
+  }
+
+  #editor{
+    position:relative;
+    z-index:1;
+    max-width:1120px;
+    width:100%;
+    font-size:clamp(38px, 6vw, 88px);
+    line-height:1.2;
+    font-weight:400;
+    letter-spacing:-0.01em;
+    text-wrap:pretty;
+    outline:none;
+    caret-color:#ff8a3d;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  #editor::selection, #editor *::selection{ background:rgba(255,150,80,0.22); }
+
+  /* ── Elemental glyph treatments ───────────────────────── */
+  .fx{ position:relative; }
+
+  .fx-fire{
+    background:linear-gradient(180deg,#ffe6a0 0%,#ff8a1e 52%,#ff3b2f 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 16px rgba(255,110,30,.55));
+    animation:fireGlow 2.6s ease-in-out infinite alternate;
+  }
+  @keyframes fireGlow{
+    from{ filter:drop-shadow(0 0 10px rgba(255,90,20,.4)); }
+    to{ filter:drop-shadow(0 0 22px rgba(255,140,40,.75)); }
+  }
+
+  .fx-smoke{ color:#9a9aa2; filter:blur(.5px); opacity:.88; }
+
+  .fx-metal{
+    background:linear-gradient(100deg,#aeb6c0 0%,#f6fafe 18%,#9aa3ad 38%,#e3eaf2 58%,#8f98a3 78%,#eef3f8 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.55));
+    animation:sheen 3.4s linear infinite;
+  }
+  .fx-gold{
+    background:linear-gradient(100deg,#caa54a 0%,#fff2bf 18%,#d8ac3c 40%,#fff6d0 60%,#c89a33 80%,#fff0bd 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 12px rgba(220,170,60,.45));
+    animation:sheen 3.9s linear infinite;
+  }
+  @keyframes sheen{ to{ background-position:220% 0; } }
+
+  .fx-wind{ color:#cfe0ef; font-style:italic; filter:drop-shadow(0 0 7px rgba(150,200,255,.28)); }
+
+  .fx-snow{ color:#eef4ff; filter:drop-shadow(0 0 11px rgba(180,212,255,.5)); }
+
+  .fx-ice{ color:#bfe9f4; filter:drop-shadow(0 0 9px rgba(140,222,240,.45)); }
+
+  .fx-water{
+    background:linear-gradient(180deg,#a6d8ff 0%,#2f7fe0 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 7px rgba(40,110,210,.45));
+  }
+
+  .fx-electric{
+    color:#e2f7ff;
+    filter:drop-shadow(0 0 9px rgba(120,225,255,.6));
+    animation:zap .14s steps(2) infinite alternate;
+  }
+  @keyframes zap{
+    from{ filter:drop-shadow(0 0 6px rgba(120,225,255,.4)); }
+    to{ filter:drop-shadow(0 0 15px rgba(160,238,255,.95)); }
+  }
+
+  /* ── Caption ──────────────────────────────────────────── */
+  .caption{
+    position:fixed; left:0; right:0; bottom:22px;
+    z-index:3;
+    text-align:center;
+    font-family:"JetBrains Mono", monospace;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+    color:rgba(236,230,218,0.34);
+    pointer-events:none;
+    padding:0 16px;
+  }
+  .caption b{ color:rgba(236,230,218,0.6); font-weight:500; }
+
+  @media (prefers-reduced-motion: reduce){
+    .fx-fire,.fx-metal,.fx-gold,.fx-electric{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+  <canvas id="fx-canvas"></canvas>
+
+  <div id="editor" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off"></div>
+
+  <p class="caption">Editable — type words like <b>fire · smoke · metal · wind · snow · ice · gold · water · lightning</b></p>
+
+  <script>
+  (function(){
+    'use strict';
+
+    const SAMPLE = "The dragon breathed Fire into the cold night, and Smoke curled around his Metal scales. A bitter Wind carried embers across the Snow, where Ice locked the river still and a thread of Gold light bled through the Water below — as distant Lightning split the dark.";
+
+    // word (lowercase) -> effect type
+    const DICT = {
+      fire:'fire', flame:'fire', flames:'fire', ember:'fire', embers:'fire', blaze:'fire', burning:'fire',
+      smoke:'smoke', smoky:'smoke', smoldering:'smoke', smog:'smoke', haze:'smoke',
+      metal:'metal', metallic:'metal', steel:'metal', iron:'metal', chrome:'metal', silver:'metal',
+      wind:'wind', windy:'wind', gust:'wind', breeze:'wind', gale:'wind', breath:'wind', breathed:'wind',
+      snow:'snow', snowy:'snow', snowflake:'snow', snowflakes:'snow',
+      ice:'ice', icy:'ice', frost:'ice', frosty:'ice', frozen:'ice',
+      water:'water', rain:'water', ocean:'water', wave:'water', waves:'water',
+      gold:'gold', golden:'gold',
+      lightning:'electric', electric:'electric', thunder:'electric', spark:'electric', sparks:'electric'
+    };
+
+    const editor = document.getElementById('editor');
+    const canvas = document.getElementById('fx-canvas');
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── Editable text: re-wrap effect words on every edit, preserve caret ── */
+    function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function build(text){
+      let html = '';
+      const re = /([A-Za-z]+)|([^A-Za-z]+)/g;
+      let m;
+      while((m = re.exec(text))){
+        if(m[1]){
+          const type = DICT[m[1].toLowerCase()];
+          if(type){ html += '<span class="fx fx-'+type+'" data-fx="'+type+'">'+esc(m[1])+'</span>'; }
+          else { html += esc(m[1]); }
+        } else {
+          html += esc(m[2]);
+        }
+      }
+      return html;
+    }
+
+    function getCaret(){
+      const sel = window.getSelection();
+      if(!sel.rangeCount) return null;
+      const range = sel.getRangeAt(0);
+      if(!editor.contains(range.endContainer)) return null;
+      const pre = range.cloneRange();
+      pre.selectNodeContents(editor);
+      pre.setEnd(range.endContainer, range.endOffset);
+      return pre.toString().length;
+    }
+
+    function setCaret(offset){
+      if(offset == null) return;
+      const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT, null);
+      let node, chars = offset;
+      while((node = walker.nextNode())){
+        const len = node.textContent.length;
+        if(chars <= len){
+          const range = document.createRange();
+          range.setStart(node, chars);
+          range.collapse(true);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          return;
+        }
+        chars -= len;
+      }
+      // fallback: end
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    let composing = false;
+    function rehighlight(){
+      if(composing) return;
+      const caret = getCaret();
+      const text = editor.innerText;
+      editor.innerHTML = build(text);
+      setCaret(caret);
+    }
+
+    editor.addEventListener('input', rehighlight);
+    editor.addEventListener('compositionstart', function(){ composing = true; });
+    editor.addEventListener('compositionend', function(){ composing = false; rehighlight(); });
+    editor.addEventListener('paste', function(e){
+      e.preventDefault();
+      const t = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, t);
+    });
+
+    // seed
+    editor.innerHTML = build(SAMPLE);
+
+    /* ── Particle system ───────────────────────────────────── */
+    let DPR = Math.min(window.devicePixelRatio || 1, 2);
+    function resize(){
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(innerWidth * DPR);
+      canvas.height = Math.floor(innerHeight * DPR);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const RATE = { fire:34, smoke:9, wind:20, snow:24, ice:7, metal:5, gold:6, water:14, electric:26 };
+    const acc = new WeakMap();
+    const parts = [];
+    const MAX = 1000;
+    const rand = (a,b)=> a + Math.random()*(b-a);
+
+    function spawn(type, r){
+      switch(type){
+        case 'fire':
+          parts.push({ k:'glow', x:r.left+rand(0,r.width), y:r.top+rand(-r.height*0.2,r.height*0.45),
+            vx:rand(-22,22), vy:rand(-115,-45), s:rand(3,9), t:0, max:rand(1.0,1.9),
+            h:rand(16,46), add:true }); break;
+        case 'smoke':
+          parts.push({ k:'smoke', x:r.left+r.width*0.5+rand(-r.width*0.4,r.width*0.4), y:r.top+rand(-r.height*0.25,r.height*0.45),
+            vx:rand(-12,12), vy:rand(-46,-18), s:rand(12,26), t:0, max:rand(2.4,4.0) }); break;
+        case 'wind':
+          parts.push({ k:'streak', x:r.left+rand(-12,6), y:r.top+rand(0,r.height),
+            vx:rand(160,340), vy:rand(-14,14), len:rand(16,54), t:0, max:rand(.5,1.0) }); break;
+        case 'snow':
+          parts.push({ k:'snow', x:r.left+rand(0,r.width), y:r.top+rand(0,r.height),
+            vx:rand(-12,12), vy:rand(30,72), s:rand(1.4,3.4), t:0, max:rand(2.4,4.2), ph:rand(0,6.28) }); break;
+        case 'ice':
+          parts.push({ k:'plus', x:r.left+rand(-6,r.width+6), y:r.top+rand(-6,r.height+6),
+            vx:rand(-6,6), vy:rand(-6,6), s:rand(2,5), t:0, max:rand(1.2,2.4), col:'190,235,247' }); break;
+        case 'metal':
+          parts.push({ k:'star', x:r.left+rand(0,r.width), y:r.top+rand(0,r.height),
+            s:rand(6,14), t:0, max:rand(.45,.9), col:'235,242,250' }); break;
+        case 'gold':
+          parts.push({ k:'star', x:r.left+rand(0,r.width), y:r.top+rand(0,r.height),
+            s:rand(7,15), t:0, max:rand(.5,.95), col:'255,224,130' }); break;
+        case 'water':
+          parts.push({ k:'drop', x:r.left+rand(0,r.width), y:r.top+r.height*rand(0.7,1.0),
+            vx:rand(-15,15), vy:rand(40,90), ay:260, s:rand(2,4), t:0, max:rand(.7,1.4) }); break;
+        case 'electric':
+          parts.push({ k:'spark', x:r.left+rand(0,r.width), y:r.top+rand(0,r.height),
+            t:0, max:rand(.12,.4), seg:[rand(-1,1),rand(-1,1),rand(-1,1),rand(-1,1)], s:rand(10,26) }); break;
+      }
+    }
+
+    function softCircle(x,y,radius,r,g,b,a){
+      const grd = ctx.createRadialGradient(x,y,0,x,y,radius);
+      grd.addColorStop(0, 'rgba('+r+','+g+','+b+','+a+')');
+      grd.addColorStop(1, 'rgba('+r+','+g+','+b+',0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(x,y,radius,0,6.2832); ctx.fill();
+    }
+
+    function draw(p){
+      const e = p.t / p.max;            // 0..1
+      const bell = Math.sin(Math.min(e,1)*Math.PI); // fade in+out
+      switch(p.k){
+        case 'glow':{ // fire ember
+          const a = (1-e)*(0.9);
+          const flick = 0.8 + 0.2*Math.sin(p.t*22 + p.x);
+          const c = 'hsl('+p.h+',100%,'+ (55+10*Math.sin(p.t*10)) +'%)';
+          ctx.globalCompositeOperation='lighter';
+          const grd = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.s*2.4);
+          grd.addColorStop(0,c); grd.addColorStop(.35,c); grd.addColorStop(1,'rgba(0,0,0,0)');
+          ctx.globalAlpha = a*flick;
+          ctx.fillStyle = grd;
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.s*2.4,0,6.2832); ctx.fill();
+          ctx.globalAlpha = 1; ctx.globalCompositeOperation='source-over';
+          break; }
+        case 'smoke':{
+          const radius = p.s*(1 + e*1.6);
+          const a = bell*0.085;
+          softCircle(p.x,p.y,radius, 150,150,158, a);
+          break; }
+        case 'streak':{
+          ctx.globalCompositeOperation='lighter';
+          const a = bell*0.5;
+          const grd = ctx.createLinearGradient(p.x-p.len,p.y,p.x,p.y);
+          grd.addColorStop(0,'rgba(190,220,255,0)');
+          grd.addColorStop(1,'rgba(200,228,255,'+a+')');
+          ctx.strokeStyle=grd; ctx.lineWidth=1.4; ctx.lineCap='round';
+          ctx.beginPath(); ctx.moveTo(p.x-p.len,p.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+          ctx.globalCompositeOperation='source-over';
+          break; }
+        case 'snow':{
+          const a = bell*0.9;
+          softCircle(p.x,p.y,p.s*1.8, 240,246,255, a);
+          break; }
+        case 'plus':{ // ice frost twinkle
+          ctx.globalCompositeOperation='lighter';
+          const a = bell*0.8;
+          ctx.strokeStyle='rgba('+p.col+','+a+')'; ctx.lineWidth=1; ctx.lineCap='round';
+          ctx.beginPath();
+          ctx.moveTo(p.x-p.s,p.y); ctx.lineTo(p.x+p.s,p.y);
+          ctx.moveTo(p.x,p.y-p.s); ctx.lineTo(p.x,p.y+p.s);
+          ctx.stroke();
+          ctx.globalCompositeOperation='source-over';
+          break; }
+        case 'star':{ // metal / gold glint
+          ctx.globalCompositeOperation='lighter';
+          const a = bell;
+          const len = p.s*(0.6+0.6*bell);
+          function ray(dx,dy,w){
+            const grd = ctx.createLinearGradient(p.x-dx,p.y-dy,p.x+dx,p.y+dy);
+            grd.addColorStop(0,'rgba('+p.col+',0)');
+            grd.addColorStop(.5,'rgba('+p.col+','+a+')');
+            grd.addColorStop(1,'rgba('+p.col+',0)');
+            ctx.strokeStyle=grd; ctx.lineWidth=w; ctx.lineCap='round';
+            ctx.beginPath(); ctx.moveTo(p.x-dx,p.y-dy); ctx.lineTo(p.x+dx,p.y+dy); ctx.stroke();
+          }
+          ray(len,0,1.4); ray(0,len,1.4);
+          softCircle(p.x,p.y,p.s*0.5, 255,255,255, a*0.5);
+          ctx.globalCompositeOperation='source-over';
+          break; }
+        case 'drop':{
+          const a = bell*0.85;
+          ctx.fillStyle='rgba(120,185,255,'+a+')';
+          ctx.beginPath();
+          ctx.ellipse(p.x,p.y,p.s*0.7,p.s*1.3,0,0,6.2832);
+          ctx.fill();
+          break; }
+        case 'spark':{ // electric
+          ctx.globalCompositeOperation='lighter';
+          const a = bell;
+          ctx.strokeStyle='rgba(180,240,255,'+a+')'; ctx.lineWidth=1.4; ctx.lineCap='round';
+          const mx = p.x + p.seg[0]*p.s*0.5, my = p.y + p.seg[1]*p.s*0.5;
+          ctx.beginPath();
+          ctx.moveTo(p.x - p.seg[2]*p.s, p.y - p.seg[3]*p.s);
+          ctx.lineTo(mx,my);
+          ctx.lineTo(p.x + p.seg[0]*p.s, p.y + p.seg[1]*p.s);
+          ctx.stroke();
+          ctx.globalCompositeOperation='source-over';
+          break; }
+      }
+    }
+
+    function update(p, dt){
+      p.t += dt;
+      switch(p.k){
+        case 'glow': p.x += p.vx*dt; p.y += p.vy*dt; p.vy *= (1 - 0.25*dt); break;
+        case 'smoke': p.x += p.vx*dt; p.y += p.vy*dt; break;
+        case 'streak': p.x += p.vx*dt; p.y += p.vy*dt; break;
+        case 'snow': p.x += (p.vx + Math.sin(p.t*1.6 + p.ph)*14)*dt; p.y += p.vy*dt; break;
+        case 'plus': p.x += p.vx*dt; p.y += p.vy*dt; break;
+        case 'drop': p.vy += p.ay*dt; p.x += p.vx*dt; p.y += p.vy*dt; break;
+        case 'star': case 'spark': break;
+      }
+    }
+
+    let last = performance.now();
+    function frame(now){
+      let dt = (now - last)/1000; last = now;
+      if(dt > 0.05) dt = 0.05;
+
+      ctx.clearRect(0,0,innerWidth,innerHeight);
+
+      if(!reduceMotion && parts.length < MAX){
+        const spans = editor.querySelectorAll('.fx');
+        spans.forEach(function(s){
+          const type = s.dataset.fx;
+          const r = s.getBoundingClientRect();
+          if(r.width < 1 || r.bottom < -50 || r.top > innerHeight+50) return;
+          let a = (acc.get(s) || 0) + RATE[type]*dt;
+          while(a >= 1){ spawn(type, r); a -= 1; }
+          acc.set(s, a);
+        });
+      }
+
+      for(let i = parts.length - 1; i >= 0; i--){
+        const p = parts[i];
+        update(p, dt);
+        if(p.t >= p.max){ parts.splice(i,1); continue; }
+        draw(p);
+      }
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // fade the caption away after a while
+    setTimeout(function(){
+      const c = document.querySelector('.caption');
+      c.style.transition = 'opacity 1.2s ease';
+      c.style.opacity = '0';
+    }, 9000);
+  })();
+  </script>
+</body>
+</html>

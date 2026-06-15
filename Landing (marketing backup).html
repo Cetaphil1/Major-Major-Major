@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fit Beyond Interest — Does your major actually fit you?</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap" />
+  <!-- Editorial serif used by the "Headline voice" tweak -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="landing.css" />
+  <link rel="stylesheet" href="skolla.css" />
+  <link rel="stylesheet" href="light.css" />
+
+  <style>
+    /* Personalized context ribbon — only shown after the pre-landing flow */
+    .ctx-ribbon {
+      display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      background: rgba(142,68,173,0.08);
+      border: 1px solid rgba(142,68,173,0.22);
+      border-radius: 999px; padding: 8px 8px 8px 16px;
+      margin-bottom: 22px;
+      font-size: 14px; color: var(--ink-2);
+    }
+    .ctx-ribbon strong { color: var(--ink); font-weight: 600; }
+    .ctx-ribbon .ctx-sep { color: var(--ink-4); }
+    .ctx-ribbon .ctx-edit {
+      font-size: 12.5px; font-weight: 600; color: var(--purple);
+      background: #fff; border: 1px solid rgba(142,68,173,0.25);
+      border-radius: 999px; padding: 6px 13px; text-decoration: none;
+      transition: background .16s ease, border-color .16s ease;
+    }
+    .ctx-ribbon .ctx-edit:hover { background: #faf3ff; border-color: var(--purple); }
+    .ctx-ribbon .ctx-research {
+      color: #fff; background: var(--purple); border-color: var(--purple);
+    }
+    .ctx-ribbon .ctx-research:hover { background: var(--purple-deep, #6d2f95); border-color: var(--purple-deep, #6d2f95); }
+    .hero__greeting { font-weight: 600; color: var(--purple); }
+  </style>
+
+  <script src="app/user-context.js"></script>
+  <script>
+    /* Pre-landing gate: a brand-new visitor goes through start.html first. */
+    (function () {
+      try {
+        var c = window.UserContext.load();
+        if (!c.preLandingComplete) { window.location.replace('start.html'); }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body style="background-color: rgb(243, 236, 236); font-family: 'Trebuchet MS';">
+
+  <!-- ════════════════════ TOP NAV ════════════════════ -->
+  <header class="topnav" data-screen-label="Landing">
+    <div class="topnav__inner">
+      <a href="#top" class="brand">
+        <span class="mark"></span>
+        <span>Fit Not Interest
+MAJOR-FIT GUIDANCE</span>
+      </a>
+
+      <nav class="topnav__links">
+        <a href="#reasons">The Why</a>
+        <a href="model-iceberg.html">The model</a>
+        <a href="dimensions.html">The what</a>
+        <a href="research.html">Your School</a>
+        <a href="about.html">About Me</a>
+      </nav>
+
+      <div class="topnav__cta">
+        <a href="survey.html" class="btn btn--primary">
+          Take the survey
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="sk-hero" id="top">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="wrap sk-hero__inner">
+      <div id="ctx-ribbon" class="ctx-ribbon" hidden>
+        <a class="ctx-edit ctx-research" href="research.html">Research your school <span aria-hidden="true">→</span></a>
+        <a class="ctx-edit" href="start.html">Edit context</a>
+      </div>
+
+      <h1 class="sk-title">
+        Does your major<br />
+        <span class="grad">actually fit</span> you?
+      </h1>
+
+      <p class="sk-sub">
+        A quiz tells you what you like. <strong>It can't tell you if you'll stay.</strong>
+      </p>
+
+      <div class="sk-ctas">
+        <a href="survey.html" class="btn btn--primary">
+          Take the survey
+          <span class="arrow">→</span>
+        </a>
+        <a href="#experience" class="btn btn--white">See how it works</a>
+      </div>
+    </div>
+
+    <!-- Live iceberg "video" — the hero centerpiece -->
+    <div class="wrap">
+      <div class="sk-stage-wrap">
+        <div class="sk-stage">
+          <div id="iceberg-mount" role="img" aria-label="Animated iceberg: interest above the waterline, eight deeper signals below."></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ THE EXPERIENCE ════════════════════ -->
+  <section class="section xp" id="experience">
+    <div class="wrap">
+      <div class="xp__head">
+        <span class="xp__eyebrow"><span class="dot"></span>The experience</span>
+        <h2 class="xp__title">Designed to tell you if you'll <span class="grad">stay</span> — not just what you like.</h2>
+        <p class="xp__sub">No score to chase, no verdict handed down. Six honest minutes, then an advising-style read on where your fit is strong, where the risk is, and what to do next.</p>
+      </div>
+
+      <!-- 3-step process -->
+      <div class="xp-steps reveal-stagger">
+        <div class="xp-step" style="--c: var(--blue);">
+          <div class="xp-step__n"><b>Step</b> 01</div>
+          <h3 class="xp-step__t">Tell us your context</h3>
+          <p class="xp-step__d">Your school, your major, your year, and whether you're set, exploring, or already thinking about a switch. It shapes everything that follows.</p>
+        </div>
+        <div class="xp-step" style="--c: var(--purple);">
+          <div class="xp-step__n"><b>Step</b> 02</div>
+          <h3 class="xp-step__t">Answer eight short sections</h3>
+          <p class="xp-step__d">Plain, first-person statements you rate honestly — interest, workload, belonging, burnout, and more. No right answers, no trick questions.</p>
+        </div>
+        <div class="xp-step" style="--c: var(--green);">
+          <div class="xp-step__n"><b>Step</b> 03</div>
+          <h3 class="xp-step__t">Get an honest report</h3>
+          <p class="xp-step__d">A clear read on your fit and switching risk, what's driving it, when to stay, when to switch, and the next steps to take before you decide.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ WHY STUDENTS LEAVE ════════════════════ -->
+  <section class="section section--tight" id="reasons">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta">
+          <span class="num">02</span>
+          <span class="dot"></span>
+          Why students really leave
+        </div>
+        <h2 class="h1">It's rarely just "too hard."</h2>
+        <p class="body-l">Switching and dropping out usually trace to something more specific. We measure the real reasons — not just whether you enjoy the subject.</p>
+      </div>
+
+      <div class="reasons">
+        <div class="reason"><span class="reason__pip" style="--c: var(--purple);"></span><span class="reason__t">Workload &amp; burnout</span><span class="reason__d">The pace and volume grind you down faster than the interest can carry you.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--green);"></span><span class="reason__t">Financial pressure</span><span class="reason__d">Cost, hours worked, and time-to-degree quietly force a switch.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--blue);"></span><span class="reason__t">Family &amp; status pressure</span><span class="reason__d">A major chosen for safety, prestige, or someone else's plan.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--pink);"></span><span class="reason__t">Belonging &amp; isolation</span><span class="reason__d">Feeling like an outsider in the field — one of the strongest predictors of leaving.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--blue-bright);"></span><span class="reason__t">Low academic confidence</span><span class="reason__d">Feeling behind your peers, even when you're capable.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--green);"></span><span class="reason__t">Unclear career path</span><span class="reason__d">You can't picture — or don't want — where the degree leads.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--pink);"></span><span class="reason__t">Poor school fit</span><span class="reason__d">It's the program or campus culture, not the field itself.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--yellow);"></span><span class="reason__t">Feeling trapped</span><span class="reason__d">Staying in a major you don't actually value because leaving feels too costly.</span></div>
+      </div>
+
+      <a href="dimensions.html" class="learn-more">See all eight signals we measure <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- ════════════════════ THE MODEL TEASER ════════════════════ -->
+  <section class="section section--dark" id="model">
+    <div class="wrap">
+      <div class="model-teaser">
+        <div class="model-teaser__copy">
+          <div class="section__meta">
+            <span class="num">03</span>
+            <span class="dot" style="background: var(--purple); box-shadow: 0 0 12px var(--purple);"></span>
+            The model
+          </div>
+          <h2 class="h1">Interest is the tip of the iceberg.</h2>
+          <p class="body-l">Most major quizzes stop at what you like. We read the eight signals below the waterline — workload, motivation, belonging, school fit, burnout, and more — that actually decide whether you stay.</p>
+          <div class="model-teaser__links">
+            <a href="model-iceberg.html" class="btn btn--white">Explore the model<span class="arrow">→</span></a>
+            <a href="models.html" class="btn">How we predict switching</a>
+          </div>
+        </div>
+
+        <div class="model-teaser__mini" aria-hidden="true">
+          <img class="berg-photo" src="assets/iceberg.png" alt="" draggable="false" />
+          <div class="berg-veil"></div>
+          <div class="berg-hud">Iceberg model</div>
+          <div class="berg-tip">
+            <span class="berg-tip__lbl">Interest</span>
+            <span class="berg-tip__note">What quizzes measure</span>
+          </div>
+          <div class="berg-water"><span>The waterline</span></div>
+          <div class="berg-deep">
+            <span class="berg-pip" style="--c: var(--blue); left: 31%; top: 37%;">Workload</span>
+            <span class="berg-pip" style="--c: var(--purple); left: 69%; top: 40%;">Motivation</span>
+            <span class="berg-pip" style="--c: var(--pink); left: 37%; top: 51%;">Belonging</span>
+            <span class="berg-pip" style="--c: var(--blue-bright); left: 66%; top: 54%;">School fit</span>
+            <span class="berg-pip" style="--c: var(--green); left: 47%; top: 67%;">Career</span>
+            <span class="berg-pip" style="--c: var(--red); left: 50%; top: 82%;">Burnout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FINAL CTA ════════════════════ -->
+  <section class="cta" id="final-cta">
+    <div class="cta__bg" aria-hidden="true"></div>
+    <div class="cta__inner">
+      <h2>Find out whether to stay — or switch.</h2>
+
+      <div class="cta__buttons">
+        <a href="survey.html" class="btn btn--primary" style="padding: 14px 22px; font-size: 15px;">
+          Take the survey
+          <span class="arrow">→</span>
+        </a>
+        <a href="dimensions.html" class="btn btn--ghost">See what we measure</a>
+      </div>
+
+      <div class="cta__fineprint">
+        <span>~6 min</span>
+        <span class="sep">·</span>
+        <span>8 signals</span>
+        <span class="sep">·</span>
+        <span>no sign-up</span>
+        <span class="sep">·</span>
+        <span>saved locally</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <div>
+        <div class="brand" style="margin-bottom: 10px;">
+          <span class="mark"></span>
+          <span>Fit Beyond Interest</span>
+        </div>
+        <p style="margin: 0; max-width: 440px; line-height: 1.5;">Honest, advising-style guidance on college major fit and switching — built on the behavioral and psychological signals that predict whether students stay.</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px; text-align: right;">
+        <a href="model-iceberg.html" class="meta" style="color: var(--ink-2);">The model</a>
+        <a href="dimensions.html" class="meta" style="color: var(--ink-2);">What we measure</a>
+        <a href="models.html" class="meta" style="color: var(--ink-2);">How we predict</a>
+        <span class="meta" style="color: var(--ink-4);">Not a clinical assessment</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Persistent floating CTA -->
+  <a href="survey.html" class="floating-cta" id="floating-cta" aria-label="Take the survey">
+    Take the survey
+    <span class="arrow">→</span>
+  </a>
+
+  <!-- ════════════════════ SCRIPTS ════════════════════ -->
+  <script>
+    // Personalize from the saved pre-landing context
+    (function () {
+      try {
+        var c = window.UserContext.load();
+        var name = (c.displayName || "").trim();
+        var college = c.selectedCollege && c.selectedCollege.name;
+        var major = c.selectedMajor && c.selectedMajor.name;
+        if (!college && !major) return;
+        var ribbon = document.getElementById("ctx-ribbon");
+        if (ribbon) {
+          ribbon.hidden = false;
+        }
+      } catch (e) {}
+      function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+    })();
+
+    // Reveal-on-scroll
+    (function () {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        }
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal-stagger, .reason, .model-teaser').forEach(el => io.observe(el));
+    })();
+
+    // Floating CTA appears after the hero scrolls away
+    (function () {
+      const fab = document.getElementById('floating-cta');
+      const hero = document.getElementById('top');
+      if (!fab || !hero) return;
+      const io = new IntersectionObserver((entries) => {
+        fab.classList.toggle('show', !entries[0].isIntersecting);
+      }, { threshold: 0 });
+      io.observe(hero);
+    })();
+  </script>
+
+  <!-- Live iceberg animation (React + animation engine) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="animations.jsx"></script>
+  <script type="text/babel">
+    window.Animations = { Stage, Sprite, useTime, useTimeline, useSprite, interpolate, animate, Easing, TextSprite, ImageSprite, RectSprite };
+  </script>
+  <script type="text/babel" src="iceberg.jsx"></script>
+
+  <!-- ════════════════════ TWEAKS ════════════════════ -->
+  <div id="tweaks-root"></div>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel">
+    /* Three expressive controls that reshape the whole mood of the landing —
+       not single-property pixel-pushing. They drive CSS-variable + targeted
+       overrides written into a single <style id="tweak-overrides"> element. */
+
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "theme": "light",
+      "accent": [
+        "#1f9d8b",
+        "#27ae60"
+      ],
+      "voice": "editorial"
+    }/*EDITMODE-END*/;
+
+    // hex (#rgb / #rrggbb) → rgba() string at alpha a
+    function hexA(hex, a) {
+      const h = String(hex).replace('#', '');
+      const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h;
+      const n = parseInt(x, 16);
+      return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+    }
+
+    function buildOverrideCSS(t) {
+      const [c0, c1] = t.accent;
+      const grad = `linear-gradient(135deg, ${c0} 0%, ${c1} 100%)`;
+
+      // ── Accent: recolors the signature gradient headline, brand mark, and
+      //    the hero's spotlight glow — applied in BOTH themes. ───────────────
+      let rootVars =
+        `--accent-grad:${grad};` +
+        `--grad-fit:${grad};` +
+        `--blue-glow:${hexA(c0, 0.20)};` +
+        `--purple-glow:${hexA(c1, 0.18)};`;
+
+      let blocks = '';
+
+      // ── Theme mood: dark analytical instrument ───────────────────────────
+      if (t.theme === 'dark') {
+        rootVars +=
+          '--bg-void:#07090F;--bg-panel:#0E121C;--bg-card:#141927;' +
+          '--bg-card-2:#1A2030;--bg-hover:#1F2638;' +
+          '--stroke:rgba(255,255,255,0.06);--stroke-2:rgba(255,255,255,0.10);' +
+          '--stroke-hot:rgba(124,156,255,0.35);' +
+          '--ink:#ECEEF5;--ink-2:#B7BCCB;--ink-3:#7A8197;--ink-4:#4E5468;' +
+          '--shadow-card:0 1px 0 rgba(255,255,255,0.04) inset,0 12px 32px rgba(0,0,0,0.35);' +
+          '--shadow-pop:0 1px 0 rgba(255,255,255,0.06) inset,0 24px 56px rgba(0,0,0,0.5);';
+        blocks += `
+          body{background:#07090F !important;}
+          .topnav{background:rgba(7,9,15,0.78) !important;border-bottom-color:rgba(255,255,255,0.06) !important;}
+          .topnav__links a{color:#B7BCCB !important;}
+          .topnav__links a:hover{background:#1F2638 !important;color:#fff !important;}
+          .btn{background:rgba(255,255,255,0.03) !important;border-color:rgba(255,255,255,0.12) !important;color:#ECEEF5 !important;}
+          .btn:hover{background:#1F2638 !important;border-color:rgba(124,156,255,0.35) !important;}
+          .btn--white{background:#141927 !important;color:#ECEEF5 !important;border-color:rgba(255,255,255,0.12) !important;box-shadow:none !important;}
+          .btn--white:hover{background:#1A2030 !important;}
+          .hero__grid{background-image:linear-gradient(to right,rgba(255,255,255,0.045) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.045) 1px,transparent 1px) !important;}
+          .ctx-ribbon{background:${hexA(c1, 0.12)} !important;border-color:${hexA(c1, 0.30)} !important;color:#B7BCCB !important;}
+          .ctx-ribbon strong{color:#ECEEF5 !important;}
+          .ctx-ribbon .ctx-edit{background:#141927 !important;border-color:${hexA(c1, 0.32)} !important;}
+          .site-footer{border-top-color:rgba(255,255,255,0.06) !important;}
+        `;
+      }
+
+      // ── Headline voice: typographic personality on the display headlines ──
+      const heads = '.sk-title,.xp__title,.h1,.cta h2';
+      if (t.voice === 'editorial') {
+        blocks += `${heads}{font-family:'Spectral',Georgia,serif !important;font-weight:600 !important;letter-spacing:-0.012em !important;}`;
+      } else if (t.voice === 'clinical') {
+        blocks += `${heads}{font-family:'Inter Tight','Inter',system-ui,sans-serif !important;font-weight:600 !important;letter-spacing:-0.042em !important;}`;
+      }
+      // 'friendly' = leave the page's inherited humanist face untouched.
+
+      return `:root{${rootVars}}${blocks}`;
+    }
+
+    function applyTweaks(t) {
+      let el = document.getElementById('tweak-overrides');
+      if (!el) {
+        el = document.createElement('style');
+        el.id = 'tweak-overrides';
+        document.head.appendChild(el); // appended last → wins over light.css
+      }
+      el.textContent = buildOverrideCSS(t);
+    }
+
+    function TweaksApp() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      React.useEffect(() => { applyTweaks(t); }, [t]);
+      return (
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Mood" />
+          <TweakRadio label="Theme" value={t.theme}
+            options={[{ value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]}
+            onChange={(v) => setTweak('theme', v)} />
+          <TweakColor label="Accent pairing" value={t.accent}
+            options={[
+              ['#8e44ad', '#2f80c4'],
+              ['#5B8DEF', '#A78BFA'],
+              ['#1f9d8b', '#27ae60'],
+              ['#e0a015', '#d6336c'],
+            ]}
+            onChange={(v) => setTweak('accent', v)} />
+          <TweakSection label="Typography" />
+          <TweakRadio label="Headline voice" value={t.voice}
+            options={[
+              { value: 'friendly', label: 'Friendly' },
+              { value: 'editorial', label: 'Editorial' },
+              { value: 'clinical', label: 'Clinical' },
+            ]}
+            onChange={(v) => setTweak('voice', v)} />
+        </TweaksPanel>
+      );
+    }
+
+    // Apply persisted defaults immediately (before the panel is ever opened)…
+    applyTweaks(TWEAK_DEFAULTS);
+    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
+  </script>
+</body>
+</html>

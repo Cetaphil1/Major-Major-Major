@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "purpose": "Placeholder nearby colleges per demo school. Distance is NOT calculated — these are hand-picked regional peers for the comparison UI. Status: Preview. Whether a school offers the selected major is a guess until connected to real program data (IPEDS).",
+    "status": "Preview"
+  },
+  "byCollegeId": {
+    "swarthmore": [
+      { "name": "University of Pennsylvania", "location": "Philadelphia, PA", "type": "Private · 4-year", "domain": "upenn.edu", "offers": "likely", "distanceNote": "~25 min" },
+      { "name": "Haverford College", "location": "Haverford, PA", "type": "Private · liberal arts", "domain": "haverford.edu", "offers": "likely", "distanceNote": "~15 min" },
+      { "name": "Bryn Mawr College", "location": "Bryn Mawr, PA", "type": "Private · liberal arts", "domain": "brynmawr.edu", "offers": "likely", "distanceNote": "~20 min" },
+      { "name": "Villanova University", "location": "Villanova, PA", "type": "Private · 4-year", "domain": "villanova.edu", "offers": "likely", "distanceNote": "~25 min" },
+      { "name": "Drexel University", "location": "Philadelphia, PA", "type": "Private · 4-year", "domain": "drexel.edu", "offers": "similar", "distanceNote": "~30 min" },
+      { "name": "Temple University", "location": "Philadelphia, PA", "type": "Public · 4-year", "domain": "temple.edu", "offers": "likely", "distanceNote": "~35 min" }
+    ],
+    "uc-berkeley": [
+      { "name": "Stanford University", "location": "Stanford, CA", "type": "Private · 4-year", "domain": "stanford.edu", "offers": "likely", "distanceNote": "~1 hr" },
+      { "name": "San Jose State University", "location": "San Jose, CA", "type": "Public · 4-year", "domain": "sjsu.edu", "offers": "likely", "distanceNote": "~1 hr" },
+      { "name": "San Francisco State University", "location": "San Francisco, CA", "type": "Public · 4-year", "domain": "sfsu.edu", "offers": "likely", "distanceNote": "~30 min" },
+      { "name": "Santa Clara University", "location": "Santa Clara, CA", "type": "Private · 4-year", "domain": "scu.edu", "offers": "likely", "distanceNote": "~1 hr" },
+      { "name": "University of California, Davis", "location": "Davis, CA", "type": "Public · 4-year", "domain": "ucdavis.edu", "offers": "likely", "distanceNote": "~1 hr 15 min" }
+    ],
+    "san-jose-state": [
+      { "name": "University of California, Berkeley", "location": "Berkeley, CA", "type": "Public · 4-year", "domain": "berkeley.edu", "offers": "likely", "distanceNote": "~1 hr" },
+      { "name": "Santa Clara University", "location": "Santa Clara, CA", "type": "Private · 4-year", "domain": "scu.edu", "offers": "likely", "distanceNote": "~15 min" },
+      { "name": "Stanford University", "location": "Stanford, CA", "type": "Private · 4-year", "domain": "stanford.edu", "offers": "likely", "distanceNote": "~30 min" },
+      { "name": "San Francisco State University", "location": "San Francisco, CA", "type": "Public · 4-year", "domain": "sfsu.edu", "offers": "likely", "distanceNote": "~1 hr" },
+      { "name": "California Polytechnic State University, San Luis Obispo", "location": "San Luis Obispo, CA", "type": "Public · 4-year", "domain": "calpoly.edu", "offers": "similar", "distanceNote": "~3 hr" }
+    ]
+  },
+  "fallback": {
+    "note": "No regional list yet for this school. Use the search below to find nearby colleges.",
+    "status": "Needs source"
+  }
+}

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About the Project — Fit Beyond Interest</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="landing.css" />
+  <link rel="stylesheet" href="light.css" />
+
+  <style>
+    /* ── About-page-only layout (builds on the shared light theme) ── */
+    .about-hero { padding: 64px 0 40px; position: relative; overflow: hidden; }
+    .about-hero__grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(43,30,60,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(43,30,60,0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 80% 100% at 50% 20%, #000 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 20%, #000 30%, transparent 80%);
+    }
+    .about-hero__inner {
+      position: relative;
+      display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 56px; align-items: center;
+    }
+    @media (max-width: 860px) { .about-hero__inner { grid-template-columns: 1fr; gap: 36px; } }
+
+    .about-portrait {
+      position: relative; justify-self: center;
+      width: 100%; max-width: 320px; aspect-ratio: 4 / 5;
+      border-radius: var(--r-xl);
+      background:
+        radial-gradient(120% 90% at 50% 12%, rgba(142,68,173,0.20), transparent 60%),
+        linear-gradient(180deg, #efe7f6, #e7eefb);
+      border: 1px solid var(--stroke-2);
+      box-shadow: var(--shadow-pop);
+      overflow: hidden;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .about-portrait img { width: 96%; height: auto; display: block; filter: drop-shadow(0 14px 30px rgba(43,30,60,0.22)); }
+    .about-portrait__badge {
+      position: absolute; left: 14px; top: 14px; z-index: 2;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px; border-radius: 999px;
+      background: rgba(255,255,255,0.82); backdrop-filter: blur(8px);
+      border: 1px solid var(--stroke-2);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+    }
+    .about-portrait__badge .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+    .about-hero h1 { font-size: clamp(36px, 5.4vw, 66px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.04; margin: 18px 0 0; }
+    .about-hero h1 .grad { background: var(--accent-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .about-hero__sub { font-size: clamp(17px, 1.9vw, 21px); line-height: 1.5; color: var(--ink-2); margin: 22px 0 0; max-width: 600px; }
+    .about-hero__sub b { color: var(--ink); font-weight: 600; }
+    .about-byline { display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; }
+    .about-byline__mark {
+      width: 40px; height: 40px; border-radius: 12px; background: var(--accent-grad);
+      display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 15px; letter-spacing: -0.02em;
+      box-shadow: 0 6px 16px rgba(142,68,173,0.3);
+    }
+    .about-byline__who b { display: block; font-size: 15px; font-weight: 600; color: var(--ink); }
+    .about-byline__who span { font-size: 12.5px; color: var(--ink-3); }
+
+    /* prose + cards */
+    .about-block { max-width: 760px; }
+    .about-lede { font-size: 18px; line-height: 1.62; color: var(--ink-2); margin: 0 0 18px; }
+    .about-lede b { color: var(--ink); font-weight: 600; }
+    .about-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 8px; }
+    @media (max-width: 680px) { .about-grid { grid-template-columns: 1fr; } }
+    .about-card {
+      background: var(--bg-card); border: 1px solid var(--stroke); border-radius: var(--r-lg);
+      padding: 22px 22px; box-shadow: var(--shadow-card);
+    }
+    .about-card h3 { display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 10px; }
+    .about-card h3 .pip { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+    .about-card p { font-size: 14px; line-height: 1.6; color: var(--ink-3); margin: 0; }
+
+    .about-skills { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 6px; }
+    .skill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 13px; border-radius: 999px; background: var(--bg-card);
+      border: 1px solid var(--stroke-2); font-size: 13px; font-weight: 500; color: var(--ink);
+    }
+    .skill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--purple)); }
+
+    .about-note {
+      display: flex; gap: 14px; align-items: flex-start;
+      margin-top: 8px; padding: 18px 20px; border-radius: var(--r-lg);
+      background: linear-gradient(180deg, #fff, #fbf8fd); border: 1px solid var(--stroke-hot);
+    }
+    .about-note__icon { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; background: rgba(142,68,173,0.12); color: var(--purple); display: grid; place-items: center; font-weight: 700; }
+    .about-note p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+    .about-note p b { color: var(--ink); font-weight: 600; }
+
+    /* honest facts */
+    .funfacts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 36px; margin-top: 2px; }
+    @media (max-width: 680px) { .funfacts { grid-template-columns: 1fr; } }
+    .funfact { display: flex; gap: 13px; align-items: baseline; padding: 13px 0; border-top: 1px solid var(--stroke); font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
+    .funfact b { color: var(--ink); font-weight: 600; }
+    .funfact__n { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--purple); flex: 0 0 auto; padding-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════ TOP NAV ════════════════════ -->
+  <header class="topnav" data-screen-label="About">
+    <div class="topnav__inner">
+      <a href="index.html" class="brand">
+        <span class="mark"></span>
+        <span>Fit Beyond Interest<small>About the project</small></span>
+      </a>
+      <nav class="topnav__links">
+        <a href="index.html">Home</a>
+        <a href="model-iceberg.html">The model</a>
+        <a href="dimensions.html">What we measure</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="topnav__cta">
+        <a href="survey.html" class="btn btn--primary">Take the survey<span class="arrow">→</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="about-hero" id="top">
+    <div class="about-hero__grid" aria-hidden="true"></div>
+    <div class="wrap about-hero__inner">
+      <div>
+        <div class="section__meta">
+          <span class="num">00</span>
+          <span class="dot" style="background: var(--purple); box-shadow: 0 0 12px var(--purple);"></span>
+          About the project
+        </div>
+        <h1>About the <span class="grad">Project</span></h1>
+        <p class="about-hero__sub">
+          Built by <b>THA BIG S</b>, this project asks a slightly more uncomfortable question than "what major sounds interesting?" — namely, whether your major actually fits your <b>motivation, confidence, workload, belonging, career clarity, and environment</b>. Interest is the easy part. Staying is where it gets honest.
+        </p>
+        <div class="about-byline">
+          <span class="about-byline__mark">S</span>
+          <span class="about-byline__who">
+            <b>THA BIG S</b>
+            <span>Creator · designer · chronic over-thinker</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="about-portrait">
+        <span class="about-portrait__badge"><span class="pip"></span>The creator</span>
+        <img src="assets/creator.png" alt="Portrait of THA BIG S, the creator of the project" draggable="false" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ WHY I BUILT THIS ════════════════════ -->
+  <section class="section section--tight" id="why">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta"><span class="num">01</span><span class="dot"></span>Why I built this</div>
+        <h2 class="h1">Students rarely leave a major<br />for one tidy reason.</h2>
+      </div>
+      <div class="about-block">
+        <p class="about-lede">I kept seeing the same plot twist: people who were <b>genuinely good at their major and still wanted out</b>, and people who loved the subject but were running on three hours of sleep and vending-machine optimism. "Do you like it?" explained neither group.</p>
+        <p class="about-lede">Sometimes it really is an <b>interest mismatch</b>. But just as often it's burnout, a program that treats sleep as optional, family or money pressure, advising that's technically available, or a degree with no visible exit. None of that shows up on a quiz that only asks what sounds fun — and "the vibes were off" doesn't hold up great at the financial-aid office.</p>
+        <p class="about-lede" style="margin-bottom: 0;">So I built the thing I wish had existed <em>before</em> anyone picked anything: a quiz that reads the <b>eight signals underneath</b> the interest and gives an honest, advising-style read on whether to stay or switch — and, more importantly, <b>why</b>. Think of it as a second opinion that refuses to sugar-coat it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ WHY NORMAL QUIZZES AREN'T ENOUGH ════════════════════ -->
+  <section class="section section--dark" id="gap">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta"><span class="num">02</span><span class="dot" style="background: var(--pink); box-shadow: 0 0 12px var(--pink);"></span>The gap I'm trying to close</div>
+        <h2 class="h1">Why normal major quizzes<br />aren't enough.</h2>
+        <p class="body-l">Most online major quizzes take one input — what you like — and hand back a cheerful label. That's the tip of the iceberg, and we all know how that metaphor ends. It misses the students who like their major and still can't sustain it.</p>
+      </div>
+      <div class="reasons" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="reason"><span class="reason__pip" style="--c: var(--blue);"></span><span class="reason__t">One signal in</span><span class="reason__d">"What sounds interesting?" predicts your major about as well as a horoscope predicts your week.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--purple);"></span><span class="reason__t">No context</span><span class="reason__d">Workload, school fit, belonging, money, pressure — the stuff that actually decides it — never gets measured.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--green);"></span><span class="reason__t">A label, not a reason</span><span class="reason__d">You get "you're a match!" and zero follow-up. Closure: not included.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ INSPIRATION + SKILLS + IMPROVING ════════════════════ -->
+  <section class="section section--tight" id="behind">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta"><span class="num">03</span><span class="dot" style="background: var(--green); box-shadow: 0 0 12px var(--green);"></span>Behind the build</div>
+        <h2 class="h1">Where it came from,<br />and where it's going.</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card">
+          <h3><span class="pip" style="background: var(--blue);"></span>What inspired it</h3>
+          <p>The iceberg cliché — interest is just the visible tip — plus actual research on why students switch or drop: workload tolerance, belonging, motivation quality, and burnout. I wanted those to feel real, not like a footnote you skim at 2 a.m.</p>
+        </div>
+        <div class="about-card">
+          <h3><span class="pip" style="background: var(--purple);"></span>How it reads you</h3>
+          <p>Short, first-person statements turn into eight 0–100 scores. The model watches the tension between them — loving the subject while quietly drowning in it — to flag switching risk and explain the cause. Receipts included.</p>
+        </div>
+        <div class="about-card">
+          <h3><span class="pip" style="background: var(--green);"></span>What I'm still improving</h3>
+          <p>Making the scoring fair across wildly different majors (engineering and philosophy do not suffer identically), writing sharper stay-vs-switch guidance, and validating questions against real outcomes instead of vibes.</p>
+        </div>
+        <div class="about-card">
+          <h3><span class="pip" style="background: var(--pink);"></span>What it's not</h3>
+          <p>Not a clinical assessment, not a crystal ball, and not your parents. It's a prompt for a better conversation — ideally with an advisor who actually knows your situation — in language students recognize from their own lives.</p>
+        </div>
+      </div>
+
+      <div class="section__head" style="margin: 48px 0 18px;">
+        <div class="section__meta"><span class="num">·</span><span class="dot" style="background: var(--blue-bright); box-shadow: 0 0 12px var(--blue-bright);"></span>Built with</div>
+      </div>
+      <div class="about-skills">
+        <span class="skill" style="--c: var(--blue);">HTML &amp; CSS</span>
+        <span class="skill" style="--c: var(--purple);">JavaScript &amp; React</span>
+        <span class="skill" style="--c: var(--green);">UX &amp; interaction design</span>
+        <span class="skill" style="--c: var(--pink);">Survey &amp; scoring logic</span>
+        <span class="skill" style="--c: var(--yellow);">Data visualization</span>
+        <span class="skill" style="--c: var(--blue-bright);">Content &amp; copywriting</span>
+        <span class="skill" style="--c: var(--purple-deep);">Design systems</span>
+      </div>
+
+      <div class="about-note" style="margin-top: 36px;">
+        <span class="about-note__icon">i</span>
+        <p><b>A student-built prototype.</b> Made by one student — not a company, not a lab, and not a validated instrument — so treat the scores as a thoughtful nudge, not a verdict handed down from on high. It's a working prototype: built to learn, to start honest conversations about major fit, and to keep getting <em>less wrong</em> over time.</p>
+      </div>
+
+      <div class="section__head" style="margin: 48px 0 6px;">
+        <div class="section__meta"><span class="num">·</span><span class="dot" style="background: var(--yellow); box-shadow: 0 0 12px var(--yellow);"></span>A few honest facts</div>
+      </div>
+      <div class="funfacts">
+        <div class="funfact"><span class="funfact__n">01</span><span>Built solo, mostly at hours my sleep schedule would describe as <b>“a choice.”</b></span></div>
+        <div class="funfact"><span class="funfact__n">02</span><span>The scoring got rewritten more times than I'll admit on a page meant to impress people.</span></div>
+        <div class="funfact"><span class="funfact__n">03</span><span>The iceberg photo is doing roughly <b>40% of the design work</b>. Money well spent.</span></div>
+        <div class="funfact"><span class="funfact__n">04</span><span>Eight signals, 24 questions, and <b>zero</b> of them ask for your zodiac sign.</span></div>
+        <div class="funfact"><span class="funfact__n">05</span><span>Yes, I took my own quiz. No, I will not be sharing the result.</span></div>
+        <div class="funfact"><span class="funfact__n">06</span><span>Named the alias <b>THA BIG S</b> first, justified it later. Standard engineering process.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ CTA ════════════════════ -->
+  <section class="cta" id="final-cta">
+    <div class="cta__bg" aria-hidden="true"></div>
+    <div class="cta__inner">
+      <h2>See the project in action.</h2>
+      <p>Six minutes, eight signals, and an honest read on your major — the entire reason this page exists. Bring your real answers; the model can tell.</p>
+      <div class="cta__buttons">
+        <a href="survey.html" class="btn btn--primary" style="padding: 14px 22px; font-size: 15px;">Take the survey<span class="arrow">→</span></a>
+        <a href="model-iceberg.html" class="btn btn--ghost">Explore the model</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <div>
+        <div class="brand" style="margin-bottom: 10px;">
+          <span class="mark"></span>
+          <span>Fit Beyond Interest</span>
+        </div>
+        <p style="margin: 0; max-width: 440px; line-height: 1.5;">A student-built project on college major fit and switching — by THA BIG S. Honest, advising-style guidance, grounded in the signals that predict whether students stay.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; text-align: right;">
+        <a href="model-iceberg.html" class="meta" style="color: var(--ink-2);">The model</a>
+        <a href="dimensions.html" class="meta" style="color: var(--ink-2);">What we measure</a>
+        <a href="about.html" class="meta" style="color: var(--ink-2);">About</a>
+        <span class="meta" style="color: var(--ink-4);">Student prototype · not a clinical assessment</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

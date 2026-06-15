@@ -1,0 +1,89 @@
+{
+  "_meta": {
+    "purpose": "Maps a major to academically RELATED majors a student may want to compare. These are NOT recommendations — just adjacent fields. Status: Estimated (hand-curated, not from an official crosswalk yet).",
+    "status": "Estimated",
+    "disclaimer": "Similar majors are related academic options to compare, not final recommendations. The right move depends on the student's own fit signals."
+  },
+  "similarMajors": {
+    "Political Science": [
+      { "name": "International Relations", "relation": "Same political focus, global/foreign-affairs lens." },
+      { "name": "Public Policy", "relation": "Applied side of politics — how decisions get made and implemented." },
+      { "name": "Economics", "relation": "Shares quantitative + institutional reasoning; common double-major." },
+      { "name": "History", "relation": "Context and cause behind political systems." },
+      { "name": "Sociology", "relation": "Power, institutions, and society from a social-science angle." },
+      { "name": "Philosophy", "relation": "Theory, ethics, and argument that underpin political thought." },
+      { "name": "Pre-Law", "relation": "Common pre-professional track for poli-sci students." }
+    ],
+    "Computer Science": [
+      { "name": "Data Science", "relation": "Programming applied to data, statistics, and ML." },
+      { "name": "Software Engineering", "relation": "More applied build/ship focus than theory." },
+      { "name": "Computer Engineering", "relation": "Adds hardware, circuits, and embedded systems." },
+      { "name": "Information Systems", "relation": "Tech in a business / organizational context." },
+      { "name": "Applied Mathematics", "relation": "Shares the theoretical and proof-based core." },
+      { "name": "Statistics", "relation": "Quantitative foundation behind ML and analytics." },
+      { "name": "Cognitive Science", "relation": "CS plus mind, perception, and AI." }
+    ],
+    "Psychology, General": [
+      { "name": "Cognitive Science", "relation": "Mind and behavior with a computational/neuro lens." },
+      { "name": "Sociology", "relation": "Behavior at the group and societal scale." },
+      { "name": "Neuroscience", "relation": "The biological basis of behavior." },
+      { "name": "Human Development", "relation": "How people change across the lifespan." },
+      { "name": "Education", "relation": "Applied learning, teaching, and development." },
+      { "name": "Public Health", "relation": "Behavior and well-being at the population level." },
+      { "name": "Social Work", "relation": "Applied helping profession built on behavioral science." }
+    ],
+    "Psychology": [
+      { "name": "Cognitive Science", "relation": "Mind and behavior with a computational/neuro lens." },
+      { "name": "Sociology", "relation": "Behavior at the group and societal scale." },
+      { "name": "Neuroscience", "relation": "The biological basis of behavior." },
+      { "name": "Human Development", "relation": "How people change across the lifespan." },
+      { "name": "Education", "relation": "Applied learning, teaching, and development." },
+      { "name": "Public Health", "relation": "Behavior and well-being at the population level." },
+      { "name": "Social Work", "relation": "Applied helping profession built on behavioral science." }
+    ],
+    "Economics": [
+      { "name": "Data Science", "relation": "Quantitative analysis and modeling of real data." },
+      { "name": "Public Policy", "relation": "Economics applied to government decisions." },
+      { "name": "Statistics", "relation": "The inference toolkit behind econometrics." },
+      { "name": "Finance", "relation": "Markets, valuation, and corporate decisions." },
+      { "name": "Mathematics", "relation": "The formal backbone of economic theory." },
+      { "name": "Political Science", "relation": "Institutions and policy that shape markets." }
+    ],
+    "Biology (Pre-Med)": [
+      { "name": "Public Health", "relation": "Health at the population, not patient, scale." },
+      { "name": "Biochemistry", "relation": "The molecular machinery behind biology." },
+      { "name": "Neuroscience", "relation": "Biology focused on the brain and nervous system." },
+      { "name": "Health Sciences", "relation": "Broader pre-health track with clinical exposure." },
+      { "name": "Psychology", "relation": "Behavior and mental health alongside biology." },
+      { "name": "Kinesiology/Exercise Science", "relation": "Human body, movement, and pre-PT/OT paths." }
+    ],
+    "Mechanical Engineering": [
+      { "name": "Aerospace Engineering", "relation": "Same mechanics core, flight/space focus." },
+      { "name": "Civil Engineering", "relation": "Structures and physical systems at scale." },
+      { "name": "Industrial Engineering", "relation": "Systems, operations, and optimization." },
+      { "name": "Materials Science and Engineering", "relation": "The materials behind mechanical design." },
+      { "name": "Physics", "relation": "The theoretical foundation of mechanics." }
+    ],
+    "Business Administration": [
+      { "name": "Economics", "relation": "The analytical theory behind business." },
+      { "name": "Finance", "relation": "A specialized, quantitative business track." },
+      { "name": "Marketing", "relation": "The customer and demand side of business." },
+      { "name": "Management Information Systems", "relation": "Business plus technology systems." },
+      { "name": "Communications", "relation": "People, messaging, and organizational skills." }
+    ],
+    "Nursing (BSN)": [
+      { "name": "Public Health", "relation": "Population health rather than bedside care." },
+      { "name": "Health Sciences", "relation": "Broader clinical/allied-health foundation." },
+      { "name": "Kinesiology/Exercise Science", "relation": "Body, movement, and rehab paths." },
+      { "name": "Psychology", "relation": "Mental health and patient behavior." },
+      { "name": "Nutrition/Dietetics", "relation": "Health through nutrition science." }
+    ],
+    "English": [
+      { "name": "Creative Writing", "relation": "The craft and production side of English." },
+      { "name": "Communications", "relation": "Applied writing and messaging for organizations." },
+      { "name": "Journalism", "relation": "Reporting and nonfiction writing." },
+      { "name": "History", "relation": "Narrative, sources, and analysis of the past." },
+      { "name": "Philosophy", "relation": "Close reading, argument, and ideas." }
+    ]
+  }
+}

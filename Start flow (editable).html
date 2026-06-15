@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fit Beyond Interest — Let's set the scene (editable)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="app/flow.css" />
+  <link rel="stylesheet" href="app/prelanding.css" />
+
+  <style>
+    /* Explore-a-switch: tappable related majors + explore panel */
+    .pl-related-hint { display: block; font-size: 13px; color: var(--vff-ink-3); margin: 4px 0 14px; }
+    .pl-related .pl-relchip { cursor: pointer; font-family: inherit; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease; }
+    .pl-related .pl-relchip:hover { transform: translateY(-1px); border-color: var(--vff-purple); box-shadow: 0 4px 14px rgba(142,68,173,0.16); }
+    .pl-related .pl-relchip .arrow { opacity: .5; margin-left: 4px; transition: transform .16s ease; }
+    .pl-related .pl-relchip:hover .arrow { transform: translateX(2px); opacity: .9; }
+
+    .pl-explore { margin-top: 18px; border: 1px solid #e3d3f0; background: linear-gradient(180deg,#faf6fd 0%, #ffffff 72%); border-radius: 16px; padding: 18px 20px; box-shadow: 0 12px 30px rgba(43,30,60,0.08); }
+    .pl-explore[hidden] { display: none; }
+    .pl-explore__head { display: flex; align-items: center; justify-content: space-between; }
+    .pl-explore__eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--vff-purple); }
+    .pl-explore__close { border: 0; background: transparent; cursor: pointer; font-size: 20px; line-height: 1; color: var(--vff-ink-4); padding: 2px 8px; border-radius: 6px; }
+    .pl-explore__close:hover { background: #f1e9f8; color: var(--vff-purple); }
+    .pl-explore__name { font-size: 20px; font-weight: 700; letter-spacing: -0.015em; color: var(--vff-ink); margin: 8px 0 8px; }
+    .pl-explore__meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pl-explore__meta span { font-size: 12.5px; font-weight: 500; color: var(--vff-purple); background: #f1e9f8; border: 1px solid #e3d3f0; border-radius: 7px; padding: 5px 10px; }
+    .pl-explore__note { font-size: 13.5px; line-height: 1.55; color: var(--vff-ink-2); margin: 14px 0 0; }
+    .pl-explore__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+    .pl-explore__done { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--vff-accent); margin-top: 14px; }
+    .pl-explore__done[hidden] { display: none; }
+    .pl-explore__done .pl-dot { background: var(--vff-accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SCREEN 1 · NAME
+       ════════════════════════════════════════════════════════════ -->
+  <div class="screen" data-screen-label="01 Name">
+    <header class="vff-header">
+      <div class="vff-brand">
+        <span class="mark"></span>
+        <span><b>Fit Beyond Interest</b><span>Major-fit &amp; switching guidance</span></span>
+      </div>
+      <button class="vff-exit" data-href="index.html" style="font-weight: 700; width: 150px; background-color: rgba(255, 255, 255, 0.26);">Skip intro</button>
+    </header>
+
+    <div class="qz ctx-qz">
+      <div class="qz__inner q-anim">
+        <div class="q-tagline"><span class="pip" style="background: var(--vff-purple);"></span>Let's set the scene</div>
+        <h1 class="q-title">What should we call you?</h1>
+        <p class="q-help">Use your first name, an alias, or anything you want the report to call you. It won't bite I promise:)</p>
+        <input class="pl-input" placeholder="Scallywag, George, or Bob, etc." value="Tofu" />
+        <div class="f-submit-row">
+          <button class="o-btn" data-next>Continue<span class="k">↵</span></button>
+          <button class="btn-ghost" data-next>Skip</button>
+          <span class="f-enter-desc">press <b>Enter</b></span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="vff-footer">
+      <div class="vff-progress">
+        <span>Preview 1 of 4</span>
+        <span class="f-progress-bar"><i style="width: 25%;"></i></span>
+      </div>
+      <div class="vff-nav">
+        <button class="f-nav-btn" aria-label="Back" data-back><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+        <button class="f-nav-btn" aria-label="Continue" data-next><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SCREEN 2 · COLLEGE
+       ════════════════════════════════════════════════════════════ -->
+  <div class="screen" data-screen-label="02 College" hidden>
+    <header class="vff-header">
+      <div class="vff-brand">
+        <span class="mark"></span>
+        <span><b>Fit Beyond Interest</b><span>Major-fit &amp; switching guidance</span></span>
+      </div>
+      <button class="vff-exit" data-href="index.html" style="font-weight: 700; width: 150px; background-color: rgba(255, 255, 255, 0.26);">Skip intro</button>
+    </header>
+
+    <div class="qz ctx-qz">
+      <div class="qz__inner q-anim">
+        <div class="q-tagline"><span class="pip" style="background: var(--blue); border-radius: 0px;"></span>Let's set the scene</div>
+        <h1 class="q-title">What college are we looking at?</h1>
+        <p class="q-help">Search your current college, intended college, or the school you want the report to use, this report doesn't have everything yet:(</p>
+        <div class="ctx-stepfield">
+          <div class="field">
+            <label class="field__label">College</label>
+            <span class="field__hint">Search 150+ U.S. colleges — (“Other / not listed.”- will lead to some features will be limited)</span>
+            <div class="field__autorow">
+              <input class="text-input" placeholder="Start typing your school… (e.g. Berkeley, UCLA)" value="University of California, Los Angeles" autocomplete="off" />
+            </div>
+            <div class="col-selected">
+              <span class="col-selected__check">✓</span>
+              <span>Westwood, CA · Public · 4-year</span>
+            </div>
+          </div>
+        </div>
+        <div class="f-submit-row ctx-submit">
+          <button class="btn-ghost" data-back>← Back</button>
+          <button class="o-btn" data-next>Continue<span class="k">↵</span></button>
+          <span class="f-enter-desc">press <b>Enter</b></span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="vff-footer">
+      <div class="vff-progress">
+        <span>Preview 2 of 4</span>
+        <span class="f-progress-bar"><i style="width: 50%;"></i></span>
+      </div>
+      <div class="vff-nav">
+        <button class="f-nav-btn" aria-label="Back" data-back><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+        <button class="f-nav-btn" aria-label="Continue" data-next><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SCREEN 3 · MAJOR
+       ════════════════════════════════════════════════════════════ -->
+  <div class="screen" data-screen-label="03 Major" hidden>
+    <header class="vff-header">
+      <div class="vff-brand">
+        <span class="mark"></span>
+        <span><b>Fit Beyond Interest</b><span>Major-fit &amp; switching guidance</span></span>
+      </div>
+      <button class="vff-exit" data-href="index.html" style="font-weight: 700; width: 150px; background-color: rgba(255, 255, 255, 0.26);">Skip intro</button>
+    </header>
+
+    <div class="qz ctx-qz">
+      <div class="qz__inner q-anim">
+        <div class="q-tagline"><span class="pip" style="background: var(--purple);"></span>The subject</div>
+        <h1 class="q-title">What major are we judging?</h1>
+        <p class="q-help">Pick the major you're in, considering, comparing, or at least of dreaming about taking when you get to college.</p>
+        <div class="ctx-stepfield" style="line-height: 1.5; width: 720px; height: 50px;">
+          <div class="field">
+            <label class="field__label">Some majors may not be covered, if so please choose something similar</label>
+            <span class="field__hint">Search majors by name, field, or keyword (CS, pre-med, design…) — or add your own.</span>
+            <div class="field__autorow">
+              <input class="text-input" id="majorInput" placeholder="Start typing your major… (e.g. Computer Science, pre-med)" value="Computer Science" autocomplete="off" />
+            </div>
+            <div class="col-selected">
+              <span class="col-selected__check">✓</span>
+              <span id="majorMeta">Computer &amp; Information Sciences · CIP 11.0701</span>
+            </div>
+          </div>
+        </div>
+        <div class="f-submit-row ctx-submit">
+          <button class="btn-ghost" data-back>← Back</button>
+          <button class="o-btn" data-next>See the quick read<span class="k">↵</span></button>
+          <span class="f-enter-desc">press <b>Enter</b></span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="vff-footer">
+      <div class="vff-progress">
+        <span>Preview 3 of 4</span>
+        <span class="f-progress-bar"><i style="width: 75%;"></i></span>
+      </div>
+      <div class="vff-nav">
+        <button class="f-nav-btn" aria-label="Back" data-back><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+        <button class="f-nav-btn" aria-label="Continue" data-next><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SCREEN 4 · PREVIEW REPORT
+       ════════════════════════════════════════════════════════════ -->
+  <div class="screen" data-screen-label="04 Preview report" hidden>
+    <header class="vff-header">
+      <div class="vff-brand">
+        <span class="mark"></span>
+        <span><b>Fit Beyond Interest</b><span>Major-fit &amp; switching guidance</span></span>
+      </div>
+      <button class="vff-exit" data-href="index.html" style="font-weight: 700; width: 150px; background-color: rgba(255, 255, 255, 0.26);">Skip to landing</button>
+    </header>
+
+    <div class="pl-report">
+      <div class="pl-rhead">
+        <span class="pl-eyebrow"><span class="pulse"></span>Quick read · preview, not a verdict</span>
+        <h1 class="pl-h1">Shelly, is this right?</h1>
+        <p class="pl-sub">Before the full quiz, we just want to make sure that this is accurate.</p>
+      </div>
+
+      <div class="pl-summary">
+        <div class="pl-chips">
+          <div class="pl-chip"><span class="pl-chip__k">Name</span><span class="pl-chip__v">Shelly</span></div>
+          <div class="pl-chip"><span class="pl-chip__k">College</span><span class="pl-chip__v">University of California, Los Angeles</span></div>
+          <div class="pl-chip"><span class="pl-chip__k">Major</span><span class="pl-chip__v" data-major-name>Computer Science</span></div>
+        </div>
+        <p class="pl-summary__note"><span class="pl-dot"></span>If this isn't you, then change it in the change college option below, nerd.</p>
+      </div>
+
+      <section class="pl-section">
+        <div class="pl-sechead"><span class="pl-num">01</span><h2>Is this the right setup?</h2></div>
+        <div class="pl-confirm">
+          <div class="pl-card" style="height: 170px;">
+            <div class="pl-card__tag"><span class="pip" style="background: var(--blue);"></span>College</div>
+            <div class="pl-card__name">University of California, Los Angeles</div>
+            <div class="pl-card__rows">
+              <span>Westwood, CA</span>
+              <span>Public</span>
+              <span>4-year</span>
+            </div>
+          </div>
+          <div class="pl-card" style="height: 170px;">
+            <div class="pl-card__tag"><span class="pip" style="background: var(--purple);"></span>Major</div>
+            <div class="pl-card__name" data-major-name>Computer Science</div>
+            <div class="pl-card__rows" id="setupMajorRows">
+              <span>Computer &amp; Information Sciences</span>
+              <span>CIP 11.0701</span>
+              <span class="pl-kw">CS</span>
+              <span class="pl-kw">programming</span>
+              <span class="pl-kw">software</span>
+            </div>
+          </div>
+        </div>
+        <div class="pl-confirm__btns">
+          <button class="o-btn">Yes, this is right</button>
+          <button class="btn-ghost" data-goto="1">Change college</button>
+          <button class="btn-ghost" data-goto="2">Change major</button>
+        </div>
+      </section>
+
+      <section class="pl-section">
+        <div class="pl-sechead"><span class="pl-num">02</span><h2>College snapshot</h2></div>
+        <div class="pl-stats">
+          <div class="pl-stat"><span class="pl-stat__k">Location</span><span class="pl-stat__v">Westwood, CA</span><span class="pl-stat__s">From preview dataset</span></div>
+          <div class="pl-stat"><span class="pl-stat__k">School type</span><span class="pl-stat__v">Public · 4-year</span><span class="pl-stat__s">Real local data</span></div>
+          <div class="pl-stat"><span class="pl-stat__k">Campus setting</span><span class="pl-stat__v">Urban</span></div>
+          <div class="pl-stat"><span class="pl-stat__k">Size</span><span class="pl-stat__v">Large</span><span class="pl-stat__s">33,471 undergrads · fall 2024</span></div>
+        </div>
+        <div class="pl-known" style="background-color: rgb(255, 255, 255);">
+          <span class="pl-known__lbl">Known for</span>
+          <ul class="pl-known__list">
+            <li>Film, TV &amp; theater</li>
+            <li>Engineering &amp; computer science</li>
+            <li>Life sciences &amp; pre-med</li>
+          </ul>
+          <p class="pl-note">Campus setting &amp; size: <a href="https://www.usnews.com/best-colleges/ucla-1315" target="_blank" rel="noopener noreferrer">U.S. News Best Colleges</a>, fall 2024. Notable programs from university &amp; U.S. News profiles.</p>
+        </div>
+      </section>
+
+      <section class="pl-section">
+        <div class="pl-sechead"><span class="pl-num">03</span><h2>Major snapshot</h2></div>
+        <div class="pl-stats">
+          <div class="pl-stat"><span class="pl-stat__k">Major</span><span class="pl-stat__v" data-major-name>Computer Science</span><span class="pl-stat__s">From CIP-style dataset</span></div>
+          <div class="pl-stat"><span class="pl-stat__k">Academic field</span><span class="pl-stat__v" id="snapMajorField">Computer &amp; Information Sciences</span><span class="pl-stat__s">Broad category</span></div>
+          <div class="pl-stat"><span class="pl-stat__k">CIP code</span><span class="pl-stat__v" id="snapMajorCip">11.0701</span><span class="pl-stat__s">Classification of Instructional Programs</span></div>
+          <div class="pl-stat"><span class="pl-stat__k">Search keywords</span><span class="pl-stat__v" id="snapMajorKeywords">CS, programming, software</span><span class="pl-stat__s">Used to match your major</span></div>
+        </div>
+        <div class="pl-known" style="background-color: rgb(255, 254, 254);">
+          <span class="pl-known__lbl">Related majors</span>
+          <span class="pl-related-hint">Curious about another path? Tap one to explore switching your major.</span>
+          <div class="pl-related" id="relatedList">
+            <button class="pl-relchip" data-major="Computer Engineering">Computer Engineering<span class="arrow">→</span></button>
+            <button class="pl-relchip" data-major="Data Science">Data Science<span class="arrow">→</span></button>
+            <button class="pl-relchip" data-major="Software Engineering">Software Engineering<span class="arrow">→</span></button>
+            <button class="pl-relchip" data-major="Cognitive Science">Cognitive Science<span class="arrow">→</span></button>
+            <button class="pl-relchip" data-major="Mathematics">Mathematics<span class="arrow">→</span></button>
+          </div>
+          <div class="pl-explore" id="explorePanel" hidden>
+            <div class="pl-explore__head">
+              <span class="pl-explore__eyebrow">Explore a switch</span>
+              <button class="pl-explore__close" id="exploreClose" aria-label="Close">×</button>
+            </div>
+            <h4 class="pl-explore__name" id="exploreName">Data Science</h4>
+            <div class="pl-explore__meta" id="exploreMeta"></div>
+            <p class="pl-explore__note">Make this your major and we'll re-frame the preview around it — your college stays the same.</p>
+            <div class="pl-explore__btns">
+              <button class="o-btn" id="exploreGo">Switch to this major</button>
+              <button class="btn-ghost" id="exploreCancel">Keep current major</button>
+            </div>
+            <div class="pl-explore__done" id="exploreDone" hidden><span class="pl-dot"></span><span id="exploreDoneText"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pl-cta" style="height: 300px">
+        <h2>Ready for the actual read?</h2>
+        <div class="pl-cta__btns">
+          <button class="o-btn o-btn--lg" data-href="index.html">Continue to main page<span class="arrow">→</span></button>
+          <div class="pl-edit">
+            <span>Edit context:</span>
+            <button data-goto="0">Name</button>
+            <button data-goto="1">College</button>
+            <button data-goto="2">Major</button>
+          </div>
+        </div>
+        <div class="pl-cta__fine" style="height: 0px;">Preview 4 of 4 · Saved on device</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    /* Lightweight navigation between the four static screens.
+       Every screen is now plain HTML, so any direct edit you make persists. */
+    (function () {
+      var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+      var cur = 0;
+      function show(i) {
+        cur = Math.max(0, Math.min(screens.length - 1, i));
+        screens.forEach(function (s, n) { s.hidden = n !== cur; });
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      document.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-next],[data-back],[data-goto],[data-href]');
+        if (!t) return;
+        if (t.hasAttribute('data-href')) { window.location.href = t.getAttribute('data-href'); return; }
+        if (t.hasAttribute('data-goto')) { show(parseInt(t.getAttribute('data-goto'), 10)); return; }
+        if (t.hasAttribute('data-next')) { show(cur + 1); return; }
+        if (t.hasAttribute('data-back')) { show(cur - 1); return; }
+      });
+      show(0);
+    })();
+
+    /* Explore-a-switch: tap a related major to preview switching to it. */
+    (function () {
+      var MAJORS = {
+        "Computer Science":     { field: "Computer & Information Sciences", cip: "11.0701", keywords: ["CS", "programming", "software"] },
+        "Computer Engineering": { field: "Engineering",                     cip: "14.0901", keywords: ["hardware", "embedded", "circuits"] },
+        "Data Science":         { field: "Computer & Information Sciences", cip: "30.7001", keywords: ["statistics", "ML", "analytics"] },
+        "Software Engineering": { field: "Computer & Information Sciences", cip: "14.0903", keywords: ["software", "systems", "dev"] },
+        "Cognitive Science":    { field: "Interdisciplinary studies",       cip: "30.2501", keywords: ["mind", "neuroscience", "AI"] },
+        "Mathematics":          { field: "Mathematics & Statistics",        cip: "27.0101", keywords: ["proofs", "analysis", "algebra"] }
+      };
+      var ORDER = ["Computer Science", "Computer Engineering", "Data Science", "Software Engineering", "Cognitive Science", "Mathematics"];
+      var current = "Computer Science";
+      var pending = null;
+
+      var panel = document.getElementById('explorePanel');
+      var relatedList = document.getElementById('relatedList');
+      if (!panel || !relatedList) return;
+
+      function esc(s) { return String(s).replace(/&/g, '&amp;'); }
+
+      function renderRelated() {
+        relatedList.innerHTML = ORDER.filter(function (m) { return m !== current; })
+          .map(function (m) { return '<button class="pl-relchip" data-major="' + m + '">' + esc(m) + '<span class="arrow">\u2192</span></button>'; })
+          .join('');
+      }
+
+      function openExplore(name) {
+        pending = name;
+        var d = MAJORS[name];
+        document.getElementById('exploreName').textContent = name;
+        document.getElementById('exploreMeta').innerHTML =
+          '<span>' + esc(d.field) + '</span><span>CIP ' + d.cip + '</span>';
+        document.getElementById('exploreGo').textContent = 'Switch to ' + name;
+        document.getElementById('exploreCancel').textContent = 'Keep ' + current;
+        document.getElementById('exploreDone').hidden = true;
+        panel.hidden = false;
+      }
+
+      function applyMajor(name) {
+        current = name;
+        var d = MAJORS[name];
+        Array.prototype.forEach.call(document.querySelectorAll('[data-major-name]'), function (el) { el.textContent = name; });
+        document.getElementById('snapMajorField').innerHTML = esc(d.field);
+        document.getElementById('snapMajorCip').textContent = d.cip;
+        document.getElementById('snapMajorKeywords').textContent = d.keywords.join(', ');
+        document.getElementById('setupMajorRows').innerHTML =
+          '<span>' + esc(d.field) + '</span><span>CIP ' + d.cip + '</span>' +
+          d.keywords.map(function (k) { return '<span class="pl-kw">' + esc(k) + '</span>'; }).join('');
+        var mi = document.getElementById('majorInput');
+        if (mi) mi.value = name;
+        var mm = document.getElementById('majorMeta');
+        if (mm) mm.innerHTML = esc(d.field) + ' \u00b7 CIP ' + d.cip;
+        renderRelated();
+      }
+
+      relatedList.addEventListener('click', function (e) {
+        var chip = e.target.closest('.pl-relchip');
+        if (chip) openExplore(chip.getAttribute('data-major'));
+      });
+      document.getElementById('exploreClose').addEventListener('click', function () { panel.hidden = true; });
+      document.getElementById('exploreCancel').addEventListener('click', function () { panel.hidden = true; });
+      document.getElementById('exploreGo').addEventListener('click', function () {
+        if (!pending) return;
+        var name = pending;
+        applyMajor(name);
+        var done = document.getElementById('exploreDone');
+        document.getElementById('exploreDoneText').textContent = 'Now exploring ' + name + ' \u2014 preview re-framed.';
+        done.hidden = false;
+        document.getElementById('exploreGo').textContent = 'Switch to ' + name;
+        document.getElementById('exploreCancel').textContent = 'Keep ' + name;
+      });
+    })();
+  </script>
+</body>
+</html>

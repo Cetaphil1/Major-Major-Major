@@ -1,0 +1,138 @@
+/* light.css — unifies the whole marketing site (landing + subpages) into the
+   vue-flow-form light "purple" tone. Loaded AFTER tokens.css + landing.css
+   (+ skolla.css on the home page). Only the live pages load this; the dark
+   backups (Landing (original).html) don't, so they stay dark. */
+
+:root {
+  /* surfaces → light lavender */
+  --bg-void:      #F9F6FB;
+  --bg-panel:     #F3EEF8;
+  --bg-card:      #FFFFFF;
+  --bg-card-2:    #FBF8FD;
+  --bg-hover:     #F3EDFA;
+
+  /* strokes → soft dark hairlines */
+  --stroke:       #ebe4f2;
+  --stroke-2:     #ddd3ea;
+  --stroke-hot:   rgba(142,68,173,0.40);
+
+  /* text → dark on light */
+  --ink:    #181818;
+  --ink-2:  #52525b;
+  --ink-3:  #7f8c8d;
+  --ink-4:  #9aa0a6;
+
+  /* accents flattened for a light background */
+  --blue:        #2f80c4;
+  --blue-bright: #3b82c4;
+  --blue-deep:   #1f5790;
+  --blue-glow:   rgba(47,128,196,0.16);
+  --purple:      #8e44ad;
+  --purple-deep: #703688;
+  --purple-glow: rgba(142,68,173,0.14);
+  --yellow:      #e0a015;
+  --yellow-deep: #b8830c;
+  --pink:        #d6336c;
+  --pink-deep:   #b02a59;
+  --green:       #27ae60;
+  --green-deep:  #1e8c4d;
+  --red:         #e74c3c;
+  --red-deep:    #c0392b;
+
+  --grad-fit:    linear-gradient(135deg, #8e44ad 0%, #27ae60 100%);
+  --grad-risk:   linear-gradient(135deg, #e0a015 0%, #d6336c 100%);
+
+  /* type → Poppins, to match the survey */
+  --font-sans:   'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* soft light shadows */
+  --shadow-card: 0 1px 2px rgba(43,30,60,0.04), 0 12px 30px rgba(43,30,60,0.07);
+  --shadow-pop:  0 1px 2px rgba(43,30,60,0.05), 0 22px 52px rgba(43,30,60,0.14);
+
+  --accent-grad: linear-gradient(135deg, #8e44ad 0%, #2f80c4 100%);
+}
+
+body { background: var(--bg-void); color: var(--ink); }
+::selection { background: rgba(142,68,173,0.18); }
+
+/* ── Nav: light translucent bar ─────────────────── */
+.topnav {
+  background: rgba(249,246,251,0.82);
+  border-bottom: 1px solid var(--stroke);
+}
+.topnav__links a { color: var(--ink-2); }
+.topnav__links a:hover { background: var(--bg-hover); color: var(--purple); }
+.brand .mark::after { background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.55), transparent 58%); }
+
+/* ── Buttons: solid green primary (matches survey OK) ── */
+.btn { background: var(--bg-card); border-color: var(--stroke-2); color: var(--ink); }
+.btn:hover { background: var(--bg-hover); border-color: var(--stroke-hot); }
+.btn--primary { background: var(--green); color: #fff; box-shadow: 0 6px 16px rgba(39,174,96,0.28); }
+.btn--primary:hover { background: #2ebd6b; box-shadow: 0 10px 24px rgba(39,174,96,0.32); }
+.btn--white { background: #fff; color: var(--ink); border-color: var(--stroke-2); box-shadow: var(--shadow-card); }
+.btn--white:hover { background: #fff; border-color: var(--stroke-hot); }
+.btn--ghost { background: transparent; }
+
+/* ── Accent gradients: readable purple→blue on light ── */
+.hero h1 .accent,
+.sk-title .grad,
+.xp__title .grad,
+.nudge__title .grad {
+  background: var(--accent-grad);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ── Hero background grid + eyebrow ──────────────── */
+.hero__grid {
+  background-image:
+    linear-gradient(to right, rgba(43,30,60,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(43,30,60,0.05) 1px, transparent 1px);
+}
+.hero__eyebrow { background: #fff; border-color: var(--stroke-2); color: var(--ink-2); }
+
+/* ── Skolla sections ─────────────────────────────── */
+.sig-strip { background: linear-gradient(180deg, rgba(142,68,173,0.04), transparent); }
+.xp { background: var(--bg-panel); }
+.section--dark { background: var(--bg-panel); }
+
+/* keep the iceberg "video" framed dark (it's imagery) */
+.sk-stage { background: #03060E; box-shadow: var(--shadow-pop), 0 0 0 1px rgba(142,68,173,0.12); }
+.sk-stage__tag { background: rgba(7,9,15,0.6); border-color: rgba(255,255,255,0.14); color: rgba(255,255,255,0.86); }
+.sk-stage-wrap::before {
+  background:
+    radial-gradient(60% 60% at 28% 12%, rgba(142,68,173,0.18), transparent 70%),
+    radial-gradient(55% 60% at 80% 90%, rgba(39,174,96,0.16), transparent 72%);
+}
+
+/* ── Outline chips that were faux-transparent on dark ── */
+.hero__eyebrow,
+.dim-item,
+.kbd,
+.signal-chip,
+.fit-row .bar { background: #fff; }
+.dim-item { background: #fbf8fd; border-color: var(--stroke); }
+.dim-card { box-shadow: var(--shadow-card); }
+.dim-card:hover { background: #fff; }
+
+/* ── Models page ─────────────────────────────────── */
+.model { box-shadow: var(--shadow-card); }
+.model--two,
+.compare__col--new {
+  background: linear-gradient(180deg, #fbf6fe, #f6effb);
+  border-color: var(--stroke-hot);
+  box-shadow: 0 0 0 1px var(--stroke-hot), 0 22px 50px rgba(142,68,173,0.10);
+}
+.compare__col--old { background: linear-gradient(180deg, #f4f1f8, #efeaf5); border-color: var(--stroke); }
+.model__node { background: #fff; border: 1px solid var(--stroke-2); color: var(--ink); }
+.model__node.output { background: var(--accent-grad); color: #fff; border-color: transparent; }
+
+/* ── Iceberg discovery (model page) ──────────────── */
+.lockpip { background: #e7e0f0; border-color: var(--stroke-2); }
+
+/* ── Floating CTA + nudge ────────────────────────── */
+.floating-cta { background: var(--green); color: #fff; box-shadow: 0 14px 34px rgba(39,174,96,0.34); }
+.floating-cta:hover { box-shadow: 0 18px 40px rgba(39,174,96,0.4); }
+.nudge { background: linear-gradient(180deg, #fff, #fbf8fd); border-color: var(--stroke-hot); box-shadow: var(--shadow-pop); }
+
+/* ── Footer ──────────────────────────────────────── */
+.site-footer { border-top: 1px solid var(--stroke); color: var(--ink-3); }

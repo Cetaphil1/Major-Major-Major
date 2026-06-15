@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fit Beyond Interest — Research your college &amp; major</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="app/flow.css" />
+  <link rel="stylesheet" href="app/report.css" />
+  <link rel="stylesheet" href="app/research.css" />
+
+  <script src="app/user-context.js"></script>
+  <script>
+    /* Pre-landing gate: a brand-new visitor goes through start.html first. */
+    (function () {
+      try {
+        var c = window.UserContext.load();
+        if (!c.preLandingComplete) { window.location.replace('start.html'); }
+      } catch (e) {}
+    })();
+  </script>
+  <script src="app/research-data.js"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- External-link breakout helper.
+       Every research link is already a plain <a href="https://…" target="_blank" rel="noopener noreferrer">.
+       This delegated handler additionally tries to force a real top-level new tab via window.open,
+       which is the explicit fallback for environments that intercept anchor clicks. It does NOT use
+       React Router, internal routes, iframes, or window.location.href, and it never navigates the
+       current page. NOTE: the Claude/Quad Design preview still captures the destination and renders
+       it in an embedded frame — Google/YouTube/Reddit send X-Frame-Options: DENY, so you see
+       "refused to connect" / ERR_BLOCKED_BY_RESPONSE there. The links open normally in a real local
+       or deployed browser tab. -->
+  <script>
+    function openExternal(url) {
+      if (!url) return;
+      try { window.open(url, "_blank", "noopener,noreferrer"); }
+      catch (e) { /* fall back to default anchor behavior */ }
+    }
+    document.addEventListener("click", function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('a[target="_blank"]') : null;
+      if (!a) return;
+      var href = a.getAttribute("href") || "";
+      if (!/^https?:\/\//i.test(href)) return;        // only real external URLs
+      if (e.defaultPrevented || e.button !== 0) return; // respect modifier/middle clicks
+      e.preventDefault();
+      openExternal(href);
+    }, true);
+  </script>
+
+  <script type="text/babel" src="app/research.jsx"></script>
+  <script type="text/babel">
+    function ResearchPage() {
+      // Read the college + major the student already entered (pre-landing flow).
+      // Falls back to a demo pairing so the page is never empty.
+      const uc = (window.UserContext && window.UserContext.load()) || {};
+      const college = (uc.selectedCollege && uc.selectedCollege.name) || "Swarthmore College";
+      const major = (uc.selectedMajor && uc.selectedMajor.name) || "Political Science";
+      const isDemo = !(uc.selectedCollege && uc.selectedCollege.name);
+
+      return (
+        <div className="rp" style={{ paddingTop: 28 }}>
+          <div className="rp-top">
+            <a className="rp-brand" href="index.html" style={{ textDecoration: "none", color: "inherit" }}>
+              <span className="mark" />
+              <span><b>Fit Beyond Interest</b><span>Research center</span></span>
+            </a>
+            <div className="grow" />
+            <a className="rs-chiplink" href="start.html">Change college / major</a>
+            <a className="rs-chiplink" href="survey.html" style={{ borderColor: "var(--purple)", color: "var(--purple)" }}>Take the survey →</a>
+          </div>
+
+          {isDemo ? (
+            <div className="rs-empty" style={{ marginBottom: 18 }}>
+              <DataStatusBadge status="Preview" />
+              Showing a demo pairing. <a className="rs-chiplink" href="start.html">Enter your own college &amp; major</a> to research yours.
+            </div>
+          ) : null}
+
+          <ResearchCenter college={college} major={major} />
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<ResearchPage />);
+  </script>
+</body>
+</html>

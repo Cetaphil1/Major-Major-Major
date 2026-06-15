@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How we predict — interest alone vs. the deeper-fit model</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="landing.css" />
+  <link rel="stylesheet" href="light.css" />
+</head>
+<body>
+
+  <header class="topnav" data-screen-label="How we predict">
+    <div class="topnav__inner">
+      <a href="index.html" class="brand">
+        <span class="mark"></span>
+        <span>Fit Beyond Interest<small>How we predict</small></span>
+      </a>
+      <nav class="topnav__links">
+        <a href="index.html">Home</a>
+        <a href="model-iceberg.html">The model</a>
+        <a href="dimensions.html">What we measure</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="topnav__cta">
+        <a href="survey.html" class="btn btn--primary">Take the Survey<span class="arrow">→</span></a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section section--tight" id="top">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta"><span class="num">01</span><span class="dot" style="background: var(--blue-bright); box-shadow: 0 0 12px var(--blue-bright);"></span>How we predict</div>
+        <h1 class="h1">Two ways to predict<br />whether you'll stay.</h1>
+        <p class="body-l">Most online major quizzes use one signal: what you like. We compare that baseline against a deeper model that reads eight signals — and surfaces the students who like their major but are quietly at risk of switching.</p>
+      </div>
+
+      <div class="models">
+        <article class="model">
+          <div class="model__name">Model 1 · Baseline</div>
+          <h3 class="model__title">Interest only</h3>
+          <div class="model__diagram">
+            <span class="model__node input">Interest</span>
+            <span class="model__arrow">→</span>
+            <span class="model__node output">Stay or switch?</span>
+          </div>
+          <ul class="model__bullets">
+            <li>One signal in</li>
+            <li>Mirrors what most online major quizzes do today</li>
+            <li>Easy to compute, easy to explain</li>
+          </ul>
+          <p class="model__caveat">Predicts only the surface. Misses the students who like the subject but can't sustain the workload, the cost, the culture, or the isolation.</p>
+        </article>
+
+        <article class="model model--two">
+          <div class="model__name">Model 2 · Deeper fit</div>
+          <h3 class="model__title">Interest + behavior + environment + pressure</h3>
+          <div class="model__diagram">
+            <span class="model__node input">Interest</span>
+            <span class="model__node input purple">Confidence</span>
+            <span class="model__node input purple">Workload</span>
+            <span class="model__node input">Motivation</span>
+            <span class="model__node input green">Career</span>
+            <span class="model__node input pink">School fit</span>
+            <span class="model__node input pink">Belonging</span>
+            <span class="model__node input red">Burnout</span>
+            <span class="model__arrow">→</span>
+            <span class="model__node output">Switch risk + why</span>
+          </div>
+          <ul class="model__bullets">
+            <li>Eight signals as inputs, each scored 0–100</li>
+            <li>Same person, same decision — a far richer picture</li>
+            <li>Designed to surface students at quiet risk of switching</li>
+            <li>Explains the <em>reason</em> behind the risk, not just a label</li>
+          </ul>
+          <p class="model__caveat">More complete, not magical. The model can't make you stay — it can only show which signals matter and where support might land.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- How scoring works -->
+  <section class="section section--dark">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta"><span class="num">02</span><span class="dot" style="background: var(--green); box-shadow: 0 0 12px var(--green);"></span>From answers to a read</div>
+        <h2 class="h1">How a switch-risk read is built.</h2>
+        <p class="body-l">Your answers become eight dimension scores, which combine into an overall fit, a switching-risk level, and a plain-language explanation of what's driving it.</p>
+      </div>
+
+      <div class="reasons" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="reason"><span class="reason__pip" style="--c: var(--blue);"></span><span class="reason__t">01 · Score each signal</span><span class="reason__d">Short statements are averaged into a 0–100 score per dimension, with reverse-worded items flipped.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--purple);"></span><span class="reason__t">02 · Weigh the tension</span><span class="reason__d">High interest against low workload, belonging, or burnout is the pattern that predicts quiet switching.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--yellow);"></span><span class="reason__t">03 · Estimate the risk</span><span class="reason__d">Switching and burnout risk are leveled from the operational signals and your stated intent.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--green);"></span><span class="reason__t">04 · Explain the why</span><span class="reason__d">The report names whether it's the major, the school, the workload, the career, or outside pressure.</span></div>
+      </div>
+
+      <p class="body" style="margin-top: 28px; font-size: 13px; color: var(--ink-3); max-width: 760px;">This prototype computes a transparent average-and-weight pass over your answers — not a clinical or validated instrument. It's meant to start an honest conversation, ideally with an academic advisor.</p>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="cta__bg" aria-hidden="true"></div>
+    <div class="cta__inner">
+      <h2>Run the deeper model on yourself.</h2>
+      <p>Six minutes in, you'll have an overall fit score, a switching-risk read, and an explanation of exactly what's behind it.</p>
+      <div class="cta__buttons">
+        <a href="survey.html" class="btn btn--primary" style="padding: 14px 22px; font-size: 15px;">Take the Survey<span class="arrow">→</span></a>
+        <a href="model-iceberg.html" class="btn btn--ghost">See the model visually</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Survey nudge — interior pages only -->
+  <aside class="nudge" id="nudge" role="complementary" aria-label="Take the survey">
+    <button class="nudge__close" id="nudge-close" type="button" aria-label="Dismiss">×</button>
+    <p class="nudge__eyebrow"><span class="nudge__pip"></span>Still deciding?</p>
+    <p class="nudge__title">See whether your major <span class="grad">actually fits.</span></p>
+    <p class="nudge__body">Eight signals, an honest read on staying or switching. About 6 minutes — no sign-up.</p>
+    <a href="survey.html" class="btn btn--primary nudge__cta">Take the survey<span class="arrow">→</span></a>
+  </aside>
+
+  <script>
+    (function () {
+      var nudge = document.getElementById('nudge');
+      var closeBtn = document.getElementById('nudge-close');
+      if (!nudge) return;
+      var KEY = 'fbi-nudge-dismissed';
+      try { if (sessionStorage.getItem(KEY)) { nudge.remove(); return; } } catch (e) {}
+      var t = setTimeout(function () { nudge.classList.add('show'); }, 1100);
+      function dismiss() {
+        clearTimeout(t);
+        nudge.classList.remove('show');
+        try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+        setTimeout(function () { if (nudge.parentNode) nudge.remove(); }, 450);
+      }
+      closeBtn.addEventListener('click', dismiss);
+    })();
+  </script>
+
+</body>
+</html>

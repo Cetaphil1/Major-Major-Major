@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "purpose": "Templates for outbound research links. Nothing here is scraped or stored — every entry just builds a URL to an official tool or a public search. Placeholders: {c}=URL-encoded college name, {m}=URL-encoded major. Search entries use an engine + a human query template with {college}/{major}/{domain}.",
+    "engines": {
+      "google": "https://www.google.com/search?q=",
+      "youtube": "https://www.youtube.com/results?search_query=",
+      "maps": "https://www.google.com/maps/search/",
+      "reddit": "https://www.reddit.com/search/?q="
+    }
+  },
+  "categories": [
+    {
+      "id": "official",
+      "title": "Official school & data sources",
+      "blurb": "Government data tools and the college's own pages — the most reliable starting point.",
+      "links": [
+        { "id": "scorecard", "label": "College Scorecard profile", "type": "direct", "url": "https://collegescorecard.ed.gov/search/?search={c}", "status": "Official source", "note": "U.S. Dept. of Education: costs, graduation rate, earnings, fields of study." },
+        { "id": "navigator", "label": "NCES College Navigator", "type": "direct", "url": "https://nces.ed.gov/collegenavigator/?q={c}", "status": "Official source", "note": "National Center for Education Statistics: enrollment, tuition, aid, programs." },
+        { "id": "ipeds", "label": "NCES IPEDS · Find Your College", "type": "direct", "url": "https://nces.ed.gov/ipeds/find-your-college", "status": "Official source", "note": "The institution-level dataset behind College Navigator." },
+        { "id": "homepage", "label": "{college} — official homepage", "type": "homepage", "query": "{college} official website", "status": "Research link", "note": "Direct link when we have the verified domain; otherwise a search." },
+        { "id": "admissions", "label": "{college} admissions", "type": "scoped", "siteQuery": "site:{domain} admissions", "query": "{college} admissions", "status": "Research link" },
+        { "id": "catalog", "label": "{college} course catalog", "type": "scoped", "siteQuery": "site:{domain} academic catalog", "query": "{college} academic course catalog", "status": "Research link" },
+        { "id": "department", "label": "{college} {major} department", "type": "scoped", "siteQuery": "site:{domain} {major} department", "query": "{college} {major} department", "status": "Research link" },
+        { "id": "faculty", "label": "{college} {major} faculty", "type": "scoped", "siteQuery": "site:{domain} {major} faculty", "query": "{college} {major} faculty directory", "status": "Research link" },
+        { "id": "requirements", "label": "{college} {major} requirements", "type": "scoped", "siteQuery": "site:{domain} {major} major requirements", "query": "{college} {major} major requirements", "status": "Research link" }
+      ]
+    },
+    {
+      "id": "rankings",
+      "title": "Rankings & reputation",
+      "blurb": "Search links only — we don't store ranking numbers. Treat these as one signal, never the answer.",
+      "warning": "Rankings are one signal, not the verdict. A high rank does not mean the major fits you, and a lower-ranked school can be a far better fit for your goals, budget, and how you learn.",
+      "links": [
+        { "id": "usnews", "label": "U.S. News ranking", "type": "search", "engine": "google", "query": "{college} U.S. News ranking", "status": "Research link" },
+        { "id": "niche", "label": "Niche profile", "type": "search", "engine": "google", "query": "{college} Niche college profile", "status": "Research link" },
+        { "id": "qs", "label": "QS World University Rankings", "type": "search", "engine": "google", "query": "{college} QS World University Rankings", "status": "Research link" },
+        { "id": "the", "label": "Times Higher Education", "type": "search", "engine": "google", "query": "{college} Times Higher Education ranking", "status": "Research link" }
+      ]
+    },
+    {
+      "id": "professors",
+      "title": "Professors & course reviews",
+      "blurb": "Public searches for student-reported experiences. Nothing is scraped.",
+      "warning": "Professor-review sites are incomplete and can be biased: students with very strong opinions — great or terrible — are the most likely to leave reviews. Read them as anecdotes, not data.",
+      "links": [
+        { "id": "rmp_school", "label": "Rate My Professors — school", "type": "direct", "url": "https://www.ratemyprofessors.com/search/schools?q={c}", "status": "Research link", "note": "Find your school, then browse its professors." },
+        { "id": "rmp_prof", "label": "Rate My Professors — {major} profs", "type": "search", "engine": "google", "query": "{college} {major} professors rate my professors", "status": "Research link" },
+        { "id": "reddit_profs", "label": "Reddit — student experiences", "type": "search", "engine": "reddit", "query": "{college} {major} professor", "status": "Research link" },
+        { "id": "g_profs", "label": "Search: {major} professors", "type": "search", "engine": "google", "query": "{college} {major} professors", "status": "Research link" },
+        { "id": "g_courses", "label": "Search: {major} courses", "type": "search", "engine": "google", "query": "{college} {major} courses", "status": "Research link" },
+        { "id": "g_reviews", "label": "Search: {major} student reviews", "type": "search", "engine": "google", "query": "{college} {major} student reviews", "status": "Research link" }
+      ]
+    },
+    {
+      "id": "campus",
+      "title": "Campus & location",
+      "blurb": "See where you'd actually live and study — maps, tours, and student talk.",
+      "links": [
+        { "id": "maps", "label": "Google Maps — campus", "type": "search", "engine": "maps", "query": "{college}", "status": "Research link" },
+        { "id": "youtube_tour", "label": "YouTube — campus tour", "type": "search", "engine": "youtube", "query": "{college} campus tour", "status": "Research link" },
+        { "id": "reddit_life", "label": "Reddit — student life", "type": "search", "engine": "reddit", "query": "{college} student life", "status": "Research link" },
+        { "id": "g_life", "label": "Search: student life", "type": "search", "engine": "google", "query": "{college} student life", "status": "Research link" },
+        { "id": "g_culture", "label": "Search: campus culture", "type": "search", "engine": "google", "query": "{college} campus culture", "status": "Research link" },
+        { "id": "g_safety", "label": "Search: safety", "type": "search", "engine": "google", "query": "{college} safety", "status": "Research link" },
+        { "id": "g_area", "label": "Search: surrounding area", "type": "search", "engine": "google", "query": "{college} surrounding area", "status": "Research link" }
+      ]
+    }
+  ]
+}

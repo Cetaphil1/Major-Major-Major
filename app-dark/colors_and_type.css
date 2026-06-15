@@ -1,0 +1,150 @@
+/* ════════════════════════════════════════════════════════════════════
+   FIT BEYOND INTEREST — Color & Type Foundations
+   Modern psychology-dashboard language · dark-mode anchor.
+   Derived from the product's tokens.css (Cetaphil1/NBAJE).
+   Load this once, then build with the CSS vars + semantic classes below.
+
+   Fonts: Inter Tight (sans) + JetBrains Mono (mono), via Google Fonts.
+   Add this to <head> before this file:
+   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+   ════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Backgrounds (dark anchor + light surfaces) ──────────────── */
+  --bg-void:       #07090F;   /* page background, deepest */
+  --bg-panel:      #0E121C;   /* sidebars, sticky chrome */
+  --bg-card:       #141927;   /* default card */
+  --bg-card-2:     #1A2030;   /* raised card / input field */
+  --bg-hover:      #1F2638;   /* hover surface */
+  --bg-light:      #F4F5F8;   /* rare light surface */
+  --bg-light-card: #FFFFFF;
+
+  /* ── Strokes (hairline borders on dark) ──────────────────────── */
+  --stroke:     rgba(255,255,255,0.06);   /* default hairline */
+  --stroke-2:   rgba(255,255,255,0.10);   /* stronger hairline */
+  --stroke-hot: rgba(124,156,255,0.35);   /* focused / brand edge */
+
+  /* ── Ink (text on dark) ──────────────────────────────────────── */
+  --ink:   #ECEEF5;   /* primary text */
+  --ink-2: #B7BCCB;   /* secondary / body */
+  --ink-3: #7A8197;   /* tertiary / labels */
+  --ink-4: #4E5468;   /* faint / disabled */
+
+  /* ── Brand · electric blue ───────────────────────────────────── */
+  --blue:        #5B8DEF;
+  --blue-bright: #7DA8FF;
+  --blue-deep:   #2E5BD7;
+  --blue-glow:   rgba(91,141,239,0.18);
+
+  /* ── Brand · soft purple ─────────────────────────────────────── */
+  --purple:      #A78BFA;
+  --purple-deep: #7C5CE6;
+  --purple-glow: rgba(167,139,250,0.16);
+
+  /* ── Semantic accents (diagnostic signals) ───────────────────── */
+  --yellow:      #FBBF24;   --yellow-deep: #D89B12;   /* caution / pilot */
+  --pink:        #F472B6;   --pink-deep:   #DA4F9C;   /* affect / social */
+  --green:       #4ADE80;   --green-deep:  #1FB35A;   /* positive / buffer */
+  --red:         #FB7185;   --red-deep:    #E54258;   /* risk / error */
+
+  /* ── Diagnostic gradients ────────────────────────────────────── */
+  --grad-fit:     linear-gradient(135deg, #5B8DEF 0%, #A78BFA 100%);   /* brand */
+  --grad-risk:    linear-gradient(135deg, #FBBF24 0%, #F472B6 100%);   /* warning */
+  --grad-iceberg: linear-gradient(180deg, #2A4E9B 0%, #18305E 40%, #0A1830 100%);
+
+  /* ── Type families ───────────────────────────────────────────── */
+  --font-sans: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ── Radii ───────────────────────────────────────────────────── */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 28px;
+
+  /* ── Spacing ─────────────────────────────────────────────────── */
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 16px;
+  --space-4: 24px;   /* --gutter */
+  --space-5: 32px;   /* --pad */
+  --space-6: 48px;
+  --space-7: 64px;
+  --gutter: 24px;
+  --pad:    32px;
+
+  /* ── Shadows / elevation ─────────────────────────────────────── */
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.04) inset, 0 12px 32px rgba(0,0,0,0.35);
+  --shadow-pop:  0 1px 0 rgba(255,255,255,0.06) inset, 0 24px 56px rgba(0,0,0,0.5);
+  --shadow-hot:  0 0 0 1px rgba(124,156,255,0.18), 0 20px 50px rgba(0,0,0,0.5);
+
+  /* ── Motion ──────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(.2,.7,.2,1);
+  --dur-fast: 0.16s;
+  --dur-base: 0.25s;
+  --dur-slow: 0.5s;
+
+  /* ── Semantic type tokens ────────────────────────────────────── */
+  --display-size: clamp(48px, 6.4vw, 96px);
+  --h1-size: clamp(36px, 4vw, 56px);
+  --h2-size: clamp(28px, 3vw, 40px);
+  --h3-size: 22px;
+  --h4-size: 16px;
+  --body-size: 15px;
+  --label-size: 11.5px;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   BASE
+   ════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg-void);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--body-size);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SEMANTIC TYPE CLASSES
+   ════════════════════════════════════════════════════════════════════ */
+.display {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--display-size);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+h1, .h1 { font-size: var(--h1-size); font-weight: 600; letter-spacing: -0.028em; line-height: 1.04; margin: 0; }
+h2, .h2 { font-size: var(--h2-size); font-weight: 600; letter-spacing: -0.022em; line-height: 1.10; margin: 0; }
+h3, .h3 { font-size: var(--h3-size); font-weight: 600; letter-spacing: -0.014em; line-height: 1.25; margin: 0; }
+h4, .h4 { font-size: var(--h4-size); font-weight: 600; letter-spacing: -0.008em; line-height: 1.30; margin: 0; }
+.body   { font-size: 15px; line-height: 1.6;  color: var(--ink-2); }
+.body-l { font-size: 18px; line-height: 1.55; color: var(--ink-2); }
+.lede   { font-size: 22px; line-height: 1.45; color: var(--ink); font-weight: 400; letter-spacing: -0.008em; }
+
+/* Mono micro-label — the workhorse caption of this system. UPPERCASE, tracked. */
+.mono, .label, .kbd {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* Inline code */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: rgba(255,255,255,0.04);
+  padding: 1px 6px;
+  border-radius: var(--r-xs);
+  color: var(--blue-bright);
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fit Beyond Interest — Should you switch your major?</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+  <!-- ════════════════════ TOP NAV ════════════════════ -->
+  <header class="topnav" data-screen-label="Landing">
+    <div class="topnav__inner">
+      <a href="#top" class="brand">
+        <span class="mark"></span>
+        <span>
+          Fit Beyond Interest
+          <small>Major-fit &amp; switching guidance</small>
+        </span>
+      </a>
+
+      <nav class="topnav__links">
+        <a href="#reasons">Why students leave</a>
+        <a href="model-iceberg.html">The model</a>
+        <a href="dimensions.html">What we measure</a>
+        <a href="models.html">How we predict</a>
+      </nav>
+
+      <div class="topnav__cta">
+        <a href="survey.html" class="btn btn--primary">
+          Take the Survey
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="hero" id="top">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="wrap hero__inner">
+      <div>
+        <h1>
+          Should you switch<br />
+          your <span class="accent">major?</span>
+        </h1>
+
+        <p class="hero__sub">
+          A quiz tells you what you like. It can't tell you if you'll stay.
+        </p>
+
+        <p class="hero__body">
+          Most students don't leave a major because they're simply "overwhelmed." They leave over workload, money, family pressure, belonging, an unclear career — or a major they never really chose. We read all of it, then tell you whether staying or switching makes more sense, and <em>why</em>.
+        </p>
+
+        <div class="hero__ctas">
+          <a href="survey.html" class="btn btn--primary">
+            Take the survey
+            <span class="arrow">→</span>
+          </a>
+          <a href="model-iceberg.html" class="btn">
+            See how it works
+          </a>
+        </div>
+
+        <p class="hero__fine">Free · about 6 minutes · no sign-up · saved as you go</p>
+      </div>
+
+      <!-- Hero diagnostic panel -->
+      <aside class="hero-panel" aria-label="Sample switch-risk profile">
+        <div class="hero-panel__head">
+          <span>Sample student · switch-risk read</span>
+          <span class="live"><span class="d"></span>Sample</span>
+        </div>
+
+        <div class="fit-radar">
+          <div class="fit-row"><span class="lbl">Interest</span><span class="bar"><i style="width: 90%"></i></span><span class="v">High</span></div>
+          <div class="fit-row warn"><span class="lbl">Workload</span><span class="bar"><i style="width: 40%"></i></span><span class="v">Low</span></div>
+          <div class="fit-row"><span class="lbl">Career</span><span class="bar"><i style="width: 78%"></i></span><span class="v">Clear</span></div>
+          <div class="fit-row warn"><span class="lbl">Belonging</span><span class="bar"><i style="width: 44%"></i></span><span class="v">Thin</span></div>
+          <div class="fit-row danger"><span class="lbl">Burnout</span><span class="bar"><i style="width: 80%"></i></span><span class="v">High</span></div>
+          <div class="fit-row danger"><span class="lbl">Switch risk</span><span class="bar"><i style="width: 64%"></i></span><span class="v">Elevated</span></div>
+        </div>
+
+        <div class="hero-panel__foot">
+          <span>↑ Likes the major. Still at risk of leaving.</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 02 · WHY STUDENTS LEAVE ════════════════════ -->
+  <section class="section section--tight" id="reasons">
+    <div class="wrap">
+      <div class="section__head">
+        <div class="section__meta">
+          <span class="num">02</span>
+          <span class="dot"></span>
+          Why students really leave
+        </div>
+        <h2 class="h1">It's rarely just "too hard."</h2>
+        <p class="body-l">Switching and dropping out usually trace to something more specific. We measure the real reasons — not just whether you enjoy the subject.</p>
+      </div>
+
+      <div class="reasons">
+        <div class="reason"><span class="reason__pip" style="--c: var(--purple);"></span><span class="reason__t">Workload &amp; burnout</span><span class="reason__d">The pace and volume grind you down faster than the interest can carry you.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--green);"></span><span class="reason__t">Financial pressure</span><span class="reason__d">Cost, hours worked, and time-to-degree quietly force a switch.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--blue);"></span><span class="reason__t">Family &amp; status pressure</span><span class="reason__d">A major chosen for safety, prestige, or someone else's plan.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--pink);"></span><span class="reason__t">Belonging &amp; isolation</span><span class="reason__d">Feeling like an outsider in the field — one of the strongest predictors of leaving.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--blue-bright);"></span><span class="reason__t">Low academic confidence</span><span class="reason__d">Feeling behind your peers, even when you're capable.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--green);"></span><span class="reason__t">Unclear career path</span><span class="reason__d">You can't picture — or don't want — where the degree leads.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--pink);"></span><span class="reason__t">Poor school fit</span><span class="reason__d">It's the program or campus culture, not the field itself.</span></div>
+        <div class="reason"><span class="reason__pip" style="--c: var(--yellow);"></span><span class="reason__t">Feeling trapped</span><span class="reason__d">Staying in a major you don't actually value because leaving feels too costly.</span></div>
+      </div>
+
+      <a href="dimensions.html" class="learn-more">See all eight signals we measure <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 03 · THE MODEL TEASER ════════════════════ -->
+  <section class="section section--dark" id="model">
+    <div class="wrap">
+      <div class="model-teaser">
+        <div class="model-teaser__copy">
+          <div class="section__meta">
+            <span class="num">03</span>
+            <span class="dot" style="background: var(--purple); box-shadow: 0 0 12px var(--purple);"></span>
+            The model
+          </div>
+          <h2 class="h1">Interest is the tip of the iceberg.</h2>
+          <p class="body-l">Most major quizzes stop at what you like. We read the eight signals below the waterline — workload, motivation, belonging, school fit, burnout, and more — that actually decide whether you stay.</p>
+          <div class="model-teaser__links">
+            <a href="model-iceberg.html" class="btn btn--white">Explore the model<span class="arrow">→</span></a>
+            <a href="models.html" class="btn">How we predict switching</a>
+          </div>
+        </div>
+
+        <div class="model-teaser__mini" aria-hidden="true">
+          <img class="berg-photo" src="assets/iceberg.png" alt="" draggable="false" />
+          <div class="berg-veil"></div>
+          <div class="berg-hud">Iceberg model</div>
+          <div class="berg-tip">
+            <span class="berg-tip__lbl">Interest</span>
+            <span class="berg-tip__note">What quizzes measure</span>
+          </div>
+          <div class="berg-water"><span>The waterline</span></div>
+          <div class="berg-deep">
+            <span class="berg-pip" style="--c: var(--blue); left: 31%; top: 37%;">Workload</span>
+            <span class="berg-pip" style="--c: var(--purple); left: 69%; top: 40%;">Motivation</span>
+            <span class="berg-pip" style="--c: var(--pink); left: 37%; top: 51%;">Belonging</span>
+            <span class="berg-pip" style="--c: var(--blue-bright); left: 66%; top: 54%;">School fit</span>
+            <span class="berg-pip" style="--c: var(--green); left: 47%; top: 67%;">Career</span>
+            <span class="berg-pip" style="--c: var(--red); left: 50%; top: 82%;">Burnout</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ 04 · FINAL CTA ════════════════════ -->
+  <section class="cta" id="final-cta">
+    <div class="cta__bg" aria-hidden="true"></div>
+    <div class="cta__inner">
+      <h2>Find out whether to stay — or switch.</h2>
+      <p>Six minutes, eight signals, and an honest, advising-style read on your major: where your fit is strong, where the switching risk is, and what to do next.</p>
+
+      <div class="cta__buttons">
+        <a href="survey.html" class="btn btn--primary" style="padding: 14px 22px; font-size: 15px;">
+          Take the Survey
+          <span class="arrow">→</span>
+        </a>
+        <a href="dimensions.html" class="btn btn--ghost">See what we measure</a>
+      </div>
+
+      <div class="cta__fineprint">
+        <span>~6 min</span>
+        <span class="sep">·</span>
+        <span>8 signals</span>
+        <span class="sep">·</span>
+        <span>no sign-up</span>
+        <span class="sep">·</span>
+        <span>saved locally</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <div>
+        <div class="brand" style="margin-bottom: 10px;">
+          <span class="mark"></span>
+          <span>Fit Beyond Interest</span>
+        </div>
+        <p style="margin: 0; max-width: 440px; line-height: 1.5;">Honest, advising-style guidance on college major fit and switching — built on the behavioral and psychological signals that predict whether students stay.</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px; text-align: right;">
+        <a href="model-iceberg.html" class="meta" style="color: var(--ink-2);">The model</a>
+        <a href="dimensions.html" class="meta" style="color: var(--ink-2);">What we measure</a>
+        <a href="models.html" class="meta" style="color: var(--ink-2);">How we predict</a>
+        <span class="meta" style="color: var(--ink-4);">Not a clinical assessment</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Persistent floating CTA -->
+  <a href="survey.html" class="floating-cta" id="floating-cta" aria-label="Take the survey">
+    Take the survey
+    <span class="arrow">→</span>
+  </a>
+
+  <!-- ════════════════════ SCRIPTS ════════════════════ -->
+  <script>
+    // Reveal-on-scroll
+    (function () {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        }
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal-stagger, .reason, .model-teaser').forEach(el => io.observe(el));
+    })();
+
+    // Floating CTA appears after the hero scrolls away
+    (function () {
+      const fab = document.getElementById('floating-cta');
+      const hero = document.getElementById('top');
+      if (!fab || !hero) return;
+      const io = new IntersectionObserver((entries) => {
+        fab.classList.toggle('show', !entries[0].isIntersecting);
+      }, { threshold: 0 });
+      io.observe(hero);
+    })();
+  </script>
+</body>
+</html>

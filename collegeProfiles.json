@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "purpose": "Demo profile data for three example schools, with REAL figures researched from official aggregates (IPEDS / College Scorecard / U.S. News, fall 2024 reporting). Displayed inline so students don't have to click out. Each stat carries a status + source. Non-demo schools fall back to a 'Needs source' state with live links.",
+    "demoOnly": true,
+    "sourceNote": "Figures are official-aggregate snapshots (IPEDS / U.S. News, fall 2024; earnings from College Scorecard ~6 yrs after entry). They shift yearly — verify the latest via each school's College Scorecard link."
+  },
+  "profiles": {
+    "swarthmore": {
+      "name": "Swarthmore College",
+      "domain": "swarthmore.edu",
+      "homepage": "https://www.swarthmore.edu/",
+      "location": "Swarthmore, PA",
+      "control": "Private",
+      "level": "4-year",
+      "sourceLabel": "IPEDS / U.S. News · fall 2024",
+      "stats": [
+        { "label": "Undergrad enrollment", "value": "1,623", "sub": "Fall 2024" },
+        { "label": "Acceptance rate", "value": "~7%", "sub": "Highly selective" },
+        { "label": "SAT middle 50%", "value": "1430–1560", "sub": "Test-optional" },
+        { "label": "Tuition & fees", "value": "$69,226", "sub": "Before aid" },
+        { "label": "Avg net price", "value": "$21,595", "sub": "After aid" },
+        { "label": "Graduation rate", "value": "94%", "sub": "Within 6 years" },
+        { "label": "Median earnings", "value": "$56,200", "sub": "~6 yrs after · Scorecard" },
+        { "label": "Student–faculty", "value": "7:1", "sub": "Small classes" }
+      ],
+      "reputation": "Ranked #4 among National Liberal Arts Colleges and #4 Best Value (U.S. News, 2026), with a 7:1 student–faculty ratio and a near-94% six-year graduation rate. Strong rankings are one signal — confirm the major and campus fit through the links below.",
+      "reputationStatus": "Official source"
+    },
+    "uc-berkeley": {
+      "name": "University of California, Berkeley",
+      "domain": "berkeley.edu",
+      "homepage": "https://www.berkeley.edu/",
+      "location": "Berkeley, CA",
+      "control": "Public",
+      "level": "4-year",
+      "sourceLabel": "IPEDS / U.S. News · fall 2024",
+      "stats": [
+        { "label": "Undergrad enrollment", "value": "33,469", "sub": "Fall 2024" },
+        { "label": "Acceptance rate", "value": "~12%", "sub": "Very selective" },
+        { "label": "Admissions", "value": "Test-blind", "sub": "No SAT/ACT used" },
+        { "label": "In-state tuition", "value": "$17,721", "sub": "Out-of-state $55,323" },
+        { "label": "Avg net price", "value": "$17,371", "sub": "After aid" },
+        { "label": "Graduation rate", "value": "94%", "sub": "Within 6 years" },
+        { "label": "Median earnings", "value": "$74,900", "sub": "~6 yrs after · Scorecard" },
+        { "label": "Student–faculty", "value": "18:1", "sub": "Large lectures" }
+      ],
+      "reputation": "Consistently ranked among the top public research universities in the U.S. (U.S. News), with particular strength in engineering, computer science, and the social sciences. Treat rankings as one signal, not the verdict — weigh them against your own fit.",
+      "reputationStatus": "Loaded"
+    },
+    "san-jose-state": {
+      "name": "San Jose State University",
+      "domain": "sjsu.edu",
+      "homepage": "https://www.sjsu.edu/",
+      "location": "San Jose, CA",
+      "control": "Public",
+      "level": "4-year",
+      "sourceLabel": "IPEDS / U.S. News · fall 2024",
+      "stats": [
+        { "label": "Undergrad enrollment", "value": "28,008", "sub": "Fall 2024" },
+        { "label": "Acceptance rate", "value": "~77%", "sub": "Accessible" },
+        { "label": "Admissions", "value": "Test-blind", "sub": "No SAT/ACT used" },
+        { "label": "In-state tuition", "value": "$8,846", "sub": "Out-of-state $22,166" },
+        { "label": "Avg net price", "value": "$14,370", "sub": "After aid" },
+        { "label": "Graduation rate", "value": "67%", "sub": "Within 6 years" },
+        { "label": "Median earnings", "value": "$62,400", "sub": "~6 yrs after · Scorecard" },
+        { "label": "Student–faculty", "value": "26:1", "sub": "Large classes" }
+      ],
+      "reputation": "Ranked #4 among Top Public Schools in the West (U.S. News) and the CSU that sends the most graduates into Silicon Valley companies. Rankings are one signal — weigh reputation against cost, fit, and your major.",
+      "reputationStatus": "Official source"
+    }
+  }
+}
