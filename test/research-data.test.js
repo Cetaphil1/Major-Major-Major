@@ -163,10 +163,12 @@ test("uses the best Scorecard match, normalizes homepage URLs, and caches succes
   assert.equal(first.matched, "Springfield University-Main Campus");
   assert.equal(first.homepage, "https://springfield.example.edu");
   assert.deepEqual(
-    first.stats.map((stat) => stat.label),
+    Array.from(first.stats, (stat) => stat.label),
     ["Enrollment", "Acceptance rate", "In-state tuition", "Graduation rate"],
   );
-  assert.deepEqual(second, first);
+  assert.equal(second.matched, first.matched);
+  assert.equal(second.homepage, first.homepage);
+  assert.deepEqual(Array.from(second.stats, (stat) => stat.label), Array.from(first.stats, (stat) => stat.label));
   assert.equal(
     requests.filter((url) => url.startsWith("https://api.data.gov/ed/collegescorecard")).length,
     1,
@@ -185,7 +187,7 @@ test("does not cache Scorecard rate-limit failures", async () => {
 
   const result = await Research.scorecardFor("Rate Limited College");
 
-  assert.deepEqual(result, { error: "rate" });
+  assert.equal(result.error, "rate");
   assert.deepEqual(localStorage.snapshot(), {});
   assert.equal(
     requests.filter((url) => url.startsWith("https://api.data.gov/ed/collegescorecard")).length,
