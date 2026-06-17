@@ -4,7 +4,8 @@
      2. CollegeStep   — "What college are we looking at?"   (real autocomplete)
      3. MajorStep     — "What major are we judging?"        (real autocomplete)
      4. PreviewReport — an interactive College + Major preview report
-   On finish, sets preLandingComplete=true and routes to index.html (the landing).
+   On finish, sets preLandingComplete=true and routes to research.html
+   (the personalized school/major research page, which then leads to survey.html).
    Context is persisted via window.UserContext (localStorage). */
 
 (function () {
@@ -351,7 +352,7 @@
         <section className="pl-cta" style={{ height: "300px" }}>
           <h2>Ready for the actual read?</h2>
           <div className="pl-cta__btns">
-            <button className="o-btn o-btn--lg" onClick={onContinue}>Continue to main page<span className="arrow">→</span></button>
+            <button className="o-btn o-btn--lg" onClick={onContinue}>Continue to your research<span className="arrow">→</span></button>
             <div className="pl-edit">
               <span>Edit context:</span>
               <button onClick={onEditName}>Name</button>
@@ -393,12 +394,12 @@
 
     const finish = () => {
       UC.update({ preLandingComplete: true, contextConfirmed: true });
-      window.location.href = "index.html";
+      window.location.href = "research.html";
     };
     const skipIntro = () => {
       // honest skip: mark complete, leave whatever's filled, go to landing
       UC.update({ preLandingComplete: true });
-      window.location.href = "index.html";
+      window.location.href = "research.html";
     };
 
     const builtCollege = college.trim() ? mapCollege(college.trim(), collegeMeta) : null;

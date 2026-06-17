@@ -54,6 +54,7 @@
       // Read the college + major the student already entered (pre-landing flow).
       // Falls back to a demo pairing so the page is never empty.
       const uc = (window.UserContext && window.UserContext.load()) || {};
+      const name = (uc.displayName || "").trim();
       const college = (uc.selectedCollege && uc.selectedCollege.name) || "Swarthmore College";
       const major = (uc.selectedMajor && uc.selectedMajor.name) || "Political Science";
       const isDemo = !(uc.selectedCollege && uc.selectedCollege.name);
@@ -61,7 +62,7 @@
       return (
         <div className="rp" style={{ paddingTop: 28 }}>
           <div className="rp-top">
-            <a className="rp-brand" href="index.html" style={{ textDecoration: "none", color: "inherit" }}>
+            <a className="rp-brand" href="research.html" style={{ textDecoration: "none", color: "inherit" }}>
               <span className="mark" />
               <span><b>Fit Beyond Interest</b><span>Research center</span></span>
             </a>
@@ -69,6 +70,12 @@
             <a className="rs-chiplink" href="start.html">Change college / major</a>
             <a className="rs-chiplink" href="survey.html" style={{ borderColor: "var(--purple)", color: "var(--purple)" }}>Take the survey →</a>
           </div>
+
+          {!isDemo ? (
+            <p className="rs-greeting" style={{ margin: "0 0 14px", color: "var(--ink-soft, #555)" }}>
+              {name ? <>{name}, here</> : <>Here</>}'s the research for <b>{major}</b> at <b>{college}</b>. Read it over, then take the survey.
+            </p>
+          ) : null}
 
           {isDemo ? (
             <div className="rs-empty" style={{ marginBottom: 18 }}>
@@ -78,6 +85,17 @@
           ) : null}
 
           <ResearchCenter college={college} major={major} />
+
+          {/* End-of-page CTA — the clear path from research into the survey. */}
+          <div className="rp-next" style={{ margin: "32px 0 12px", textAlign: "center" }}>
+            <p style={{ margin: "0 0 14px", color: "var(--ink-soft, #555)" }}>
+              Seen enough? The survey turns this context into a personalized fit &amp; switch-risk read.
+            </p>
+            <a className="o-btn o-btn--lg" href="survey.html"
+               style={{ display: "inline-block", textDecoration: "none" }}>
+              Take the survey <span className="arrow">→</span>
+            </a>
+          </div>
         </div>
       );
     }
