@@ -97,7 +97,7 @@ test("marketing landing starts with context instead of bypassing the flow", () =
   assert.match(source, /<title>Fit Beyond Interest/);
   assert.doesNotMatch(source, /Edukate University/);
   assert.ok(
-    (source.match(/href="start\.html"/g) || []).length >= 2,
+    (source.match(/href="(?:\.\.\/)?start\.html"/g) || []).length >= 2,
     "primary landing CTAs should send visitors into the context flow"
   );
   assert.doesNotMatch(
