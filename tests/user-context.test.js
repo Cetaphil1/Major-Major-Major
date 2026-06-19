@@ -32,9 +32,13 @@ function loadUserContext(initialStorage) {
   return context;
 }
 
+function hostObject(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 test("load returns safe defaults for missing or malformed saved context", () => {
   const emptyContext = loadUserContext();
-  assert.deepEqual(emptyContext.window.UserContext.load(), {
+  assert.deepEqual(hostObject(emptyContext.window.UserContext.load()), {
     displayName: null,
     selectedCollege: null,
     selectedMajor: null,
@@ -43,7 +47,10 @@ test("load returns safe defaults for missing or malformed saved context", () => 
   });
 
   const malformedContext = loadUserContext({ "fbi-user-context-v1": "not json" });
-  assert.deepEqual(malformedContext.window.UserContext.load(), emptyContext.window.UserContext.empty());
+  assert.deepEqual(
+    hostObject(malformedContext.window.UserContext.load()),
+    hostObject(emptyContext.window.UserContext.empty())
+  );
 });
 
 test("update merges partial changes without dropping existing flow state", () => {
