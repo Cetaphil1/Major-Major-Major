@@ -31,6 +31,10 @@ function loadMapCollege({ colleges, selectedCollege } = {}) {
   return sandbox.module.exports;
 }
 
+function plain(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 test("mapCollege preserves structured metadata when re-editing the same saved school", () => {
   const mapCollege = loadMapCollege({
     selectedCollege: {
@@ -44,7 +48,7 @@ test("mapCollege preserves structured metadata when re-editing the same saved sc
     },
   });
 
-  assert.deepEqual(mapCollege("School A", null), {
+  assert.deepEqual(plain(mapCollege("School A", null)), {
     name: "School A",
     city: "Austin",
     state: "TX",
@@ -67,7 +71,7 @@ test("mapCollege restores structured metadata for exact college dataset matches"
     }],
   });
 
-  assert.deepEqual(mapCollege("school b", null), {
+  assert.deepEqual(plain(mapCollege("school b", null)), {
     name: "school b",
     city: "Boston",
     state: "MA",
@@ -81,7 +85,7 @@ test("mapCollege restores structured metadata for exact college dataset matches"
 test("mapCollege still marks genuinely unknown colleges as manual entries", () => {
   const mapCollege = loadMapCollege();
 
-  assert.deepEqual(mapCollege("Unlisted School", null), {
+  assert.deepEqual(plain(mapCollege("Unlisted School", null)), {
     name: "Unlisted School",
     isManual: true,
   });
