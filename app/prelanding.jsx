@@ -34,14 +34,20 @@
     return base;
   }
   function mapCollege(name, meta) {
-    if (!meta) return { name: name, isManual: true };
+    const db = window.__COLLEGES || [];
+    const rec = db.find((c) => c.name.toLowerCase() === (name || "").toLowerCase());
+    const prevSaved = UC.load().selectedCollege || {};
+    const prev = prevSaved.name && prevSaved.name.toLowerCase() === (name || "").toLowerCase() ? prevSaved : {};
+    const picked = meta || rec;
+    const hasStructured = !!(picked || prev.id || prev.city || prev.state || prev.type || prev.level);
+    if (!hasStructured) return { name: name, isManual: true };
     return {
       name: name,
-      city: meta.city || "",
-      state: meta.state || "",
-      type: meta.control || "",
-      level: meta.level || "",
-      id: meta.id || "",
+      city: picked && picked.city || prev.city || "",
+      state: picked && picked.state || prev.state || "",
+      type: picked && (picked.control || picked.type) || prev.type || "",
+      level: picked && picked.level || prev.level || "",
+      id: picked && picked.id || prev.id || "",
       isManual: false
     };
   }
