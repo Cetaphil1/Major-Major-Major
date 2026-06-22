@@ -11,7 +11,8 @@ survey, and produces a guidance report.
 The current prototype is a **plain multi-page app**: a set of standalone `.html` entry
 points that load shared React components compiled in the browser with Babel Standalone.
 There is no bundler, no router library, and no build step. State is shared across pages
-through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
+through `localStorage`. See `TECHNICAL_SPEC.md` for the current file-by-file map;
+`INITIAL_STATE.md` is a historical baseline from the handoff.
 
 ## 2. Product purpose
 
@@ -35,13 +36,15 @@ fragile and what to do about it — it does not just hand back a score.
 
 ## 3. Intended user flow
 
-1. **Context entry** — first name, college, major.
-2. **Context confirmation** — the user confirms their college and major, and can edit if
+1. **Landing** — `landing/index.html` is the marketing entry, with a quiz CTA into
+   `start.html`.
+2. **Context entry** — first name, college, major.
+3. **Context confirmation** — the user confirms their college and major, and can edit if
    anything is wrong.
-3. **Personalized research page** — after confirmation the user goes to the
+4. **Personalized research page** — after confirmation the user goes to the
    **personalized school/major research page**. Not the generic homepage, not a random
    demo page.
-4. **Research page content**
+5. **Research page content**
    - college snapshot
    - official school / data links
    - College Scorecard / NCES links when available
@@ -49,10 +52,10 @@ fragile and what to do about it — it does not just hand back a score.
    - similar majors
    - school-vs-major context
    - a clear marker of what is official vs. preview/demo data
-5. **Survey intro** — explain what the survey measures, why the questions matter, and that
+6. **Survey intro** — explain what the survey measures, why the questions matter, and that
    it is guidance rather than a final verdict.
-6. **Survey** — the multi-dimension questionnaire.
-7. **Results / report page**
+7. **Survey** — the multi-dimension questionnaire.
+8. **Results / report page**
    - overall fit score
    - strongest signals
    - weakest signals
@@ -61,18 +64,18 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+> Current caveats: the canonical post-context route is now `research.html`, but
+> `index.html` still renders a legacy gated research shell for contexted users instead of
+> redirecting to `landing/index.html`. The survey-intro content is also still part of
+> `survey.html`, not a separate screen.
 
 ## 4. Major product rules
 
 - **Do not** turn this into a generic college-ranking website.
 - **Do not** make a generic homepage the main post-context destination.
 - After context entry, users go into **personalized school/major research first**.
-- A marketing landing page may still exist as a **backup** (`Landing (marketing backup).html`).
+- The marketing landing lives under `landing/`. `Landing (marketing backup).html` and
+  `Landing (original).html` are backups/scraps, not the canonical public entry.
 - **Do not delete** the name/college/major start flow (`start.html` + prelanding).
 - **Do not delete** the research page.
 - **Do not delete** the survey/report logic (`fit-app.jsx`, `screens-quiz.jsx`,
@@ -128,9 +131,10 @@ Rules:
 - No build step. Open the `.html` files directly, or serve the project root over a static
   server so `localStorage` and relative paths behave like production:
   ```
-  cd "Major Major Major"
+  cd /workspace
   python3 -m http.server 8000
-  # then open http://localhost:8000/start.html
+  # then open http://localhost:8000/landing/index.html
+  # or jump directly into the quiz at http://localhost:8000/start.html
   ```
 - React, ReactDOM, and Babel Standalone load from `unpkg` CDNs (pinned versions with SRI
   hashes). `.jsx` files are compiled in the browser via `<script type="text/babel">`.
@@ -153,6 +157,7 @@ Rules:
 5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
 6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
-   (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+7. When touching routing, verify `landing/index.html` CTA → `start.html`,
+   `app/prelanding.jsx` → `research.html`, and `app/fit-app.jsx`'s empty-context guard
+   together. `index.html` is still a legacy research shell, so do not assume it is the
+   public homepage until that code is changed.

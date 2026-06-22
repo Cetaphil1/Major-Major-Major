@@ -1,8 +1,15 @@
 # INITIAL_STATE.md — Fit Beyond Interest (as found)
 
-This documents the project **exactly as it currently is**, before any routing or design
+This documents the project **as it was originally found**, before routing or design
 changes. It comes from the Claude Design handoff bundle (`College major` project) copied
-into this working directory. Nothing below has been changed yet.
+into this working directory.
+
+> Maintenance note: this is now a historical baseline, not the current live spec. Since
+> this file was written, `app/prelanding.jsx` has been updated to route confirmed context
+> to `research.html`, `research.html` has been personalized with a greeting and survey CTA,
+> and `landing/index.html` has been rebranded as the public marketing page. `index.html`
+> still contains a legacy gated research shell. Use `TECHNICAL_SPEC.md` for current
+> routing and operational guidance.
 
 ---
 
