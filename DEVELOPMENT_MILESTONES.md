@@ -5,6 +5,11 @@ like**. Scope is intentionally realistic for a no-build, static, multi-page app 
 test audience. Constraints throughout: do not touch `LICENSE`; no redesign of the existing
 visual system; no merge/rebase/force-push.
 
+Current status note: `landing/index.html` has been rebranded and the context flow now routes
+to `research.html`, but `index.html` still renders a legacy gated research shell rather than a
+homepage redirect. Treat any root-redirect or research-page guard below as pending cleanup
+until the source code changes.
+
 ---
 
 ## Phase 1 — Planning and repo cleanup
@@ -15,7 +20,7 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 **Deliverables**
 - `PRD.md`, `TECHNICAL_SPEC.md`, `DEVELOPMENT_MILESTONES.md` (this set) committed.
 - An inventory separating **live files** from **scraps/backups/duplicates** (e.g.
-  `research.html` as a duplicate of the research center, `Landing (*).html`, `Start flow
+  `index.html` as a legacy research shell, `Landing (*).html`, `Start flow
   (editable).html`, `Survey (dark).html`, `app-dark/`, design scrap `.html` files,
   `screenshots/`, `uploads/`).
 - A cleanup plan: which scraps to archive vs. delete (no deletion of `LICENSE`).
@@ -33,7 +38,8 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 "Take the quiz" CTA → `start.html`.
 
 **Deliverables**
-- Site root `index.html` reliably redirects to `landing/index.html`.
+- Site root `index.html` reliably redirects to `landing/index.html` (pending; it is still a
+  legacy research shell today).
 - `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
 - Confirm landing does **not** deep-link into `research.html`/`survey.html`.
 
@@ -77,7 +83,8 @@ college/major before the quiz.
   - a school-vs-major framing,
   - provenance labels (Official source / Research link / Estimated).
 - External links open in a real new tab per the external-link rules.
-- Guard: redirect to `start.html` if no identity.
+- Decide whether missing identity should keep the current Preview demo fallback or redirect to
+  `start.html`; if redirecting, implement and document the guard.
 - Continue → `survey.html`.
 
 **Done looks like**

@@ -19,10 +19,10 @@ links between `.html` files.
 ## 2. Current folder / page structure
 
 ```
-/ (repo root = quiz app)
-  index.html        # PUBLIC entry: immediately redirects to landing/index.html
+/ (repo root = static app + legacy quiz entry points)
+  index.html        # Legacy gated research shell; redirects to start.html only when context is missing
   start.html        # Quiz app step 1 — context flow (name → college → major → confirm)
-  research.html     # Quiz app step 2 — personalized school/major research page
+  research.html     # Canonical quiz app step 2 — personalized school/major research page
   survey.html       # Quiz app step 3+4 — survey + analyzing + report controller
   about.html        # explainer / about page
 
@@ -51,28 +51,33 @@ links between `.html` files.
 
   # Public homepage (marketing site)
   landing/
-    index.html           # PUBLIC homepage; "Take the quiz" CTA -> ../start.html
+    index.html           # PUBLIC homepage export; quiz CTA must enter ../start.html
     about-page/  contact/  event-page/  news/  programs/  research-page/
 
   LICENSE                # DO NOT TOUCH
   README.md  INITIAL_STATE.md  PRD.md  TECHNICAL_SPEC.md  DEVELOPMENT_MILESTONES.md
 ```
 
-Note: the repo also contains design scraps and backups (`Landing (*).html`, `Start flow
-(editable).html`, `Survey (dark).html`, `dimensions.html`, `models.html`, `app-dark/`,
-`screenshots/`, `uploads/`). These are **not** part of the live flow and are slated for cleanup
-in Phase 1.
+Notes:
+- `research.html` is the canonical research page in the live quiz flow. `index.html` still
+  carries an older research shell with a pre-landing gate; it is not a root redirect today.
+- The repo also contains design scraps and backups (`Landing (*).html`, `Start flow
+  (editable).html`, `Survey (dark).html`, `dimensions.html`, `models.html`, `app-dark/`,
+  `uploads/`). These are **not** part of the live flow and are slated for cleanup in Phase 1.
 
 ## 3. Landing page vs quiz app separation
 
-- **`/landing` is the public homepage** (marketing site). Visiting the site root
-  (`index.html`) immediately redirects to `landing/index.html` via `window.location.replace`
-  plus a `<meta http-equiv="refresh">` fallback.
+- **`/landing` is the public homepage** (marketing site). The current root `index.html`
+  does **not** redirect there yet; implementing that redirect is a separate cleanup step.
 - **The quiz app lives in the root `.html` files**: `start.html`, `research.html`,
   `survey.html` (plus `about.html`).
-- **The only doorway from landing into the quiz is the "Take the quiz" CTA**, which links to
-  `start.html`. The landing page must not deep-link into `research.html` or `survey.html`
-  (those assume context already exists).
+- **The canonical doorway from landing into the quiz is the "Take the quiz" CTA**, which
+  must link to the quiz start page (`../start.html` from `landing/index.html`). The landing
+  page must not deep-link into `research.html` or `survey.html` because those assume the
+  student has had a chance to enter context.
+- The `landing/` pages are generated/minified Framer exports. When refreshing them, verify
+  that product copy stays on Fit Beyond Interest and that quiz CTAs still point to
+  `start.html` instead of the template's original school/program routes.
 
 ## 4. Frontend structure
 
@@ -211,14 +216,19 @@ reload keeps context):
 
 ## 10. Routing / linking rules
 
-- Site root `index.html` → redirect to `landing/index.html` (homepage).
-- `landing/index.html` "Take the quiz" → `start.html` (the **only** entry into the quiz).
+- `landing/index.html` "Take the quiz" → `../start.html` (the intended public entry into
+  the quiz).
 - `start.html` (context confirmed) → `research.html`.
-- `research.html` (continue) → `survey.html`.
+- `research.html` (continue) → `survey.html`. If context is missing, the page falls back to
+  the Swarthmore College / Political Science demo pairing and labels it with `Preview`.
 - `survey.html` runs survey → analyzing → report in-page (no separate `results.html` file
   today; report is a screen state within the survey flow).
-- Guard: if `research.html`/`survey.html` load without `UserContext.hasIdentity()`, route the
-  user back to `start.html` rather than rendering empty.
+- Guard: `survey.html` checks `UserContext.load().preLandingComplete` in `app/fit-app.jsx`
+  and routes empty-context visitors back to `start.html`.
+- Legacy root behavior: `index.html` is another research shell. It checks
+  `preLandingComplete` and redirects to `start.html` when false; when true, it renders a
+  research page. Treat `research.html` as canonical until `index.html` is deliberately
+  changed to a homepage redirect.
 
 ## 11. External link rules
 
@@ -234,7 +244,8 @@ reload keeps context):
 
 - **Missing college/major** in datasets → manual-entry fallback (`isManual: true`); research
   page degrades gracefully to search links + "Estimated" labels.
-- **No context on a downstream page** → redirect to `start.html`.
+- **No context on `research.html`** → demo research pairing with a visible `Preview` label.
+- **No context on `survey.html`** → redirect to `start.html`.
 - **Partial survey** → unanswered dimensions default to neutral (~55); ensure the report flags
   reduced confidence rather than presenting it as complete.
 - **`localStorage` unavailable / cleared mid-flow** → `UserContext` returns an empty object
@@ -257,6 +268,7 @@ reload keeps context):
 - **Persistence:** refresh mid-flow and confirm context survives; "start over" clears both
   stores.
 - **Missing-data path:** test a college/major not in the datasets.
-- **Cross-page guards:** open `research.html`/`survey.html` directly with empty storage and
-  confirm redirect to `start.html`.
+- **Cross-page guards:** open `research.html` and `survey.html` directly with empty storage.
+  `research.html` should show the Preview demo state; `survey.html` should redirect to
+  `start.html`.
 - No automated test harness exists yet; testing is manual/observational in this phase.
