@@ -181,9 +181,11 @@
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = !!(window.UserContext && window.UserContext.hasIdentity && window.UserContext.hasIdentity());
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!uc || !uc.preLandingComplete || !hasIdentity) { window.location.replace("start.html"); }
+    }, [hasIdentity]);
+    if (!uc || !uc.preLandingComplete || !hasIdentity) return null;
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
