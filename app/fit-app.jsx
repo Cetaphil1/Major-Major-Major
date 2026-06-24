@@ -176,14 +176,19 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
-    // If it's missing entirely, send the visitor through the pre-landing first.
-    const uc = (window.UserContext && window.UserContext.load()) || null;
+    // If it's missing or incomplete, send the visitor through the pre-landing first.
+    const UC = window.UserContext;
+    const uc = (UC && UC.load()) || null;
+    const identityKey = UC && UC.identityKey(uc);
+    const canEnter = !!(uc && uc.preLandingComplete && identityKey);
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!canEnter) { window.location.replace("start.html"); }
+    }, [canEnter]);
+    if (!canEnter) return null;
+
+    const rawSaved = load();
+    const saved = UC.matchesIdentity(rawSaved, uc) ? rawSaved : null;
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,10 +212,11 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => { save({ identityKey, phase, ctx, sectionIdx, answers }); }, [identityKey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
+    const toStart = () => { window.location.href = "start.html"; };
 
     const report = buildReport(ctx, answers);
 
@@ -230,7 +236,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { wipe(); UC.clear(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toStart(); }}
     />;
   }
 
