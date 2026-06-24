@@ -32,6 +32,7 @@ animations.jsx, iceberg.jsx, tweaks-panel.jsx
 colleges.json, majors.json, collegeMajors.json, collegeProfiles.json,
 nearbyColleges.json, researchSources.json
 
+docs/                          # focused engineering docs (routing, research data, scoring, variants)
 app/                           # ← the real shared app source (light theme)
   user-context.js              # localStorage identity store (window.UserContext)
   research-data.js             # research links + data-honesty status labels
@@ -78,6 +79,7 @@ screenshots/                   # design reference PNGs (not used at runtime)
   renders `<ResearchCenter college={…} major={…} />`, falling back to a demo pairing
   (Swarthmore College / Political Science) labeled **Preview** when no context is saved.
 - **Data:** `app/research-data.js` (links + status labels), `researchSources.json`
+- **Docs:** `docs/RESEARCH_DATA.md`
 
 ## 4. Which file controls the landing page
 
@@ -93,6 +95,7 @@ screenshots/                   # design reference PNGs (not used at runtime)
 - **Logic:** `app/screens-quiz.jsx` (quiz screens) driven by `app/fit-app.jsx` (the overall
   flow controller). Survey questions/dimensions come from `app/data.jsx`.
 - **Dark variant:** `Survey (dark).html` + `app-dark/`.
+- **Docs:** `docs/SCORING.md`
 
 ## 6. Which file controls the report / results
 
@@ -114,6 +117,8 @@ screenshots/                   # design reference PNGs (not used at runtime)
 - **Pre-landing gate:** `index.html` (and `app/fit-app.jsx`) check
   `UserContext.load().preLandingComplete`. If it is false, they
   `window.location.replace('start.html')` to force the context flow first.
+- `research.html` currently renders the same research UI but does **not** run the
+  `index.html` pre-landing gate, so it can show the labeled demo pairing directly.
 - **Page-to-page links:**
   - `start.html` (prelanding) → on finish → **`index.html`** (see §9).
   - `index.html` / `research.html` → `start.html` ("Change college / major"),
@@ -123,6 +128,7 @@ screenshots/                   # design reference PNGs (not used at runtime)
 - **External links** are plain `<a target="_blank" rel="noopener noreferrer">`, with an
   optional delegated `window.open` fallback. They are intentionally **not** routed through
   any internal mechanism.
+- **Detailed docs:** see `docs/ROUTING.md`.
 
 ## 8. Where localStorage / sessionStorage is used
 
@@ -190,7 +196,7 @@ model. This is the area most likely to drift from the intended flow (README §3 
 
 5. **Three parallel codebases.** The live light app (`app/`), a dark variant (`app-dark/`),
    and a separate Framer/Vercel marketing build (`uploads/`). Edits to `app/` do **not**
-   propagate to the others. It's unclear which is the deploy target.
+   propagate to the others. See `docs/VARIANTS.md` before changing more than one artifact.
 
 6. **CDN + Babel-in-browser.** No build step or dependency lockfile; React/Babel are pinned
    via SRI on `unpkg`. Offline or CDN outages break the app, and in-browser Babel compile
@@ -203,3 +209,19 @@ model. This is the area most likely to drift from the intended flow (README §3 
 8. **Demo/fallback data.** The research page falls back to Swarthmore / Political Science
    when no context is saved. It is labeled **Preview**, but any change must preserve that
    honesty labeling (README §6).
+
+9. **Placeholder CTAs.** `app/screens-report.jsx` still contains
+   `[COFFEE_CHAT_LINK]` and `[BUY_ME_COFFEE_LINK]` in the report extras. Do not treat
+   those as working production links until real destinations are provided.
+
+---
+
+## 11. Focused engineering docs
+
+- `docs/ROUTING.md` — canonical page flow, gate matrix, and route-change checklist.
+- `docs/RESEARCH_DATA.md` — `window.Research`, JSON ownership, source labels, and
+  College Scorecard behavior.
+- `docs/SCORING.md` — dimension formulas, report thresholds, risk levels, and report
+  object constraints.
+- `docs/VARIANTS.md` — boundaries between the root light app, `app-dark/`, and the
+  `uploads/` Framer/Vercel export.

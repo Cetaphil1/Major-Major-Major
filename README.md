@@ -11,7 +11,8 @@ survey, and produces a guidance report.
 The current prototype is a **plain multi-page app**: a set of standalone `.html` entry
 points that load shared React components compiled in the browser with Babel Standalone.
 There is no bundler, no router library, and no build step. State is shared across pages
-through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
+through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map and
+`docs/` for focused notes on routing, research data, scoring, and app variants.
 
 ## 2. Product purpose
 
@@ -64,8 +65,8 @@ fragile and what to do about it — it does not just hand back a score.
 > ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
 > routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
 > while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+> `INITIAL_STATE.md §10` and `docs/ROUTING.md`, and should be resolved with small,
+> reviewed changes — not a rewrite.
 
 ## 4. Major product rules
 
@@ -136,23 +137,36 @@ Rules:
   hashes). `.jsx` files are compiled in the browser via `<script type="text/babel">`.
 - There is a parallel **dark** variant under `app-dark/` and a separate Framer/Vercel
   marketing build under `uploads/`. Treat these as separate artifacts — see
-  `INITIAL_STATE.md`.
+  `docs/VARIANTS.md`.
 - Test external links and the full page-to-page flow in a real browser tab, not the design
   preview.
 
-## 9. How future AI coding agents should make changes
+## 9. Engineering docs
+
+- `INITIAL_STATE.md` — file map, current routing, storage keys, and known confusing areas.
+- `docs/ROUTING.md` — canonical page flow, gate matrix, and route-change checklist.
+- `docs/RESEARCH_DATA.md` — `window.Research`, JSON ownership, source labels, and
+  College Scorecard behavior.
+- `docs/SCORING.md` — survey formulas, report thresholds, risk levels, and report object
+  constraints.
+- `docs/VARIANTS.md` — boundaries between the light root app, dark survey variant, and
+  Framer/Vercel export.
+
+## 10. How future AI coding agents should make changes
 
 1. **Read `INITIAL_STATE.md` first.** It maps every page to the file that controls it,
    how routing works, and where the risky areas are.
-2. **Make small, testable changes.** One behavior at a time. Confirm the change in a real
+2. **Read the focused doc for the subsystem you touch.** Routing, research data, scoring,
+   and app-variant boundaries each have notes under `docs/`.
+3. **Make small, testable changes.** One behavior at a time. Confirm the change in a real
    browser before moving on.
-3. **Respect the product rules in §4.** In particular: don't delete the start flow,
+4. **Respect the product rules in §4.** In particular: don't delete the start flow,
    research page, or survey/report logic, and don't make a generic homepage the
    post-context destination.
-4. **Keep data honesty (§6) and external-link rules (§7) intact** in any page you touch.
-5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
+5. **Keep data honesty (§6) and external-link rules (§7) intact** in any page you touch.
+6. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
-6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
+7. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
+8. When fixing the post-context route, change the destination in the **prelanding flow**
    (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+   `INITIAL_STATE.md §7`, §9, and `docs/ROUTING.md` — rather than rewiring every page.
