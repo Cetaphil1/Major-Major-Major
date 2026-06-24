@@ -12,6 +12,34 @@
   function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
   function wipe() { try { localStorage.removeItem(STORE); } catch {} }
 
+  function norm(v) { return (v == null ? "" : String(v)).trim().toLowerCase(); }
+  function identityKeyFromContext(ctx) {
+    if (!ctx) return "";
+    return [
+      norm(ctx.displayName),
+      norm(ctx.collegeMeta && ctx.collegeMeta.id),
+      norm(ctx.college),
+      norm(ctx.majorMeta && ctx.majorMeta.cipCode),
+      norm(ctx.major),
+    ].join("|");
+  }
+  function identityKeyFromUserContext(uc) {
+    const college = uc && uc.selectedCollege || {};
+    const major = uc && uc.selectedMajor || {};
+    return [
+      norm(uc && uc.displayName),
+      norm(college.id),
+      norm(college.name),
+      norm(major.cipCode),
+      norm(major.name),
+    ].join("|");
+  }
+  function savedForIdentity(saved, identityKey) {
+    if (!saved) return null;
+    const savedKey = saved.identityKey || identityKeyFromContext(saved.ctx);
+    return savedKey && identityKey && savedKey !== identityKey ? null : saved;
+  }
+
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
   // Dimension score is 0–100 where HIGH = healthy (high burnout score = resilient).
@@ -176,17 +204,21 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
+    const rawSaved = load();
 
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
-    // If it's missing entirely, send the visitor through the pre-landing first.
+    // If the required identity is missing, send the visitor through pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = !!(window.UserContext && window.UserContext.hasIdentity && window.UserContext.hasIdentity());
+    const shouldRedirect = !uc || !uc.preLandingComplete || !hasIdentity;
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (shouldRedirect) { window.location.replace("start.html"); }
+    }, [shouldRedirect]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
+    const identityKey = identityKeyFromUserContext(uc);
+    const saved = savedForIdentity(rawSaved, identityKey);
     const emptyCtx = { college: "", major: "", stage: "", enrollment: "", intent: "", displayName: "" };
     const seeded = Object.assign({}, emptyCtx, saved?.ctx || {});
     // Pre-landing identity is the source of truth — always overlay it.
@@ -207,7 +239,11 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (!shouldRedirect) { save({ phase, ctx, sectionIdx, answers, identityKey }); }
+    }, [phase, ctx, sectionIdx, answers, identityKey, shouldRedirect]);
+
+    if (shouldRedirect) return null;
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
