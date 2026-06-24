@@ -33,14 +33,23 @@ function readHtml(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
-function metaContent(html, selector) {
-  const pattern = new RegExp(
-    `<meta\\s+${selector}=["']([^"']+)["']\\s+content=["']([^"']*)["']|` +
-      `<meta\\s+content=["']([^"']*)["']\\s+${selector}=["']([^"']+)["']`,
-    "i",
-  );
-  const match = html.match(pattern);
-  return match ? match[2] || match[3] : null;
+function parseAttributes(tag) {
+  const attributes = {};
+  for (const match of tag.matchAll(/([^\s=]+)=["']([^"']*)["']/g)) {
+    attributes[match[1].toLowerCase()] = match[2];
+  }
+  return attributes;
+}
+
+function metaContent(html, expectedAttributes) {
+  for (const match of html.matchAll(/<meta\b[^>]*>/gi)) {
+    const attributes = parseAttributes(match[0]);
+    const matches = Object.entries(expectedAttributes).every(
+      ([key, value]) => attributes[key.toLowerCase()] === value,
+    );
+    if (matches) return attributes.content || null;
+  }
+  return null;
 }
 
 function titleText(html) {
@@ -68,17 +77,17 @@ test("landing export uses Fit Beyond Interest metadata consistently", () => {
 
     assert.match(titleText(html), /Fit Beyond Interest/, `${relative(filePath)} title`);
     assert.equal(
-      metaContent(html, 'name="description"'),
+      metaContent(html, { name: "description" }),
       EXPECTED_DESCRIPTION,
       `${relative(filePath)} meta description`,
     );
     assert.equal(
-      metaContent(html, 'property="og:description"'),
+      metaContent(html, { property: "og:description" }),
       EXPECTED_DESCRIPTION,
       `${relative(filePath)} OG description`,
     );
     assert.equal(
-      metaContent(html, 'name="twitter:description"'),
+      metaContent(html, { name: "twitter:description" }),
       EXPECTED_DESCRIPTION,
       `${relative(filePath)} Twitter description`,
     );
