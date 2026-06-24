@@ -59,9 +59,29 @@
     return n || (fallback || "you");
   }
 
+  function normalizedPart(value) {
+    return (value || "").trim().toLowerCase();
+  }
+
+  function identityKey(ctx) {
+    ctx = ctx || load();
+    var college = ctx.selectedCollege && ctx.selectedCollege.name;
+    var major = ctx.selectedMajor && ctx.selectedMajor.name;
+    if (!normalizedPart(college) || !normalizedPart(major)) return null;
+    return JSON.stringify([
+      normalizedPart(ctx.displayName),
+      normalizedPart(college),
+      normalizedPart(major),
+    ]);
+  }
+
   function hasIdentity() {
-    var c = load();
-    return !!(c.selectedCollege && c.selectedCollege.name && c.selectedMajor && c.selectedMajor.name);
+    return !!identityKey();
+  }
+
+  function matchesIdentity(saved, ctx) {
+    var key = identityKey(ctx);
+    return !!(key && saved && saved.identityKey === key);
   }
 
   // Build a small relatedMajors list from the majors DB by sharing a category.
@@ -91,7 +111,9 @@
     update: update,
     clear: clear,
     nameOr: nameOr,
+    identityKey: identityKey,
     hasIdentity: hasIdentity,
+    matchesIdentity: matchesIdentity,
     relatedMajorsFor: relatedMajorsFor,
   };
 })();

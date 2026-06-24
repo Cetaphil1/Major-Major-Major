@@ -392,18 +392,27 @@
     const TOTAL = 4;
     const go = (s) => {window.scrollTo({ top: 0, behavior: "auto" });setStep(s);};
 
+    const builtCollege = college.trim() ? mapCollege(college.trim(), collegeMeta) : null;
+    const builtMajor = major.trim() ? enrichMajor(major.trim(), majorMeta) : null;
+    const hasCompleteIdentity = !!(builtCollege && builtCollege.name && builtMajor && builtMajor.name);
+
     const finish = () => {
+      if (!hasCompleteIdentity) {
+        go(!builtCollege || !builtCollege.name ? 1 : 2);
+        return;
+      }
       UC.update({ preLandingComplete: true, contextConfirmed: true });
       window.location.href = "research.html";
     };
     const skipIntro = () => {
-      // honest skip: mark complete, leave whatever's filled, go to landing
+      // Name is optional, but the research and survey need a real school + major.
+      if (!hasCompleteIdentity) {
+        go(!builtCollege || !builtCollege.name ? 1 : 2);
+        return;
+      }
       UC.update({ preLandingComplete: true });
       window.location.href = "research.html";
     };
-
-    const builtCollege = college.trim() ? mapCollege(college.trim(), collegeMeta) : null;
-    const builtMajor = major.trim() ? enrichMajor(major.trim(), majorMeta) : null;
 
     // step 4 is the long report — different chrome (no centered qz, no footer nav)
     if (step === 3) {
