@@ -5,12 +5,7 @@
 
 (function () {
   const { useState, useEffect } = React;
-  const STORE = "fbi-flow-v1";
-
-  // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
-  function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
-  function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  const FlowState = window.FlowState;
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,7 +171,7 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
+    const saved = FlowState.load();
 
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
@@ -185,29 +180,15 @@
       if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
     }, []);
 
-    const ucCollege = uc && uc.selectedCollege;
-    const ucMajor = uc && uc.selectedMajor;
     const emptyCtx = { college: "", major: "", stage: "", enrollment: "", intent: "", displayName: "" };
-    const seeded = Object.assign({}, emptyCtx, saved?.ctx || {});
-    // Pre-landing identity is the source of truth — always overlay it.
-    if (uc) {
-      seeded.displayName = uc.displayName || "";
-      if (ucCollege && ucCollege.name) {
-        seeded.college = ucCollege.name;
-        seeded.collegeMeta = ucCollege.isManual ? null : { id: ucCollege.id, city: ucCollege.city, state: ucCollege.state, control: ucCollege.type, level: ucCollege.level };
-      }
-      if (ucMajor && ucMajor.name) {
-        seeded.major = ucMajor.name;
-        seeded.majorMeta = ucMajor.isManual ? null : { cipCode: ucMajor.cipCode, category: ucMajor.category };
-      }
-    }
+    const initial = FlowState.createInitialState(saved, uc, emptyCtx);
 
-    const [phase, setPhase] = useState(saved?.phase || "context");
-    const [ctx, setCtx] = useState(seeded);
-    const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
-    const [answers, setAnswers] = useState(saved?.answers || {});
+    const [phase, setPhase] = useState(initial.phase);
+    const [ctx, setCtx] = useState(initial.ctx);
+    const [sectionIdx, setSectionIdx] = useState(initial.sectionIdx);
+    const [answers, setAnswers] = useState(initial.answers);
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => { FlowState.save({ identityKey: initial.identityKey, phase, ctx, sectionIdx, answers }); }, [initial.identityKey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
@@ -230,7 +211,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { FlowState.wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
     />;
   }
 
