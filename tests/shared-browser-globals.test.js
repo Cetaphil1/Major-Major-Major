@@ -211,7 +211,7 @@ test("Research scorecard lookup chooses a matching school, formats stats, and ca
 
   assert.equal(first.matched, "University of California, Berkeley");
   assert.equal(first.homepage, "https://berkeley.edu");
-  assert.deepEqual(first.stats.slice(0, 3).map((stat) => stat.label), [
+  assert.deepEqual(JSON.parse(JSON.stringify(first.stats.slice(0, 3).map((stat) => stat.label))), [
     "Enrollment",
     "Acceptance rate",
     "SAT midpoint",
