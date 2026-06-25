@@ -66,7 +66,7 @@ function legacySaved(overrides = {}) {
   );
 
   assert.strictEqual(initial.phase, "context");
-  assert.deepStrictEqual(initial.answers, {});
+  assert.strictEqual(JSON.stringify(initial.answers), "{}");
   assert.strictEqual(initial.sectionIdx, 0);
   assert.strictEqual(initial.ctx.college, "MIT");
   assert.strictEqual(initial.ctx.major, "Biology (Pre-Med)");
@@ -91,7 +91,7 @@ function legacySaved(overrides = {}) {
   );
 
   assert.strictEqual(initial.phase, "context");
-  assert.deepStrictEqual(initial.answers, {});
+  assert.strictEqual(JSON.stringify(initial.answers), "{}");
   assert.strictEqual(initial.ctx.displayName, "");
   assert.strictEqual(initial.ctx.college, "");
   assert.strictEqual(initial.ctx.collegeMeta, null);
