@@ -30,7 +30,9 @@ test("research page keeps the selected context editable and hands off to the sur
   const survey = read("survey.html");
 
   assert.match(research, /<script src="app\/user-context\.js"><\/script>/, "research should read the shared user context");
-  assert.match(research, /if \(!c\.preLandingComplete\) \{ window\.location\.replace\('start\.html'\); \}/, "research should protect against missing prelanding context");
+  assert.match(research, /const uc = \(window\.UserContext && window\.UserContext\.load\(\)\) \|\| \{\};/, "research should use saved prelanding context when available");
+  assert.match(research, /const isDemo = !\(uc\.selectedCollege && uc\.selectedCollege\.name\);/, "research should explicitly mark missing context as a demo state");
+  assert.match(research, /Showing a demo pairing\./, "research should explain the fallback instead of rendering an empty page");
   assert.match(research, /href="start\.html">Change college \/ major<\/a>/, "research should let users edit their saved college or major");
   assert.match(research, /href="survey\.html"[^>]*>Take the survey/, "research should continue into the survey flow");
   assert.match(survey, /<script src="app\/user-context\.js"><\/script>[\s\S]*<script type="text\/babel" src="app\/fit-app\.jsx"><\/script>/, "survey should load the shared context before the quiz app");
