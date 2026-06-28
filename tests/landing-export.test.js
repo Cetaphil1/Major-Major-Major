@@ -72,7 +72,7 @@ test("research landing export uses current article slugs and drops retired Eduka
     assert.ok(fs.existsSync(articlePath), `expected current research article at ${slug}`);
 
     const articleHtml = fs.readFileSync(articlePath, "utf8");
-    assert.match(researchIndex, new RegExp(`research-page/${slug}`), `research index should link ${slug}`);
+    assert.match(researchIndex, new RegExp(`href="\\./${slug}/index\\.html"`), `research index should link ${slug}`);
     assert.match(articleHtml, new RegExp(`research-page/${slug}`), `${slug} should expose its canonical Open Graph URL`);
     assert.match(articleHtml, new RegExp(`&quot;${slug}&quot;`), `${slug} should hydrate with its own path variable`);
   }
