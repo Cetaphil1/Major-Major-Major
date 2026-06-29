@@ -29,7 +29,7 @@ describe("generated landing export", () => {
     assert.match(html, /<title>Fit Beyond Interest — Does your major actually fit you\?<\/title>/);
     assert.match(html, /<meta property="og:title" content="Fit Beyond Interest">/);
     assert.match(html, /<meta name="twitter:title" content="Fit Beyond Interest">/);
-    assert.match(html, /Should I switch my major\?/);
+    assert.match(html, /Compare your major, school environment, workload, motivation, belonging, and career clarity/);
     assert.doesNotMatch(html, /Edukate/i);
   });
 

@@ -55,7 +55,7 @@ describe("UserContext browser global", () => {
     const ctx = runBrowserScript("app/user-context.js", { localStorage: storage });
     const { UserContext } = ctx.window;
 
-    assert.deepEqual(JSON.parse(JSON.stringify(UserContext.load())), UserContext.empty());
+    assert.deepEqual(JSON.parse(JSON.stringify(UserContext.load())), JSON.parse(JSON.stringify(UserContext.empty())));
 
     UserContext.update({
       displayName: "Sam",
@@ -209,7 +209,7 @@ describe("Research browser global", () => {
 
     const result = await ctx.window.Research.scorecardFor("Swarthmore College");
 
-    assert.deepEqual(result, { error: "rate" });
+    assert.deepEqual(JSON.parse(JSON.stringify(result)), { error: "rate" });
     assert.equal(calls, 3, "all fallback query attempts should be tried before returning rate");
     assert.deepEqual(storage.keys(), []);
   });
