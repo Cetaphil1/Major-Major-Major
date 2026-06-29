@@ -11,7 +11,12 @@ survey, and produces a guidance report.
 The current prototype is a **plain multi-page app**: a set of standalone `.html` entry
 points that load shared React components compiled in the browser with Babel Standalone.
 There is no bundler, no router library, and no build step. State is shared across pages
-through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
+through `localStorage`.
+
+The verified app path is `start.html` -> `research.html` -> `survey.html`. The root
+`index.html` still renders a guarded research-center variant for returning/legacy links,
+and `landing/` is a separate generated marketing export. See `INITIAL_STATE.md` and
+`TECHNICAL_SPEC.md` for the file-by-file map and current routing details.
 
 ## 2. Product purpose
 
@@ -35,12 +40,12 @@ fragile and what to do about it — it does not just hand back a score.
 
 ## 3. Intended user flow
 
-1. **Context entry** — first name, college, major.
+1. **Context entry** (`start.html`) — first name, college, major.
 2. **Context confirmation** — the user confirms their college and major, and can edit if
    anything is wrong.
 3. **Personalized research page** — after confirmation the user goes to the
-   **personalized school/major research page**. Not the generic homepage, not a random
-   demo page.
+   **personalized school/major research page** (`research.html`). Not the generic homepage,
+   not a random demo page.
 4. **Research page content**
    - college snapshot
    - official school / data links
@@ -49,10 +54,11 @@ fragile and what to do about it — it does not just hand back a score.
    - similar majors
    - school-vs-major context
    - a clear marker of what is official vs. preview/demo data
-5. **Survey intro** — explain what the survey measures, why the questions matter, and that
-   it is guidance rather than a final verdict.
+5. **Survey setup** (`survey.html`) — asks only the remaining context needed for scoring
+   (stage, enrollment, intent). It reuses the saved name/college/major and should not ask
+   for identity again.
 6. **Survey** — the multi-dimension questionnaire.
-7. **Results / report page**
+7. **Analyzing / report page**
    - overall fit score
    - strongest signals
    - weakest signals
@@ -61,11 +67,10 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+> Current routing does reach `research.html` after context entry. The remaining flow risks
+> are that `index.html` and `research.html` can drift as two research-center entry points,
+> and the survey intro is folded into `survey.html` rather than being a distinct page. See
+> `INITIAL_STATE.md §10`; resolve these with small, reviewed changes, not a rewrite.
 
 ## 4. Major product rules
 
@@ -128,7 +133,7 @@ Rules:
 - No build step. Open the `.html` files directly, or serve the project root over a static
   server so `localStorage` and relative paths behave like production:
   ```
-  cd "Major Major Major"
+  cd /workspace
   python3 -m http.server 8000
   # then open http://localhost:8000/start.html
   ```
@@ -137,8 +142,11 @@ Rules:
 - There is a parallel **dark** variant under `app-dark/` and a separate Framer/Vercel
   marketing build under `uploads/`. Treat these as separate artifacts — see
   `INITIAL_STATE.md`.
-- Test external links and the full page-to-page flow in a real browser tab, not the design
-  preview.
+- Test the full current app path in a real browser tab: clear `localStorage`, open
+  `start.html`, finish the context flow, confirm `research.html` shows the chosen
+  college/major, continue to `survey.html`, answer through the report, then verify the
+  research-center link returns to `research.html`.
+- Test external links in a real browser tab, not the design preview.
 
 ## 9. How future AI coding agents should make changes
 
@@ -153,6 +161,7 @@ Rules:
 5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
 6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
-   (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+7. When changing route behavior, update the source of navigation in the **prelanding flow**
+   (`app/prelanding.jsx`), the survey back/restart target in `app/fit-app.jsx`, and any
+   duplicated research shell behavior in `index.html` / `research.html` together — see
+   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page independently.
