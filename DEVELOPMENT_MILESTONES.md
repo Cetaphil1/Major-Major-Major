@@ -15,7 +15,8 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 **Deliverables**
 - `PRD.md`, `TECHNICAL_SPEC.md`, `DEVELOPMENT_MILESTONES.md` (this set) committed.
 - An inventory separating **live files** from **scraps/backups/duplicates** (e.g.
-  `research.html` as a duplicate of the research center, `Landing (*).html`, `Start flow
+  `research.html` as the canonical research page, `index.html` as the guarded research
+  variant, `landing/` as a generated marketing export, `Landing (*).html`, `Start flow
   (editable).html`, `Survey (dark).html`, `app-dark/`, design scrap `.html` files,
   `screenshots/`, `uploads/`).
 - A cleanup plan: which scraps to archive vs. delete (no deletion of `LICENSE`).
@@ -36,6 +37,10 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 - Site root `index.html` reliably redirects to `landing/index.html`.
 - `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
 - Confirm landing does **not** deep-link into `research.html`/`survey.html`.
+
+**Current source gap:** this phase is not complete yet. Root `index.html` currently remains a
+guarded research-center entry, and the generated `landing/` export should be verified before
+it is documented as the public quiz doorway.
 
 **Done looks like**
 - Visiting the site root lands on the marketing homepage.
@@ -115,8 +120,9 @@ college/major before the quiz.
   `UserContext` (honest `nameOr` fallback).
 - `screens-report.jsx` renders it: overall verdict, per-dimension 0–100, strongest/weakest,
   switch + burnout context, school-vs-major interpretation, next steps.
-- "Start over" clears both stores (identity + survey) and returns to `start.html`; report can be
-  re-rendered without recomputing.
+- Target behavior: "Start over" clears both stores (identity + survey) and returns to
+  `start.html`; report can be re-rendered without recomputing. Current implementation clears
+  only the survey/report store and returns to `index.html`; see `TECHNICAL_SPEC.md §6`.
 
 **Done looks like**
 - The report shows the correct student context and scores, names cause (workload vs. field),
