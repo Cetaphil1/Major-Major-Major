@@ -89,8 +89,9 @@ test("switching risk clamps to bounded percentages", () => {
   const { buildReport, SECTIONS } = loadScoring();
   const healthyAnswers = answersFor(SECTIONS, (question) => question.reverse ? 1 : 5);
   const strainedAnswers = answersFor(SECTIONS, (question) => question.reverse ? 5 : 1);
-  const ctx = { college: "UC Berkeley", major: "Computer Science", intent: "switch" };
+  const firstMajorCtx = { college: "UC Berkeley", major: "Computer Science", intent: "first" };
+  const switchingCtx = { college: "UC Berkeley", major: "Computer Science", intent: "switch" };
 
-  assert.equal(buildReport(ctx, healthyAnswers).switchRisk.pct, 4);
-  assert.equal(buildReport(ctx, strainedAnswers).switchRisk.pct, 96);
+  assert.equal(buildReport(firstMajorCtx, healthyAnswers).switchRisk.pct, 4);
+  assert.equal(buildReport(switchingCtx, strainedAnswers).switchRisk.pct, 96);
 });
