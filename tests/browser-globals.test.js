@@ -248,7 +248,7 @@ test("Research scorecard lookup picks exact normalized matches and caches only s
   assert.equal(first.matched, "Swarthmore College");
   assert.equal(second.matched, "Swarthmore College");
   assert.equal(first.homepage, "https://www.swarthmore.edu");
-  assert.deepEqual(first.stats.map((stat) => host(stat)), [
+  assert.deepEqual(host(first.stats), [
     { label: "Enrollment", value: "1,647", sub: "Degree-seeking" },
     { label: "Acceptance rate", value: "7%", sub: "Highly selective" },
     { label: "SAT midpoint", value: "1500", sub: "Reading + math" },
