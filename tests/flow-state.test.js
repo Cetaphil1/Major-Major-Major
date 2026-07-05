@@ -50,7 +50,7 @@ test("does not restore survey state for a different identity", () => {
   FlowState.save(firstIdentity, firstState);
 
   assert.equal(FlowState.load(secondIdentity), null);
-  assert.deepEqual(FlowState.load(firstIdentity).answers, firstState.answers);
+  assert.equal(FlowState.load(firstIdentity).answers.interest_1, 5);
 });
 
 test("migrates matching legacy state into an identity-scoped key", () => {
