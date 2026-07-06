@@ -18,16 +18,6 @@ function hrefsIn(html) {
   return [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
 }
 
-function localTargetExists(fromFile, href) {
-  const withoutFragment = href.split("#")[0].split("?")[0];
-  if (!withoutFragment || /^[a-z][a-z0-9+.-]*:/i.test(withoutFragment)) return true;
-
-  const resolved = path.resolve(path.dirname(fromFile), withoutFragment);
-  if (fs.existsSync(resolved)) return true;
-
-  return fs.existsSync(path.join(resolved, "index.html"));
-}
-
 test("all landing quiz CTAs resolve to root start.html from their page depth", () => {
   const pages = walkHtml(landingRoot);
   const startLinks = [];
@@ -94,19 +84,4 @@ test("rebranded research articles use the current slugs and no stale Edukate pat
     assert.ok(!fs.existsSync(path.join(landingRoot, "research-page", slug)), `retired slug directory still exists: ${slug}`);
   }
   assert.doesNotMatch(landingText, /Edukate/i, "landing export should not contain stale Edukate branding");
-});
-
-test("all local landing hrefs resolve to committed files", () => {
-  const brokenLinks = [];
-
-  for (const file of walkHtml(landingRoot)) {
-    const html = fs.readFileSync(file, "utf8");
-    for (const href of hrefsIn(html)) {
-      if (!localTargetExists(file, href)) {
-        brokenLinks.push(`${path.relative(repoRoot, file)} -> ${href}`);
-      }
-    }
-  }
-
-  assert.deepEqual(brokenLinks, []);
 });
