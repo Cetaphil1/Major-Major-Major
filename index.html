@@ -65,7 +65,10 @@
       const uc = (window.UserContext && window.UserContext.load()) || {};
       const college = (uc.selectedCollege && uc.selectedCollege.name) || "Swarthmore College";
       const major = (uc.selectedMajor && uc.selectedMajor.name) || "Political Science";
-      const isDemo = !(uc.selectedCollege && uc.selectedCollege.name);
+      const hasIdentity = !!(uc.selectedCollege && uc.selectedCollege.name && uc.selectedMajor && uc.selectedMajor.name);
+      const isDemo = !hasIdentity;
+      const surveyHref = hasIdentity ? "survey.html" : "start.html";
+      const surveyLabel = hasIdentity ? "Take the survey" : "Enter college / major";
 
       return (
         <div className="rp" style={{ paddingTop: 28 }}>
@@ -76,7 +79,7 @@
             </a>
             <div className="grow" />
             <a className="rs-chiplink" href="start.html">Change college / major</a>
-            <a className="rs-chiplink" href="survey.html" style={{ borderColor: "var(--purple)", color: "var(--purple)" }}>Take the survey →</a>
+            <a className="rs-chiplink" href={surveyHref} style={{ borderColor: "var(--purple)", color: "var(--purple)" }}>{surveyLabel} →</a>
           </div>
 
           {isDemo ? (
