@@ -61,11 +61,17 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+Current implementation notes:
+
+- `start.html` now finishes explicitly at `research.html`, the canonical personalized
+  research page.
+- `index.html` is still a gated research-center alias: first-time visitors without
+  `preLandingComplete` are sent to `start.html`; visitors with saved context see the research
+  center. It is **not** a marketing redirect today.
+- `survey.html` starts with three extra context questions (stage, enrollment, intent) before
+  the eight-dimension questionnaire.
+- The report "Start over" action currently clears the survey/report store and returns through
+  `index.html`; it does not clear `fbi-user-context-v1`.
 
 ## 4. Major product rules
 
@@ -123,12 +129,28 @@ Rules:
   they show "refused to connect" *in the preview only*. Real link testing must happen
   **locally or on a deployed site**, not in the design preview.
 
-## 8. Development workflow
+## 8. Operational notes and common pitfalls
+
+- Serve the repo root over HTTP for realistic testing:
+  ```
+  python3 -m http.server 8000
+  # then open http://localhost:8000/start.html
+  ```
+- The app is static, but several pages use `fetch()` for local JSON. Direct `file://` opens can
+  fail those requests; use a local server for the full flow.
+- Research stats for non-curated schools call the U.S. Department of Education College
+  Scorecard API from the browser using `DEMO_KEY` (`app/research-data.js`). This is fine for
+  low-volume demos but can rate-limit; the UI falls back to official Scorecard / NCES links
+  and labels the state.
+- Successful live Scorecard matches are cached in `localStorage` under `fbi-sc-*` keys for
+  about 30 days. Clear site data when testing matching or rate-limit behavior.
+
+## 9. Development workflow
 
 - No build step. Open the `.html` files directly, or serve the project root over a static
   server so `localStorage` and relative paths behave like production:
   ```
-  cd "Major Major Major"
+  cd /workspace
   python3 -m http.server 8000
   # then open http://localhost:8000/start.html
   ```
@@ -140,7 +162,7 @@ Rules:
 - Test external links and the full page-to-page flow in a real browser tab, not the design
   preview.
 
-## 9. How future AI coding agents should make changes
+## 10. How future AI coding agents should make changes
 
 1. **Read `INITIAL_STATE.md` first.** It maps every page to the file that controls it,
    how routing works, and where the risky areas are.
@@ -153,6 +175,7 @@ Rules:
 5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
 6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
-   (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+7. When changing routing, update the page shell (`index.html`, `research.html`, or
+   `survey.html`) and the relevant controller (`app/prelanding.jsx` or `app/fit-app.jsx`)
+   together. Do not assume `index.html` is a marketing homepage until the code actually makes
+   it one.

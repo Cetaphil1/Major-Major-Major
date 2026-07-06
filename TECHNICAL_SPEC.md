@@ -20,7 +20,7 @@ links between `.html` files.
 
 ```
 / (repo root = quiz app)
-  index.html        # PUBLIC entry: immediately redirects to landing/index.html
+  index.html        # Gated research-center alias; redirects first-time visitors to start.html
   start.html        # Quiz app step 1 — context flow (name → college → major → confirm)
   research.html     # Quiz app step 2 — personalized school/major research page
   survey.html       # Quiz app step 3+4 — survey + analyzing + report controller
@@ -51,7 +51,7 @@ links between `.html` files.
 
   # Public homepage (marketing site)
   landing/
-    index.html           # PUBLIC homepage; "Take the quiz" CTA -> ../start.html
+    index.html           # Framer-exported marketing homepage artifact
     about-page/  contact/  event-page/  news/  programs/  research-page/
 
   LICENSE                # DO NOT TOUCH
@@ -65,14 +65,19 @@ in Phase 1.
 
 ## 3. Landing page vs quiz app separation
 
-- **`/landing` is the public homepage** (marketing site). Visiting the site root
-  (`index.html`) immediately redirects to `landing/index.html` via `window.location.replace`
-  plus a `<meta http-equiv="refresh">` fallback.
 - **The quiz app lives in the root `.html` files**: `start.html`, `research.html`,
   `survey.html` (plus `about.html`).
-- **The only doorway from landing into the quiz is the "Take the quiz" CTA**, which links to
-  `start.html`. The landing page must not deep-link into `research.html` or `survey.html`
-  (those assume context already exists).
+- **`research.html` is the canonical personalized research page.** It can render a visible
+  Swarthmore College / Political Science preview when opened with no saved context.
+- **`index.html` currently mirrors the research center with a pre-landing gate.** It reads
+  `UserContext.load().preLandingComplete`; if false, it redirects to `start.html`. If true,
+  it renders research using saved context, or the same preview pairing if context is missing.
+- **`landing/` is a separate Framer-exported marketing artifact.** The current root
+  `index.html` does not redirect to it. Treat changes to `landing/` and changes to the root
+  quiz app as separate surfaces unless a routing task explicitly connects them.
+- The intended product direction is still `landing/` → `start.html` → `research.html` →
+  `survey.html`, but the source of truth for the current route is the root page shells and
+  controllers listed in §10.
 
 ## 4. Frontend structure
 
@@ -111,6 +116,20 @@ recommendations. Carries a `_meta.status: "Estimated"` provenance flag.
 engine (google/youtube/maps/reddit). Each link carries a `status` provenance label
 ("Official source" vs "Research link"). Nothing is scraped or stored; links only build URLs.
 
+### Live College Scorecard (`app/research-data.js`)
+For schools without a curated `collegeProfiles.json` profile, the research page calls the U.S.
+Department of Education College Scorecard API directly from the browser:
+
+- API key: `DEMO_KEY` in `app/research-data.js` for low-volume demos.
+- Request fields: school name/homepage, enrollment, admissions, tuition/net price, completion,
+  and median earnings.
+- Matching: tries normalized college-name variants and picks the best match by name overlap and
+  school size.
+- Cache: successful matches are stored in `localStorage` as `fbi-sc-<normalized-school>` for
+  about 30 days. Errors and rate limits are not cached.
+- Fallback: if matching fails or the demo key is rate-limited, the UI shows official
+  Scorecard/NCES links with an honest status label instead of fabricating stats.
+
 ### Quiz questions & scoring model (`app/data.jsx`)
 - `DIMENSIONS` — 8 dimensions: `interest, confidence, workload, motivation, career, school,
   belonging, burnout` (each with `key, name, color, short`).
@@ -148,15 +167,22 @@ reload keeps context):
    `relatedMajorsFor(major, db, n)`. Written by `start.html`, read by `research.html` and
    `survey.html`.
 
-2. **Survey/report store** — managed in `fit-app.jsx` (`load/save/wipe` around its own key).
+2. **Survey/report store (`fbi-flow-v1`)** — managed in `fit-app.jsx`
+   (`load/save/wipe` around its own key).
    Holds quiz `answers`, stated `intent/stage`, and the generated report so the report page can
    re-render without recomputing.
+
+3. **Scorecard cache (`fbi-sc-*`)** — managed in `research-data.js`. Stores successful live
+   College Scorecard matches only, with a roughly 30-day TTL. This is an optimization for the
+   research page, not student state.
 
 **Rules:**
 - Identity is written once in `start.html`; downstream pages read it and never re-ask.
 - `sessionStorage` is not currently used; keep `localStorage` as the shared mechanism unless a
   page needs strictly per-tab state.
-- A "start over" action calls `UserContext.clear()` + survey `wipe()`.
+- The report "Start over" action currently calls survey `wipe()` and returns through
+  `index.html`; it does **not** call `UserContext.clear()`. Use `start.html`'s edit path or
+  clear `fbi-user-context-v1` manually when testing a completely fresh identity.
 
 ## 7. Quiz scoring logic (`fit-app.jsx`)
 
@@ -185,7 +211,8 @@ reload keeps context):
 ## 8. School / major research logic (`research.jsx`, `research-data.js`, `researchSources.json`)
 
 - Read `selectedCollege` + `selectedMajor` from `UserContext`.
-- Render a **college snapshot** from `college-snapshots.js` / `collegeProfiles.json`.
+- Render a **college snapshot** from `collegeProfiles.json` when a curated profile exists;
+  otherwise fetch a live College Scorecard match and render the same stat grid when available.
 - Build outbound links from `researchSources.json` by substituting `{c}`/`{m}` (URL-encoded)
   into direct URL templates, or composing search queries for google/youtube/maps/reddit.
 - Show **related majors** for comparison from `collegeMajors.json` (labeled "not
@@ -211,14 +238,27 @@ reload keeps context):
 
 ## 10. Routing / linking rules
 
-- Site root `index.html` → redirect to `landing/index.html` (homepage).
-- `landing/index.html` "Take the quiz" → `start.html` (the **only** entry into the quiz).
-- `start.html` (context confirmed) → `research.html`.
-- `research.html` (continue) → `survey.html`.
-- `survey.html` runs survey → analyzing → report in-page (no separate `results.html` file
-  today; report is a screen state within the survey flow).
-- Guard: if `research.html`/`survey.html` load without `UserContext.hasIdentity()`, route the
-  user back to `start.html` rather than rendering empty.
+Current source behavior:
+
+- `start.html` (context confirmed or skipped) → `research.html`.
+- `research.html` (continue CTA) → `survey.html`.
+- `survey.html` runs extra context questions → quiz → analyzing → report in-page (no separate
+  `results.html` file today; report is a screen state within the survey flow).
+- `index.html` checks `UserContext.load().preLandingComplete`. If false, it redirects to
+  `start.html`; if true, it renders the same research-center shell with saved context or the
+  Swarthmore / Political Science preview.
+- `survey.html` also redirects to `start.html` when `preLandingComplete` is missing.
+- `research.html` does **not** guard on identity today. Direct opens without saved context show
+  the visible preview/demo pairing.
+- In `survey.html`, the context step's back/home path and the report restart path go to
+  `index.html`, which then gates or renders research based on saved context.
+
+Desired product direction:
+
+- Public marketing (`landing/`) should be wired intentionally before it is described as the
+  root homepage.
+- If `index.html` becomes a marketing redirect later, update `app/fit-app.jsx` restart/back
+  behavior and any docs that currently rely on `index.html` as a research alias.
 
 ## 11. External link rules
 
@@ -234,29 +274,38 @@ reload keeps context):
 
 - **Missing college/major** in datasets → manual-entry fallback (`isManual: true`); research
   page degrades gracefully to search links + "Estimated" labels.
-- **No context on a downstream page** → redirect to `start.html`.
+- **No context on `survey.html`** → redirect to `start.html` when `preLandingComplete` is false.
+- **No context on `research.html`** → render the Swarthmore / Political Science preview with a
+  visible `Preview` badge.
 - **Partial survey** → unanswered dimensions default to neutral (~55); ensure the report flags
   reduced confidence rather than presenting it as complete.
 - **`localStorage` unavailable / cleared mid-flow** → `UserContext` returns an empty object
-  safely; downstream pages re-route to start.
+  safely; gated pages re-route to start and `research.html` falls back to preview.
 - **Reverse-scored items** must stay correctly tagged in `data.jsx`; a mistag silently inverts a
   dimension.
 - **CDN/integrity failure** → page won't render; acceptable prototype risk, but don't remove the
   pinned versions/hashes.
-- **Re-take** → must clear prior answers (survey `wipe()`) without forcing re-entry of identity.
+- **Re-take** → clears prior answers and restarts the quiz without forcing re-entry of identity.
+- **Start over** → clears the survey store only in current code; identity persists unless
+  `UserContext.clear()` or browser site-data clearing is used.
 
 ## 13. Testing considerations
 
-- **Manual flow test (primary):** landing → "Take the quiz" → start → research → survey →
-  report, verifying identity carries through unchanged at each step.
+- **Manual flow test (primary):** start → research → survey context questions → quiz →
+  analyzing → report, verifying identity carries through unchanged at each step.
+- **Route sanity:** open `index.html` with empty `localStorage` and confirm it redirects to
+  `start.html`; open `research.html` with empty `localStorage` and confirm the preview pairing
+  is visibly labeled.
 - **Scoring sanity checks:** craft all-high, all-low, and mixed answer sets and confirm
   switch/burnout risk and strongest/weakest signals move in the expected direction; verify
   reverse items flip correctly.
-- **Provenance:** confirm official vs. estimated labels render on the research page.
+- **Provenance:** confirm official vs. estimated/preview labels render on the research page.
+- **Scorecard fallback:** test a non-curated college with the demo key available and with the
+  cache cleared; confirm live stats or the rate-limit/no-match fallback is labeled honestly.
 - **External links:** confirm new-tab behavior in a real browser; note preview-frame limitation.
-- **Persistence:** refresh mid-flow and confirm context survives; "start over" clears both
-  stores.
+- **Persistence:** refresh mid-flow and confirm context survives; report "Start over" clears
+  survey progress but currently preserves identity.
 - **Missing-data path:** test a college/major not in the datasets.
-- **Cross-page guards:** open `research.html`/`survey.html` directly with empty storage and
-  confirm redirect to `start.html`.
+- **Cross-page guards:** open `survey.html` directly with empty storage and confirm redirect to
+  `start.html`.
 - No automated test harness exists yet; testing is manual/observational in this phase.
