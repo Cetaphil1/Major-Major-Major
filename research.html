@@ -57,7 +57,10 @@
       const name = (uc.displayName || "").trim();
       const college = (uc.selectedCollege && uc.selectedCollege.name) || "Swarthmore College";
       const major = (uc.selectedMajor && uc.selectedMajor.name) || "Political Science";
-      const isDemo = !(uc.selectedCollege && uc.selectedCollege.name);
+      const hasIdentity = !!(uc.selectedCollege && uc.selectedCollege.name && uc.selectedMajor && uc.selectedMajor.name);
+      const isDemo = !hasIdentity;
+      const surveyHref = hasIdentity ? "survey.html" : "start.html";
+      const surveyLabel = hasIdentity ? "Take the survey" : "Enter college / major";
 
       return (
         <div className="rp" style={{ paddingTop: 28 }}>
@@ -68,7 +71,7 @@
             </a>
             <div className="grow" />
             <a className="rs-chiplink" href="start.html">Change college / major</a>
-            <a className="rs-chiplink" href="survey.html" style={{ borderColor: "var(--purple)", color: "var(--purple)" }}>Take the survey →</a>
+            <a className="rs-chiplink" href={surveyHref} style={{ borderColor: "var(--purple)", color: "var(--purple)" }}>{surveyLabel} →</a>
           </div>
 
           {!isDemo ? (
@@ -91,9 +94,9 @@
             <p style={{ margin: "0 0 14px", color: "var(--ink-soft, #555)" }}>
               Seen enough? The survey turns this context into a personalized fit &amp; switch-risk read.
             </p>
-            <a className="o-btn o-btn--lg" href="survey.html"
+            <a className="o-btn o-btn--lg" href={surveyHref}
                style={{ display: "inline-block", textDecoration: "none" }}>
-              Take the survey <span className="arrow">→</span>
+              {surveyLabel} <span className="arrow">→</span>
             </a>
           </div>
         </div>
