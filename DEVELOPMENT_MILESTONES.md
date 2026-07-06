@@ -10,14 +10,14 @@ visual system; no merge/rebase/force-push.
 ## Phase 1 — Planning and repo cleanup
 
 **Goal:** establish the source of truth for what's built and clear away dead/duplicate files so
-the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) is unambiguous.
+the desired live flow (`landing/` + `start.html` → `research.html` → `survey.html`) is
+unambiguous.
 
 **Deliverables**
 - `PRD.md`, `TECHNICAL_SPEC.md`, `DEVELOPMENT_MILESTONES.md` (this set) committed.
 - An inventory separating **live files** from **scraps/backups/duplicates** (e.g.
-  `research.html` as a duplicate of the research center, `Landing (*).html`, `Start flow
-  (editable).html`, `Survey (dark).html`, `app-dark/`, design scrap `.html` files,
-  `screenshots/`, `uploads/`).
+  `index.html` as the gated research alias, `Landing (*).html`, `Start flow (editable).html`,
+  `Survey (dark).html`, `app-dark/`, design scrap `.html` files, `uploads/`).
 - A cleanup plan: which scraps to archive vs. delete (no deletion of `LICENSE`).
 
 **Done looks like**
@@ -31,6 +31,9 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 
 **Goal:** make `/landing` the public homepage and ensure the **only** way into the quiz is the
 "Take the quiz" CTA → `start.html`.
+
+Current branch note: this is a target state. The current root `index.html` is still a gated
+research-center alias; see `TECHNICAL_SPEC.md §10`.
 
 **Deliverables**
 - Site root `index.html` reliably redirects to `landing/index.html`.
@@ -115,8 +118,8 @@ college/major before the quiz.
   `UserContext` (honest `nameOr` fallback).
 - `screens-report.jsx` renders it: overall verdict, per-dimension 0–100, strongest/weakest,
   switch + burnout context, school-vs-major interpretation, next steps.
-- "Start over" clears both stores (identity + survey) and returns to `start.html`; report can be
-  re-rendered without recomputing.
+- "Retake" clears prior survey answers without forcing identity re-entry; a separate full reset
+  path clears both stores (identity + survey) and returns to `start.html`.
 
 **Done looks like**
 - The report shows the correct student context and scores, names cause (workload vs. field),
