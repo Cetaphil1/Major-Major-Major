@@ -210,7 +210,7 @@
     useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
-    const toLanding = () => { window.location.href = "index.html"; };
+    const toLanding = () => { window.location.href = "research.html"; };
 
     const report = buildReport(ctx, answers);
 
