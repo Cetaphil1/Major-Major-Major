@@ -5,12 +5,17 @@
 
 (function () {
   const { useState, useEffect } = React;
-  const STORE = "fbi-flow-v1";
+  const FlowState = window.FBIFlowState;
 
   // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
-  function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
-  function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  function hasIdentity(uc) {
+    return !!(uc && uc.preLandingComplete &&
+      uc.selectedCollege && uc.selectedCollege.name &&
+      uc.selectedMajor && uc.selectedMajor.name);
+  }
+  function load(uc) { return FlowState.loadForUserContext(uc); }
+  function save(s, uc) { return FlowState.saveForUserContext(s, uc); }
+  function wipe() { FlowState.wipe(); }
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,13 +181,12 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const saved = hasIdentity(uc) ? load(uc) : null;
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
+      if (!hasIdentity(uc)) { window.location.replace("start.html"); }
     }, []);
 
     const ucCollege = uc && uc.selectedCollege;
@@ -207,7 +211,9 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (hasIdentity(uc)) save({ phase, ctx, sectionIdx, answers }, uc);
+    }, [phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
@@ -230,7 +236,14 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => {
+        wipe();
+        if (window.UserContext) window.UserContext.clear();
+        setAnswers({});
+        setSectionIdx(0);
+        setCtx(emptyCtx);
+        window.location.href = "start.html";
+      }}
     />;
   }
 
