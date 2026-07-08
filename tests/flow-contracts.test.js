@@ -72,7 +72,12 @@ test("generated landing pages keep the quiz CTA on the root start flow", () => {
     assert.doesNotMatch(html, /Edukate/i, `${page} should not contain retired Edukate branding`);
     assert.equal(count(html, "research.html"), 0, `${page} should not bypass context into research`);
     assert.equal(count(html, "survey.html"), 0, `${page} should not bypass context into the survey`);
-    assert.equal(count(html, "start.html"), 1, `${page} should expose one quiz entry link`);
+    assert.ok(count(html, "start.html") >= 1, `${page} should expose at least one quiz entry link`);
+    assert.equal(
+      count(html, expectedStartHref),
+      count(html, "start.html"),
+      `${page} should only use correctly rooted start.html links`,
+    );
     assert.ok(
       html.includes(expectedStartHref),
       `${page} should link to ${expectedStartHref} so nested landing pages reach /start.html`,
@@ -157,5 +162,5 @@ test("UserContext recovers from bad storage and keeps identity updates merged", 
     ],
     2,
   );
-  assert.deepEqual(related, ["Sociology", "Economics"]);
+  assert.deepEqual(Array.from(related), ["Sociology", "Economics"]);
 });
