@@ -7,6 +7,10 @@ const vm = require("node:vm");
 const root = path.resolve(__dirname, "..");
 const source = fs.readFileSync(path.join(root, "app/user-context.js"), "utf8");
 
+function toHost(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function createUserContext() {
   const store = new Map();
   const sandbox = {
@@ -31,7 +35,7 @@ function createUserContext() {
 test("load safely returns the empty context for missing or malformed storage", () => {
   const { UserContext, store } = createUserContext();
 
-  assert.deepEqual(UserContext.load(), {
+  assert.deepEqual(toHost(UserContext.load()), {
     displayName: null,
     selectedCollege: null,
     selectedMajor: null,
@@ -40,7 +44,7 @@ test("load safely returns the empty context for missing or malformed storage", (
   });
 
   store.set(UserContext.KEY, "{not valid json");
-  assert.deepEqual(UserContext.load(), UserContext.empty());
+  assert.deepEqual(toHost(UserContext.load()), toHost(UserContext.empty()));
 });
 
 test("update merges partial patches into the saved context", () => {
@@ -63,7 +67,7 @@ test("update merges partial patches into the saved context", () => {
   assert.equal(next.selectedCollege.name, "Swarthmore College");
   assert.equal(next.selectedMajor.name, "Political Science");
   assert.equal(next.preLandingComplete, true);
-  assert.deepEqual(JSON.parse(store.get(UserContext.KEY)), next);
+  assert.deepEqual(JSON.parse(store.get(UserContext.KEY)), toHost(next));
 });
 
 test("name and identity helpers avoid fake data and require college plus major", () => {
@@ -91,7 +95,7 @@ test("related major fallback prefers explicit data, then same-category matches",
     relatedMajors: ["Data Science", "Information Systems", "Cybersecurity"],
   };
 
-  assert.deepEqual(UserContext.relatedMajorsFor(major, [], 2), ["Data Science", "Information Systems"]);
+  assert.deepEqual(Array.from(UserContext.relatedMajorsFor(major, [], 2)), ["Data Science", "Information Systems"]);
 
   window.__MAJORS = [
     { name: "Computer Science", category: "Technology" },
@@ -101,8 +105,8 @@ test("related major fallback prefers explicit data, then same-category matches",
   ];
 
   assert.deepEqual(
-    UserContext.relatedMajorsFor({ name: "Computer Science", category: "Technology" }, null, 2),
+    Array.from(UserContext.relatedMajorsFor({ name: "Computer Science", category: "Technology" }, null, 2)),
     ["Data Science", "Information Systems"],
   );
-  assert.deepEqual(UserContext.relatedMajorsFor({ name: "Undeclared" }, window.__MAJORS, 2), []);
+  assert.deepEqual(Array.from(UserContext.relatedMajorsFor({ name: "Undeclared" }, window.__MAJORS, 2)), []);
 });
