@@ -175,6 +175,7 @@
     const uc = (window.UserContext && window.UserContext.load()) || null;
     const flowIdentity = window.FlowState.identityFromUserContext(uc);
     const flowIdentityKey = window.FlowState.identityKey(flowIdentity);
+    const canPersist = !!(uc && uc.preLandingComplete);
     const saved = window.FlowState.load(flowIdentity);
 
     React.useEffect(() => {
@@ -204,8 +205,9 @@
     const [answers, setAnswers] = useState(saved?.answers || {});
 
     useEffect(() => {
+      if (!canPersist) return;
       window.FlowState.save(flowIdentity, { phase, ctx, sectionIdx, answers });
-    }, [flowIdentityKey, phase, ctx, sectionIdx, answers]);
+    }, [canPersist, flowIdentityKey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
