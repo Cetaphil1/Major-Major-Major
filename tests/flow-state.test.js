@@ -35,6 +35,10 @@ function identity(displayName, college, major) {
   };
 }
 
+function plain(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 test("loads saved survey progress for the same identity", () => {
   const { FlowState } = createFlowState();
   const current = FlowState.identityFromUserContext(identity("Sam", "UCLA", "Psychology"));
@@ -47,7 +51,7 @@ test("loads saved survey progress for the same identity", () => {
 
   FlowState.save(current, flow);
 
-  assert.deepEqual(FlowState.load(current), flow);
+  assert.deepEqual(plain(FlowState.load(current)), flow);
 });
 
 test("does not reuse answers after college or major identity changes", () => {
@@ -88,5 +92,5 @@ test("normalizes harmless case and whitespace differences in identity keys", () 
 
   FlowState.save(first, flow);
 
-  assert.deepEqual(FlowState.load(same), flow);
+  assert.deepEqual(plain(FlowState.load(same)), flow);
 });
