@@ -83,7 +83,7 @@ test("UserContext detects missing identity and supports clear", () => {
   assert.equal(UserContext.nameOr("friend"), "friend");
 
   UserContext.clear();
-  assert.deepEqual(toHost(UserContext.load()), UserContext.empty());
+  assert.deepEqual(toHost(UserContext.load()), toHost(UserContext.empty()));
 });
 
 test("UserContext relatedMajorsFor prefers curated related majors then same-category fallback", () => {
