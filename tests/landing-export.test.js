@@ -105,20 +105,26 @@ test("research article slugs match the Fit Beyond Interest content model", () =>
     "edukate-professor-receives-national-teaching-excellence-award",
     "edukate-university-celebrates-record-breaking-graduation-ceremony"
   ];
-  const indexHtml = read(path.join(landingRoot, "research-page", "index.html"));
+  const allLandingHtml = listHtmlFiles(landingRoot)
+    .map((file) => read(file))
+    .join("\n");
 
   for (const slug of currentSlugs) {
+    const articlePath = path.join(landingRoot, "research-page", slug, "index.html");
     assert.ok(
-      fs.existsSync(path.join(landingRoot, "research-page", slug, "index.html")),
+      fs.existsSync(articlePath),
       `expected current research article slug to exist: ${slug}`
     );
-    assert.ok(indexHtml.includes(`/research-page/${slug}`), `research index should link ${slug}`);
+    assert.ok(
+      read(articlePath).includes(`https://incredible-pages-588758.framer.app/research-page/${slug}`),
+      `article should keep its canonical/open-graph URL for ${slug}`
+    );
   }
   for (const slug of retiredSlugs) {
     assert.ok(
       !fs.existsSync(path.join(landingRoot, "research-page", slug, "index.html")),
       `retired Edukate research slug should stay removed: ${slug}`
     );
-    assert.ok(!indexHtml.includes(slug), `research index should not link retired slug ${slug}`);
+    assert.ok(!allLandingHtml.includes(slug), `landing export should not reference retired slug ${slug}`);
   }
 });
