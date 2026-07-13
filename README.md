@@ -11,7 +11,8 @@ survey, and produces a guidance report.
 The current prototype is a **plain multi-page app**: a set of standalone `.html` entry
 points that load shared React components compiled in the browser with Babel Standalone.
 There is no bundler, no router library, and no build step. State is shared across pages
-through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
+through `localStorage`; research pages also cache successful College Scorecard lookups for
+30 days. See `INITIAL_STATE.md` for the current file-by-file map.
 
 ## 2. Product purpose
 
@@ -38,13 +39,14 @@ fragile and what to do about it — it does not just hand back a score.
 1. **Context entry** — first name, college, major.
 2. **Context confirmation** — the user confirms their college and major, and can edit if
    anything is wrong.
-3. **Personalized research page** — after confirmation the user goes to the
-   **personalized school/major research page**. Not the generic homepage, not a random
-   demo page.
+3. **Personalized research page** — after confirmation the user goes to
+   `research.html`, the canonical school/major research page. Root `index.html` is still a
+   gated research alias for returning visitors, not the marketing homepage.
 4. **Research page content**
    - college snapshot
    - official school / data links
-   - College Scorecard / NCES links when available
+   - live College Scorecard data when it can be matched, plus College Scorecard / NCES
+     links when available
    - department / course / professor research links
    - similar majors
    - school-vs-major context
@@ -61,11 +63,16 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+Current routing notes:
+
+- `landing/index.html` is the marketing homepage and links to `../start.html`.
+- `start.html` writes context and routes to `research.html`.
+- `research.html` is the canonical post-context research page and continues to
+  `survey.html`.
+- Root `index.html` is a gated research alias: it redirects first-time visitors back to
+  `start.html`, but renders the research center for visitors with `preLandingComplete`.
+- A distinct survey-intro screen is still not implemented; `survey.html` starts with a
+  short context/intention phase before the quiz.
 
 ## 4. Major product rules
 
@@ -97,10 +104,14 @@ Every uncertain data point must be **labeled**. The research data layer
 (`app/research-data.js`) already uses status labels — keep using them:
 
 - `Official source` — verified official data (e.g. live College Scorecard / U.S. Dept. of
-  Education, NCES).
-- `Preview` / `Demo` — placeholder pairing shown so a page is never empty.
+  Education, NCES, verified school homepages).
+- `Loaded` — basic local metadata from `colleges.json`.
+- `Research link` — a public search or unverified destination that the student should vet.
+- `Preview` / `Demo` — placeholder pairing or static prompt shown so a page is never empty.
 - `Estimated` — derived/approximate (e.g. category-based related majors).
 - `Needs source` — value shown but not yet backed by a real source.
+- `Coming later` — temporarily unavailable data, most often live Scorecard rate limiting
+  from the shared `DEMO_KEY`.
 
 Rules:
 
@@ -126,19 +137,34 @@ Rules:
 ## 8. Development workflow
 
 - No build step. Open the `.html` files directly, or serve the project root over a static
-  server so `localStorage` and relative paths behave like production:
+  server so `localStorage`, `fetch()` for local JSON, and relative paths behave like
+  production:
   ```
-  cd "Major Major Major"
+  cd /workspace
   python3 -m http.server 8000
-  # then open http://localhost:8000/start.html
+  # public marketing path:
+  #   http://localhost:8000/landing/index.html
+  # quiz app path:
+  #   http://localhost:8000/start.html
   ```
 - React, ReactDOM, and Babel Standalone load from `unpkg` CDNs (pinned versions with SRI
   hashes). `.jsx` files are compiled in the browser via `<script type="text/babel">`.
 - There is a parallel **dark** variant under `app-dark/` and a separate Framer/Vercel
   marketing build under `uploads/`. Treat these as separate artifacts — see
   `INITIAL_STATE.md`.
-- Test external links and the full page-to-page flow in a real browser tab, not the design
-  preview.
+- Test external links, live Scorecard fallbacks, and the full page-to-page flow in a real
+  browser tab, not the design preview.
+
+Developer checks for common routing pitfalls:
+
+- Start from a clean `localStorage`, open `start.html`, finish context, and confirm the next
+  URL is `research.html`.
+- Open root `index.html` with no `preLandingComplete`; it should send the visitor to
+  `start.html`.
+- Open `research.html` with no context; it should show the Swarthmore / Political Science
+  `Preview` demo pairing, not silently invent user data.
+- In `survey.html`, the back/restart path currently goes to `index.html`; update that
+  controller if `research.html` becomes the only research entry.
 
 ## 9. How future AI coding agents should make changes
 
@@ -153,6 +179,7 @@ Rules:
 5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
 6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
-   (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+7. When changing routing, verify all three route owners together:
+   `app/prelanding.jsx` for context completion, the `survey.html` controller in
+   `app/fit-app.jsx` for back/restart behavior, and the root `index.html` gate. Avoid
+   rewiring individual links without updating the docs and manual checks above.

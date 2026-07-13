@@ -11,19 +11,21 @@ visual system; no merge/rebase/force-push.
 
 **Goal:** establish the source of truth for what's built and clear away dead/duplicate files so
 the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) is unambiguous.
+Current caveat: root `index.html` is still a gated research-center alias, not the marketing
+homepage.
 
 **Deliverables**
 - `PRD.md`, `TECHNICAL_SPEC.md`, `DEVELOPMENT_MILESTONES.md` (this set) committed.
-- An inventory separating **live files** from **scraps/backups/duplicates** (e.g.
-  `research.html` as a duplicate of the research center, `Landing (*).html`, `Start flow
-  (editable).html`, `Survey (dark).html`, `app-dark/`, design scrap `.html` files,
-  `screenshots/`, `uploads/`).
+- An inventory separating **live files** from **scraps/backups/duplicates** (e.g. root
+  `index.html` as a gated research alias, `Landing (*).html`, `Start flow (editable).html`,
+  `Survey (dark).html`, `app-dark/`, design scrap `.html` files, `screenshots/`,
+  `uploads/`).
 - A cleanup plan: which scraps to archive vs. delete (no deletion of `LICENSE`).
 
 **Done looks like**
-- The three planning docs exist and match the actual code.
-- There is one documented, unambiguous live path from landing into the report, with the dead
-  files clearly labeled and a plan (not necessarily executed yet) for removing them.
+- The planning docs exist and match the actual code.
+- There is one documented canonical path from landing into the report, with remaining aliases
+  and dead files clearly labeled and a plan (not necessarily executed yet) for removing them.
 
 ---
 
@@ -36,6 +38,10 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 - Site root `index.html` reliably redirects to `landing/index.html`.
 - `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
 - Confirm landing does **not** deep-link into `research.html`/`survey.html`.
+
+Current caveat: only the second and third bullets are true today. Root `index.html` still
+renders the research center after `preLandingComplete` and redirects first-time visitors to
+`start.html`.
 
 **Done looks like**
 - Visiting the site root lands on the marketing homepage.
@@ -50,7 +56,8 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 
 **Deliverables**
 - `start.html` flow: first name → college (from `colleges.json`, alias-aware search) → major
-  (from `majors.json`, keyword search) → confirm/edit, plus intent (staying/exploring/switching).
+  (from `majors.json`, keyword search) → confirm/edit. Intent is collected later in
+  `survey.html`.
 - Writes `{ displayName, selectedCollege, selectedMajor, contextConfirmed, preLandingComplete }`
   to `localStorage` via `window.UserContext`.
 - Manual-entry fallback for colleges/majors not in the datasets (`isManual: true`).
@@ -70,14 +77,18 @@ college/major before the quiz.
 
 **Deliverables**
 - `research.html` reads context from `UserContext` and renders:
-  - college snapshot (`college-snapshots.js` / `collegeProfiles.json`),
+  - college snapshot (`collegeProfiles.json` for curated demos, live College Scorecard for
+    other matched schools),
   - official links (College Scorecard, NCES) + department/course/professor search links from
     `researchSources.json` (with `{c}`/`{m}` substitution),
   - related majors from `collegeMajors.json` ("not recommendations"),
   - a school-vs-major framing,
-  - provenance labels (Official source / Research link / Estimated).
+  - provenance labels (Official source / Loaded / Research link / Preview / Estimated /
+    Needs source / Coming later).
 - External links open in a real new tab per the external-link rules.
-- Guard: redirect to `start.html` if no identity.
+- No-context behavior: `research.html` shows the Swarthmore College / Political Science
+  `Preview` demo pairing; root `index.html` is the gated alias that redirects first-time
+  visitors to `start.html`.
 - Continue → `survey.html`.
 
 **Done looks like**
@@ -111,12 +122,14 @@ college/major before the quiz.
 
 **Deliverables**
 - `fit-app.jsx` builds the report object (verdict, scores, switchRisk, burnoutRisk, diagnosis,
-  strongest/weakest, stay signals, switch signals, next steps, reflection questions) reusing
-  `UserContext` (honest `nameOr` fallback).
+  strongest/weakest, warning signs, school-environment factors, stay signs, switch signs,
+  next steps, adjacent-fit suggestions, reflection questions) reusing `UserContext` (honest
+  `nameOr` fallback).
 - `screens-report.jsx` renders it: overall verdict, per-dimension 0–100, strongest/weakest,
   switch + burnout context, school-vs-major interpretation, next steps.
-- "Start over" clears both stores (identity + survey) and returns to `start.html`; report can be
-  re-rendered without recomputing.
+- "Re-take" clears answers while preserving identity; full restart behavior should be decided
+  explicitly. Current code wipes `fbi-flow-v1`, preserves `fbi-user-context-v1`, and routes
+  through `index.html`. Report refresh works by recomputing from persisted context + answers.
 
 **Done looks like**
 - The report shows the correct student context and scores, names cause (workload vs. field),
