@@ -94,9 +94,10 @@ students (see Phase 7).
 
 1. **Landing** (`/landing/index.html`) → student clicks **"Take the quiz."**
 2. **Start** (`start.html`) → enter first name → select college → select major → confirm/edit
-   context → (intent: staying / exploring / switching).
+   context.
 3. **Research** (`research.html`) → review personalized school/major research, then continue.
-4. **Survey intro** → what it measures and that it's guidance, not a verdict.
+4. **Survey context / intro** (`survey.html`) → confirm stage, enrollment, and intent, with
+   framing that the survey is guidance, not a verdict.
 5. **Survey** (`survey.html`) → answer the eight sections.
 6. **Analyzing** → brief transition.
 7. **Report** → verdict, scores, risks, diagnosis, stay/switch signals, next steps, option to
