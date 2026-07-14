@@ -12,6 +12,37 @@
   function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
   function wipe() { try { localStorage.removeItem(STORE); } catch {} }
 
+  function norm(v) {
+    return String(v || "").trim().toLowerCase();
+  }
+
+  function hasCompleteIdentity(uc) {
+    return !!(uc && uc.preLandingComplete &&
+      uc.selectedCollege && uc.selectedCollege.name &&
+      uc.selectedMajor && uc.selectedMajor.name);
+  }
+
+  function makeIdentityKey(displayName, college, major) {
+    return [norm(displayName), norm(college), norm(major)].join("|");
+  }
+
+  function identityKeyForUserContext(uc) {
+    return makeIdentityKey(
+      uc && uc.displayName,
+      uc && uc.selectedCollege && uc.selectedCollege.name,
+      uc && uc.selectedMajor && uc.selectedMajor.name
+    );
+  }
+
+  function identityKeyForSavedCtx(ctx) {
+    return makeIdentityKey(ctx && ctx.displayName, ctx && ctx.college, ctx && ctx.major);
+  }
+
+  function savedMatchesIdentity(saved, identityKey) {
+    if (!saved || !identityKey) return false;
+    return saved.identityKey ? saved.identityKey === identityKey : identityKeyForSavedCtx(saved.ctx) === identityKey;
+  }
+
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
   // Dimension score is 0–100 where HIGH = healthy (high burnout score = resilient).
@@ -176,14 +207,17 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
-    // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = hasCompleteIdentity(uc);
+    const identityKey = hasIdentity ? identityKeyForUserContext(uc) : "";
+    const savedRaw = load();
+    const saved = savedMatchesIdentity(savedRaw, identityKey) ? savedRaw : null;
+
+    // If identity is missing or was skipped, send the visitor through setup first.
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!hasIdentity) { window.location.replace("start.html"); }
+    }, [hasIdentity]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,10 +241,14 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (hasIdentity) { save({ identityKey, phase, ctx, sectionIdx, answers }); }
+    }, [hasIdentity, identityKey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
+
+    if (!hasIdentity) return null;
 
     const report = buildReport(ctx, answers);
 
@@ -230,7 +268,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { wipe(); if (window.UserContext) window.UserContext.clear(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
     />;
   }
 
