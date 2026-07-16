@@ -53,7 +53,9 @@ test("canonical research page shows saved context, preview honesty, and survey C
   assert.match(html, /uc\.selectedMajor && uc\.selectedMajor\.name/);
   assert.match(html, /DataStatusBadge status="Preview"/);
   assert.match(html, /Showing a demo pairing/);
-  assert.match(html, /here<\/>\}'s the research for <b>\{major\}<\/b> at <b>\{college\}<\/b>/);
+  assert.match(html, /rs-greeting/);
+  assert.match(html, /the research for <b>\{major\}<\/b> at <b>\{college\}<\/b>/);
+  assert.match(html, /Read it over, then take the survey/);
   assert.ok(surveyLinks.length >= 2, "research.html should provide both top and end survey CTAs");
 });
 
