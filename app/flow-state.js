@@ -1,4 +1,4 @@
-/* flow-state.js — identity-scoped persistence for the survey flow.
+/* flow-state.js - identity-scoped persistence for the survey flow.
    Plain global script so it can be used by browser pages and lightweight Node tests. */
 (function (root) {
   var STORE = "fbi-flow-v1";
