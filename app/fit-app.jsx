@@ -182,7 +182,7 @@
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
+      if (!uc || !uc.preLandingComplete || !window.UserContext.hasIdentity()) { window.location.replace("start.html"); }
     }, []);
 
     const ucCollege = uc && uc.selectedCollege;
@@ -211,6 +211,14 @@
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
+    const startOver = () => {
+      wipe();
+      if (window.UserContext) window.UserContext.clear();
+      setAnswers({});
+      setSectionIdx(0);
+      setCtx(emptyCtx);
+      window.location.href = "start.html";
+    };
 
     const report = buildReport(ctx, answers);
 
@@ -230,7 +238,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={startOver}
     />;
   }
 
