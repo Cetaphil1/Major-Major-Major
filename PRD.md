@@ -78,12 +78,14 @@ students (see Phase 7).
 1. **Landing page (`/landing`)** — public marketing homepage. The only path into the quiz app
    is the "Take the quiz" CTA, which links to `start.html`.
 2. **Context start flow (`start.html`)** — collect first name, college, and major; confirm and
-   allow editing. Backed by `colleges.json`, `majors.json`, and `UserContext` (localStorage).
+   allow editing through a quick-read preview. Backed by `colleges.json`, `majors.json`, and
+   `UserContext` (localStorage).
 3. **Personalized research page (`research.html`)** — college snapshot, official school/data
    links (College Scorecard, NCES), department/course/professor search links, similar majors,
    and a school-vs-major framing, with provenance labels.
-4. **Quiz / survey (`survey.html`)** — eight sections (one per dimension), 3 items each (~24
-   items), Likert/frequency scales with reverse-scored items.
+4. **Survey setup + quiz (`survey.html`)** — collect stage, enrollment, and intent, then run
+   eight sections (one per dimension), 3 items each (~24 items), Likert/frequency scales with
+   reverse-scored items.
 5. **Report (rendered in `survey.html` flow)** — overall verdict, per-dimension 0–100 scores,
    strongest/weakest signals, switching-risk and burnout-risk levels, a diagnosis of the
    *cause*, stay-vs-switch signals, and concrete next steps.
@@ -94,10 +96,11 @@ students (see Phase 7).
 
 1. **Landing** (`/landing/index.html`) → student clicks **"Take the quiz."**
 2. **Start** (`start.html`) → enter first name → select college → select major → confirm/edit
-   context → (intent: staying / exploring / switching).
+   context through the quick-read preview.
 3. **Research** (`research.html`) → review personalized school/major research, then continue.
-4. **Survey intro** → what it measures and that it's guidance, not a verdict.
-5. **Survey** (`survey.html`) → answer the eight sections.
+4. **Survey setup** (`survey.html`) → choose stage, enrollment, and intent
+   (`first` / `exploring` / `switch`). Intent nudges switching-risk scoring.
+5. **Survey** → answer the eight sections.
 6. **Analyzing** → brief transition.
 7. **Report** → verdict, scores, risks, diagnosis, stay/switch signals, next steps, option to
    re-take.
