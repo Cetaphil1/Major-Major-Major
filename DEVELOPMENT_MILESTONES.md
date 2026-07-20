@@ -15,9 +15,9 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 **Deliverables**
 - `PRD.md`, `TECHNICAL_SPEC.md`, `DEVELOPMENT_MILESTONES.md` (this set) committed.
 - An inventory separating **live files** from **scraps/backups/duplicates** (e.g.
-  `research.html` as a duplicate of the research center, `Landing (*).html`, `Start flow
+  root `index.html` as a legacy research alias, `Landing (*).html`, `Start flow
   (editable).html`, `Survey (dark).html`, `app-dark/`, design scrap `.html` files,
-  `screenshots/`, `uploads/`).
+  `screenshots/`, `uploads/`). `landing/` is the current marketing export, not a scrap.
 - A cleanup plan: which scraps to archive vs. delete (no deletion of `LICENSE`).
 
 **Done looks like**
@@ -33,12 +33,15 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 "Take the quiz" CTA → `start.html`.
 
 **Deliverables**
-- Site root `index.html` reliably redirects to `landing/index.html`.
+- `landing/index.html` is the documented public homepage.
+- Decide and implement the site-root behavior: either redirect root `index.html` to
+  `landing/index.html`, or explicitly keep it as a legacy research alias until cleanup.
 - `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
 - Confirm landing does **not** deep-link into `research.html`/`survey.html`.
 
 **Done looks like**
-- Visiting the site root lands on the marketing homepage.
+- Visiting the chosen public URL lands on the marketing homepage, and root `index.html`
+  behavior is intentional rather than accidental.
 - Clicking "Take the quiz" — and only that — enters the quiz app at `start.html`.
 - No other landing link jumps past context entry.
 
@@ -50,7 +53,7 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 
 **Deliverables**
 - `start.html` flow: first name → college (from `colleges.json`, alias-aware search) → major
-  (from `majors.json`, keyword search) → confirm/edit, plus intent (staying/exploring/switching).
+  (from `majors.json`, keyword search) → confirm/edit through the quick-read preview.
 - Writes `{ displayName, selectedCollege, selectedMajor, contextConfirmed, preLandingComplete }`
   to `localStorage` via `window.UserContext`.
 - Manual-entry fallback for colleges/majors not in the datasets (`isManual: true`).
@@ -77,7 +80,8 @@ college/major before the quiz.
   - a school-vs-major framing,
   - provenance labels (Official source / Research link / Estimated).
 - External links open in a real new tab per the external-link rules.
-- Guard: redirect to `start.html` if no identity.
+- Missing identity path: either redirect to `start.html` or keep the current labeled Preview
+  demo pairing. The chosen behavior must be explicit in docs and UI.
 - Continue → `survey.html`.
 
 **Done looks like**
@@ -92,7 +96,7 @@ college/major before the quiz.
 
 **Deliverables**
 - `survey.html` renders the 8 `SECTIONS` from `data.jsx` (3 items each), correct scales
-  (AGREE/FREQ), with a survey intro framing it as guidance.
+  (AGREE/FREQ), after the `StudentContext` setup captures stage, enrollment, and intent.
 - Answers stored as `answers[id] = 1..5`.
 - Scoring in `fit-app.jsx`: reverse items flip (`6 - raw`), per-dimension 0–100 (`dimScore`),
   switching-risk and burnout-risk %s and bands per the spec.
@@ -115,8 +119,9 @@ college/major before the quiz.
   `UserContext` (honest `nameOr` fallback).
 - `screens-report.jsx` renders it: overall verdict, per-dimension 0–100, strongest/weakest,
   switch + burnout context, school-vs-major interpretation, next steps.
-- "Start over" clears both stores (identity + survey) and returns to `start.html`; report can be
-  re-rendered without recomputing.
+- Re-take clears answers and stays in the quiz. Report restart clears the survey store and
+  returns through the legacy `index.html` research alias while preserving identity; if product
+  wants full identity reset, update `app/fit-app.jsx` and this milestone together.
 
 **Done looks like**
 - The report shows the correct student context and scores, names cause (workload vs. field),
