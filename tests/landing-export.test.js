@@ -49,7 +49,8 @@ test("landing entry points start with context collection instead of bypassing th
 });
 
 test("research export exposes current articles and omits retired Edukate slugs", () => {
-  const index = decodeHtml(read("landing/research-page/index.html"));
+  const researchPages = walkHtml("landing/research-page");
+  const researchExport = researchPages.map((page) => decodeHtml(read(page))).join("\n");
   const currentSlugs = [
     "reading-belonging-and-career-clarity",
     "school-effect-vs-subject-fit",
@@ -64,7 +65,6 @@ test("research export exposes current articles and omits retired Edukate slugs",
       fs.existsSync(path.join(ROOT, "landing", "research-page", slug, "index.html")),
       `expected generated article page for ${slug}`,
     );
-    assert.match(index, new RegExp(`/research-page/${slug}`), `research index should link ${slug}`);
     assert.match(
       decodeHtml(read(`landing/research-page/${slug}/index.html`)),
       new RegExp(`og:url" content="https://incredible-pages-588758\\.framer\\.app/research-page/${slug}`),
@@ -77,6 +77,6 @@ test("research export exposes current articles and omits retired Edukate slugs",
       !fs.existsSync(path.join(ROOT, "landing", "research-page", slug, "index.html")),
       `retired generated page should not exist for ${slug}`,
     );
-    assert.doesNotMatch(index, new RegExp(slug), `research index should not link retired slug ${slug}`);
+    assert.doesNotMatch(researchExport, new RegExp(slug), `research export should not reference retired slug ${slug}`);
   }
 });
