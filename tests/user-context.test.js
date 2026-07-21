@@ -108,12 +108,12 @@ test("relatedMajorsFor prefers explicit related majors then category fallback", 
   ];
 
   assert.deepEqual(
-    UserContext.relatedMajorsFor({ name: "Custom", relatedMajors: ["A", "B", "C"] }, db, 2),
+    plain(UserContext.relatedMajorsFor({ name: "Custom", relatedMajors: ["A", "B", "C"] }, db, 2)),
     ["A", "B"],
   );
   assert.deepEqual(
-    UserContext.relatedMajorsFor({ name: "Computer Science", category: "Computing" }, db, 2),
+    plain(UserContext.relatedMajorsFor({ name: "Computer Science", category: "Computing" }, db, 2)),
     ["Data Science", "Information Systems"],
   );
-  assert.deepEqual(UserContext.relatedMajorsFor({ name: "Unknown" }, db, 2), []);
+  assert.deepEqual(plain(UserContext.relatedMajorsFor({ name: "Unknown" }, db, 2)), []);
 });
