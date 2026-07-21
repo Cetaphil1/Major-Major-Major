@@ -24,14 +24,17 @@ test("rewrites generated quiz CTAs from contact to the start flow", () => {
   const hero = anchor("/contact", "Prepare for 2027");
   const nav = anchor("./contact", "Take it");
   const labeledNav = anchor("/landing/contact", "", { "aria-label": "Take it" });
+  const unlabeledGeneratedCta = anchor("/landing/contact", "");
 
   routing.fixLink(hero);
   routing.fixLink(nav);
   routing.fixLink(labeledNav);
+  routing.fixLink(unlabeledGeneratedCta);
 
   assert.equal(hero.href, "../start.html");
   assert.equal(nav.href, "../start.html");
   assert.equal(labeledNav.href, "../start.html");
+  assert.equal(unlabeledGeneratedCta.href, "../start.html");
 });
 
 test("does not rewrite ordinary contact links", () => {
@@ -43,7 +46,7 @@ test("does not rewrite ordinary contact links", () => {
 });
 
 test("click handler catches hydrated contact CTAs before navigation", () => {
-  const hero = anchor("/contact", "Prepare for 2027");
+  const hero = anchor("../start.html", "Prepare for 2027");
   const win = {
     location: { href: "http://localhost:8000/landing/index.html" },
   };
@@ -58,8 +61,12 @@ test("click handler catches hydrated contact CTAs before navigation", () => {
   const event = {
     target: { closest: () => hero },
     prevented: false,
+    stopped: false,
     preventDefault() {
       this.prevented = true;
+    },
+    stopImmediatePropagation() {
+      this.stopped = true;
     },
   };
 
@@ -67,6 +74,7 @@ test("click handler catches hydrated contact CTAs before navigation", () => {
   clickHandler(event);
 
   assert.equal(event.prevented, true);
+  assert.equal(event.stopped, true);
   assert.equal(win.location.href, "../start.html");
 });
 

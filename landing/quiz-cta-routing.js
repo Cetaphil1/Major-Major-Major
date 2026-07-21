@@ -43,8 +43,29 @@
     }
   }
 
+  function isStartHref(href, win) {
+    href = String(href || "").trim();
+    if (!href) return false;
+    if (/^(?:\.{0,2}\/)?start\.html$/i.test(href)) return true;
+    try {
+      var base = win && win.location && win.location.href || "http://localhost/landing/index.html";
+      var url = new URL(href, base);
+      return /\/start\.html$/i.test(url.pathname);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function isContactLabel(anchor) {
+    return /\b(contact|get in touch)\b/i.test(textOf(anchor));
+  }
+
   function isQuizCta(anchor, win) {
-    return !!(anchor && isContactHref(getHref(anchor), win) && QUIZ_CTA_TEXT.test(textOf(anchor)));
+    if (!anchor) return false;
+    var href = getHref(anchor);
+    var hasQuizLabel = QUIZ_CTA_TEXT.test(textOf(anchor));
+    return !!((hasQuizLabel && (isContactHref(href, win) || isStartHref(href, win))) ||
+      (isContactHref(href, win) && !isContactLabel(anchor)));
   }
 
   function fixLink(anchor, win) {
@@ -69,6 +90,8 @@
       var anchor = closestAnchor(event.target);
       if (!isQuizCta(anchor, win)) return;
       event.preventDefault();
+      if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+      else if (typeof event.stopPropagation === "function") event.stopPropagation();
       win.location.href = START_HREF;
     };
 
@@ -87,6 +110,7 @@
   return {
     START_HREF: START_HREF,
     isContactHref: isContactHref,
+    isStartHref: isStartHref,
     isQuizCta: isQuizCta,
     fixLink: fixLink,
     fixAll: fixAll,
