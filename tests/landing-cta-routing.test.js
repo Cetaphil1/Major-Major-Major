@@ -78,6 +78,49 @@ test("click handler catches hydrated contact CTAs before navigation", () => {
   assert.equal(win.location.href, "../start.html");
 });
 
+test("click handler catches nested non-anchor quiz targets", () => {
+  const win = {
+    location: { href: "http://localhost:8000/landing/index.html" },
+  };
+  let clickHandler = null;
+  const doc = {
+    readyState: "complete",
+    querySelectorAll: () => [],
+    addEventListener(type, handler) {
+      if (type === "click") clickHandler = handler;
+    },
+  };
+  const button = {
+    textContent: "Take it",
+    getAttribute: () => null,
+    parentElement: null,
+  };
+  const child = {
+    textContent: "",
+    getAttribute: () => null,
+    closest: () => null,
+    parentElement: button,
+  };
+  const event = {
+    target: child,
+    prevented: false,
+    stopped: false,
+    preventDefault() {
+      this.prevented = true;
+    },
+    stopImmediatePropagation() {
+      this.stopped = true;
+    },
+  };
+
+  routing.install(doc, win);
+  clickHandler(event);
+
+  assert.equal(event.prevented, true);
+  assert.equal(event.stopped, true);
+  assert.equal(win.location.href, "../start.html");
+});
+
 test("landing page loads the CTA routing guard", () => {
   const html = fs.readFileSync(path.join(__dirname, "..", "landing", "index.html"), "utf8");
 

@@ -83,12 +83,23 @@
     return target.closest("a[href]");
   }
 
+  function closestQuizTarget(target) {
+    var node = target;
+    var depth = 0;
+    while (node && depth < 8) {
+      if (QUIZ_CTA_TEXT.test(textOf(node))) return node;
+      node = node.parentElement;
+      depth += 1;
+    }
+    return null;
+  }
+
   function install(doc, win) {
     win = win || root;
     var observer = null;
     var clickHandler = function (event) {
       var anchor = closestAnchor(event.target);
-      if (!isQuizCta(anchor, win)) return;
+      if (!isQuizCta(anchor, win) && !closestQuizTarget(event.target)) return;
       event.preventDefault();
       if (typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
       else if (typeof event.stopPropagation === "function") event.stopPropagation();
@@ -114,6 +125,7 @@
     isQuizCta: isQuizCta,
     fixLink: fixLink,
     fixAll: fixAll,
+    closestQuizTarget: closestQuizTarget,
     install: install,
   };
 });
