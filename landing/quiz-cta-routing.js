@@ -6,10 +6,16 @@
   if (root.document) api.install(root.document, root);
 })(typeof window !== "undefined" ? window : globalThis, function (root) {
   var START_HREF = "../start.html";
-  var QUIZ_CTA_TEXT = /^(take it|prepare for 2027|get your fit read|apply for spring 2025)\b/i;
+  var QUIZ_CTA_TEXT = /\b(take it|prepare for 2027|get your fit read|apply for spring 2025)\b/i;
 
   function textOf(anchor) {
-    return String(anchor && anchor.textContent || "").replace(/\s+/g, " ").trim();
+    if (!anchor) return "";
+    return [
+      anchor.textContent,
+      typeof anchor.getAttribute === "function" && anchor.getAttribute("aria-label"),
+      typeof anchor.getAttribute === "function" && anchor.getAttribute("title"),
+      typeof anchor.getAttribute === "function" && anchor.getAttribute("data-framer-name"),
+    ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
   }
 
   function getHref(anchor) {

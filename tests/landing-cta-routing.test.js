@@ -5,11 +5,13 @@ const test = require("node:test");
 
 const routing = require("../landing/quiz-cta-routing.js");
 
-function anchor(href, text) {
+function anchor(href, text, attributes) {
+  attributes = attributes || {};
   return {
     href,
     textContent: text,
     getAttribute(name) {
+      if (Object.prototype.hasOwnProperty.call(attributes, name)) return attributes[name];
       return name === "href" ? this.href : null;
     },
     setAttribute(name, value) {
@@ -21,12 +23,15 @@ function anchor(href, text) {
 test("rewrites generated quiz CTAs from contact to the start flow", () => {
   const hero = anchor("/contact", "Prepare for 2027");
   const nav = anchor("./contact", "Take it");
+  const labeledNav = anchor("/landing/contact", "", { "aria-label": "Take it" });
 
   routing.fixLink(hero);
   routing.fixLink(nav);
+  routing.fixLink(labeledNav);
 
   assert.equal(hero.href, "../start.html");
   assert.equal(nav.href, "../start.html");
+  assert.equal(labeledNav.href, "../start.html");
 });
 
 test("does not rewrite ordinary contact links", () => {
