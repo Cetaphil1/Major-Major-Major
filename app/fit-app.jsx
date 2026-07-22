@@ -5,12 +5,7 @@
 
 (function () {
   const { useState, useEffect } = React;
-  const STORE = "fbi-flow-v1";
-
-  // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
-  function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
-  function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  const FLOW = window.FlowState;
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,11 +171,10 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const saved = FLOW.load(uc);
     React.useEffect(() => {
       if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
     }, []);
@@ -207,7 +201,7 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => { FLOW.save(uc, { phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
@@ -230,7 +224,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { FLOW.clear(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
     />;
   }
 
