@@ -29,9 +29,13 @@ function loadUserContext(seed) {
   return { UserContext: sandbox.window.UserContext, localStorage };
 }
 
+function plain(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 test("load returns a safe empty context for missing or malformed storage", () => {
   const { UserContext, localStorage } = loadUserContext();
-  assert.deepEqual(UserContext.load(), {
+  assert.deepEqual(plain(UserContext.load()), {
     displayName: null,
     selectedCollege: null,
     selectedMajor: null,
@@ -40,7 +44,7 @@ test("load returns a safe empty context for missing or malformed storage", () =>
   });
 
   localStorage.setItem(UserContext.KEY, "{not json");
-  assert.deepEqual(UserContext.load(), UserContext.empty());
+  assert.deepEqual(plain(UserContext.load()), plain(UserContext.empty()));
 });
 
 test("update merges partial patches without dropping saved identity", () => {
@@ -71,9 +75,9 @@ test("related majors prefer explicit mappings and fall back to shared category",
     { name: "Psychology", category: "Social Science" },
   ];
 
-  assert.deepEqual(UserContext.relatedMajorsFor({ name: "Computer Science", relatedMajors: ["Cognitive Science", "Data Science"] }, db, 1), ["Cognitive Science"]);
-  assert.deepEqual(UserContext.relatedMajorsFor(db[0], db, 3), ["Information Science", "Data Science"]);
-  assert.deepEqual(UserContext.relatedMajorsFor({ name: "Undeclared" }, db), []);
+  assert.deepEqual(Array.from(UserContext.relatedMajorsFor({ name: "Computer Science", relatedMajors: ["Cognitive Science", "Data Science"] }, db, 1)), ["Cognitive Science"]);
+  assert.deepEqual(Array.from(UserContext.relatedMajorsFor(db[0], db, 3)), ["Information Science", "Data Science"]);
+  assert.deepEqual(Array.from(UserContext.relatedMajorsFor({ name: "Undeclared" }, db)), []);
 });
 
 test("clear removes stored context", () => {
@@ -84,5 +88,5 @@ test("clear removes stored context", () => {
 
   assert.equal(UserContext.nameOr("you"), "you");
   assert.equal(UserContext.hasIdentity(), false);
-  assert.deepEqual(UserContext.load(), UserContext.empty());
+  assert.deepEqual(plain(UserContext.load()), plain(UserContext.empty()));
 });
