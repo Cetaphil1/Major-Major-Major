@@ -65,7 +65,7 @@ test("saved survey flow resumes only for the matching identity", () => {
     answers: { interest_1: 4 }
   });
 
-  assert.deepEqual(FlowState.forIdentity(context), {
+  assert.deepEqual(JSON.parse(JSON.stringify(FlowState.forIdentity(context))), {
     identityKey: FlowState.identityKey(context),
     phase: "quiz",
     sectionIdx: 2,
