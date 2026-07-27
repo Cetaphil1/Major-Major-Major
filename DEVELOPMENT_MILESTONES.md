@@ -37,6 +37,11 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 - `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
 - Confirm landing does **not** deep-link into `research.html`/`survey.html`.
 
+**Current source note**
+- Root `index.html` is still a legacy/gated research-center entry, not a redirect to
+  `landing/index.html`. Treat the redirect as a Phase 2 target until the code is
+  intentionally changed.
+
 **Done looks like**
 - Visiting the site root lands on the marketing homepage.
 - Clicking "Take the quiz" — and only that — enters the quiz app at `start.html`.
@@ -115,12 +120,15 @@ college/major before the quiz.
   `UserContext` (honest `nameOr` fallback).
 - `screens-report.jsx` renders it: overall verdict, per-dimension 0–100, strongest/weakest,
   switch + burnout context, school-vs-major interpretation, next steps.
-- "Start over" clears both stores (identity + survey) and returns to `start.html`; report can be
-  re-rendered without recomputing.
+- Restart semantics are explicit and implemented consistently: either clear both
+  stores (identity + survey) and return to `start.html`, or preserve identity and
+  label the action accordingly. Current source preserves `UserContext` identity and
+  only wipes survey progress.
 
 **Done looks like**
 - The report shows the correct student context and scores, names cause (workload vs. field),
-  gives concrete next steps, and reads as guidance rather than a verdict. Re-take works.
+  gives concrete next steps, and reads as guidance rather than a verdict. Re-take works,
+  and restart behavior matches its label.
 
 ---
 

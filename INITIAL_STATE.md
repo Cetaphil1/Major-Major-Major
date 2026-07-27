@@ -1,5 +1,10 @@
 # INITIAL_STATE.md — Fit Beyond Interest (as found)
 
+> Historical snapshot: this file records the original handoff state before later
+> routing and flow fixes. For current live behavior, use `TECHNICAL_SPEC.md` and
+> `README.md`; do not treat the routing notes below as authoritative without
+> checking source.
+
 This documents the project **exactly as it currently is**, before any routing or design
 changes. It comes from the Claude Design handoff bundle (`College major` project) copied
 into this working directory. Nothing below has been changed yet.

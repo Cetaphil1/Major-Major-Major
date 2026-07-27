@@ -11,7 +11,8 @@ survey, and produces a guidance report.
 The current prototype is a **plain multi-page app**: a set of standalone `.html` entry
 points that load shared React components compiled in the browser with Babel Standalone.
 There is no bundler, no router library, and no build step. State is shared across pages
-through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
+through `localStorage`. See `TECHNICAL_SPEC.md` for the current contracts and
+`INITIAL_STATE.md` for the original handoff snapshot.
 
 ## 2. Product purpose
 
@@ -61,13 +62,50 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+> Current source note: `app/prelanding.jsx` now sends confirmed context to
+> `research.html`. A distinct survey-intro screen is still not split out from
+> `survey.html`, and `index.html` still renders a gated research-center variant. Treat
+> `research.html` as the canonical post-context research page unless a routing cleanup
+> intentionally changes that contract.
 
-## 4. Major product rules
+## 4. Live file map and routing contracts
+
+Live app entry points:
+
+| File | Role | Key source files |
+| --- | --- | --- |
+| `landing/index.html` | Framer-exported marketing homepage. Its quiz CTA should enter at `start.html`/`../start.html` only. | generated HTML |
+| `start.html` | Context flow: name -> college -> major -> confirmation. | `app/prelanding.jsx`, `app/screens-context.jsx`, `app/user-context.js` |
+| `research.html` | Canonical personalized college/major research page. | `app/research.jsx`, `app/research-data.js`, root JSON datasets |
+| `survey.html` | Survey controller, analyzing transition, and report screen. | `app/fit-app.jsx`, `app/screens-quiz.jsx`, `app/screens-report.jsx`, `app/data.jsx` |
+| `index.html` | Legacy/gated research-center entry. It redirects brand-new visitors to `start.html` through the pre-landing gate. | inline `ResearchPage`, `app/research.jsx` |
+
+Expected flow:
+
+```text
+landing/index.html -> start.html -> research.html -> survey.html -> report screen
+```
+
+State handoff rules:
+
+- `start.html` writes identity/context to `localStorage` key `fbi-user-context-v1`
+  through `window.UserContext`.
+- `research.html` reads `selectedCollege` and `selectedMajor` from `UserContext`. If
+  no context exists, it shows a visibly labeled demo pairing.
+- `survey.html` overlays `UserContext` identity onto its own `fbi-flow-v1` survey
+  progress so stale saved survey state cannot replace the current college/major.
+- If `preLandingComplete` is missing, `survey.html` routes back to `start.html`.
+
+Common pitfalls:
+
+- Do not update `index.html` and assume `research.html` changed; both include similar
+  inline research-page shells.
+- Do not deep-link from the marketing page to `research.html` or `survey.html`; those
+  pages assume context was already collected.
+- When changing context shape, update `app/user-context.js`, the start flow, research
+  page reads, survey overlay logic, and this document together.
+
+## 5. Major product rules
 
 - **Do not** turn this into a generic college-ranking website.
 - **Do not** make a generic homepage the main post-context destination.
@@ -80,7 +118,7 @@ fragile and what to do about it — it does not just hand back a score.
 - **Do not pretend** placeholder/demo data is real.
 - Default to **small, testable changes.** Don't redesign the whole product unless asked.
 
-## 5. Design direction
+## 6. Design direction
 
 - Clean, modern, student-facing.
 - Calm but not boring; slightly playful but trustworthy.
@@ -91,7 +129,7 @@ fragile and what to do about it — it does not just hand back a score.
 - Tokens live in `tokens.css` / `app/colors_and_type.css`; shared component CSS in
   `app/flow.css`, `app/report.css`, `app/research.css`, `app/prelanding.css`, `app/kit.css`.
 
-## 6. Data / source honesty rules
+## 7. Data / source honesty rules
 
 Every uncertain data point must be **labeled**. The research data layer
 (`app/research-data.js`) already uses status labels — keep using them:
@@ -110,7 +148,7 @@ Rules:
 - Prefer linking the student to the **official tool** (Scorecard, NCES, the school site)
   over restating numbers we can't verify.
 
-## 7. External link rules
+## 8. External link rules
 
 - External research links are **plain anchor tags**:
   `<a href="https://…" target="_blank" rel="noopener noreferrer">`.
@@ -123,7 +161,7 @@ Rules:
   they show "refused to connect" *in the preview only*. Real link testing must happen
   **locally or on a deployed site**, not in the design preview.
 
-## 8. Development workflow
+## 9. Development workflow
 
 - No build step. Open the `.html` files directly, or serve the project root over a static
   server so `localStorage` and relative paths behave like production:
@@ -139,20 +177,23 @@ Rules:
   `INITIAL_STATE.md`.
 - Test external links and the full page-to-page flow in a real browser tab, not the design
   preview.
+- There is no automated test harness in this branch. For documentation-only changes, verify
+  Markdown diffs and run `git diff --check`; for behavior changes, use the manual flow in
+  `TECHNICAL_SPEC.md §13`.
 
-## 9. How future AI coding agents should make changes
+## 10. How future AI coding agents should make changes
 
-1. **Read `INITIAL_STATE.md` first.** It maps every page to the file that controls it,
-   how routing works, and where the risky areas are.
+1. **Read `TECHNICAL_SPEC.md` first** for current behavior, then use
+   `INITIAL_STATE.md` only as the original handoff/history record.
 2. **Make small, testable changes.** One behavior at a time. Confirm the change in a real
    browser before moving on.
-3. **Respect the product rules in §4.** In particular: don't delete the start flow,
+3. **Respect the product rules in §5.** In particular: don't delete the start flow,
    research page, or survey/report logic, and don't make a generic homepage the
    post-context destination.
-4. **Keep data honesty (§6) and external-link rules (§7) intact** in any page you touch.
+4. **Keep data honesty (§7) and external-link rules (§8) intact** in any page you touch.
 5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
 6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
-   (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+7. When fixing routing, change the destination in the **prelanding flow**
+   (`app/prelanding.jsx`) and the **survey controller** guard/return paths
+   (`app/fit-app.jsx`) deliberately, then verify every entry point listed in §4.
