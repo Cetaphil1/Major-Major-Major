@@ -61,7 +61,7 @@ test("landing quiz-entry links send users to the root start flow", () => {
 
     assert.ok(links.length > 0, `${rel} should include a quiz entry link`);
     assert.ok(
-      links.some((href) => new URL(href, "https://example.com/landing/page/").pathname === "/start.html"),
+      links.some((href) => new URL(href, `https://example.com/${rel}`).pathname === "/start.html"),
       `${rel} should route quiz CTAs to the root start.html flow`,
     );
     assert.equal(
