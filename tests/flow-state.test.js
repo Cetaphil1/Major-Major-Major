@@ -54,7 +54,7 @@ test("flow state ignores saved answers from a different identity", () => {
   }, oldIdentity);
 
   assert.equal(FlowState.load(newIdentity), null);
-  assert.deepEqual(FlowState.load(oldIdentity).answers, { q1: 5 });
+  assert.equal(JSON.stringify(FlowState.load(oldIdentity).answers), JSON.stringify({ q1: 5 }));
   assert.match(store.get(FlowState.KEY), /"identityKey"/);
 });
 
@@ -71,7 +71,7 @@ test("legacy saved state is only migrated when its context matches", () => {
   const mismatchedIdentity = FlowState.identityKey("Ari", "Other University", "Computer Science");
 
   assert.equal(FlowState.load(mismatchedIdentity), null);
-  assert.deepEqual(FlowState.load(matchingIdentity).answers, { q2: 4 });
+  assert.equal(JSON.stringify(FlowState.load(matchingIdentity).answers), JSON.stringify({ q2: 4 }));
 });
 
 test("downstream pages require a complete saved identity", () => {
