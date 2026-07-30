@@ -8,9 +8,16 @@
   const STORE = "fbi-flow-v1";
 
   // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
-  function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
-  function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  const FlowStore = window.FlowState || {
+    identityKey: () => "",
+    loadForIdentity: () => {
+      try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; }
+    },
+    saveForIdentity: (key, state) => {
+      try { localStorage.setItem(STORE, JSON.stringify(Object.assign({}, state, { identityKey: key }))); } catch {}
+    },
+    wipe: () => { try { localStorage.removeItem(STORE); } catch {} },
+  };
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,14 +183,18 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
-    // If it's missing entirely, send the visitor through the pre-landing first.
-    const uc = (window.UserContext && window.UserContext.load()) || null;
-    React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+    // If it's missing or incomplete, send the visitor through the pre-landing first.
+    const ucApi = window.UserContext || null;
+    const uc = (ucApi && ucApi.load()) || null;
+    const hasIdentity = !!(ucApi && ucApi.hasIdentity && ucApi.hasIdentity());
+    const shouldRedirect = !uc || !uc.preLandingComplete || !hasIdentity;
+    const activeIdentityKey = shouldRedirect ? "" : FlowStore.identityKey(uc);
+    const saved = shouldRedirect ? null : FlowStore.loadForIdentity(activeIdentityKey);
+
+    useEffect(() => {
+      if (shouldRedirect) { window.location.replace("start.html"); }
+    }, [shouldRedirect]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,10 +218,16 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (!shouldRedirect) {
+        FlowStore.saveForIdentity(activeIdentityKey, { phase, ctx, sectionIdx, answers });
+      }
+    }, [shouldRedirect, activeIdentityKey, phase, ctx, sectionIdx, answers]);
+
+    if (shouldRedirect) return null;
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
-    const toLanding = () => { window.location.href = "index.html"; };
+    const toLanding = () => { window.location.href = "landing/index.html"; };
 
     const report = buildReport(ctx, answers);
 
@@ -230,7 +247,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { FlowStore.wipe(); if (ucApi && ucApi.clear) ucApi.clear(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
     />;
   }
 
