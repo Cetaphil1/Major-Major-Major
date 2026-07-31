@@ -181,9 +181,11 @@
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = !!(window.UserContext && window.UserContext.hasIdentity && window.UserContext.hasIdentity());
+    const canUseFlow = !!(uc && uc.preLandingComplete && hasIdentity);
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!canUseFlow) { window.location.replace("start.html"); }
+    }, [canUseFlow]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,10 +209,12 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => { if (canUseFlow) save({ phase, ctx, sectionIdx, answers }); }, [canUseFlow, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
+
+    if (!canUseFlow) return null;
 
     const report = buildReport(ctx, answers);
 
