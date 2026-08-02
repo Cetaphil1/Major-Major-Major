@@ -11,6 +11,15 @@
   function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
   function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
   function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  function identityKeyFromUserContext(uc) {
+    const college = uc && uc.selectedCollege;
+    const major = uc && uc.selectedMajor;
+    return [
+      uc && uc.displayName,
+      college && (college.id || college.name),
+      major && (major.cipCode || major.name),
+    ].map((part) => String(part || "").trim().toLowerCase()).join("|");
+  }
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,13 +185,14 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const hasIdentity = !!(window.UserContext && window.UserContext.hasIdentity());
     const uc = hasIdentity ? window.UserContext.load() : null;
     const canEnterSurvey = !!(uc && uc.preLandingComplete && hasIdentity);
+    const identityKey = canEnterSurvey ? identityKeyFromUserContext(uc) : "";
+    const persisted = load();
+    const saved = canEnterSurvey && persisted && persisted.identityKey === identityKey ? persisted : null;
     React.useEffect(() => {
       if (!canEnterSurvey) { window.location.replace("start.html"); }
     }, [canEnterSurvey]);
@@ -210,8 +220,8 @@
     const [answers, setAnswers] = useState(saved?.answers || {});
 
     useEffect(() => {
-      if (canEnterSurvey) save({ phase, ctx, sectionIdx, answers });
-    }, [canEnterSurvey, phase, ctx, sectionIdx, answers]);
+      if (canEnterSurvey) save({ identityKey, phase, ctx, sectionIdx, answers });
+    }, [canEnterSurvey, identityKey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toResearch = () => { window.location.href = "research.html"; };

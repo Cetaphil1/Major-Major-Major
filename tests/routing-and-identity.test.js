@@ -42,8 +42,17 @@ test("survey page requires identity before rendering or saving flow state", () =
   assert.match(source, /const hasIdentity = !!\(window\.UserContext && window\.UserContext\.hasIdentity\(\)\);/);
   assert.match(source, /const canEnterSurvey = !!\(uc && uc\.preLandingComplete && hasIdentity\);/);
   assert.match(source, /if \(!canEnterSurvey\) \{ window\.location\.replace\("start\.html"\); \}/);
-  assert.match(source, /if \(canEnterSurvey\) save\(\{ phase, ctx, sectionIdx, answers \}\);/);
+  assert.match(source, /if \(canEnterSurvey\) save\(\{ identityKey, phase, ctx, sectionIdx, answers \}\);/);
   assert.match(source, /if \(!canEnterSurvey\) return null;/);
+});
+
+test("survey progress is scoped to the current identity", () => {
+  const source = read("app/fit-app.jsx");
+
+  assert.match(source, /function identityKeyFromUserContext\(uc\)/);
+  assert.match(source, /const identityKey = canEnterSurvey \? identityKeyFromUserContext\(uc\) : "";/);
+  assert.match(source, /const persisted = load\(\);/);
+  assert.match(source, /const saved = canEnterSurvey && persisted && persisted\.identityKey === identityKey \? persisted : null;/);
 });
 
 test("starting over clears both survey progress and identity", () => {
