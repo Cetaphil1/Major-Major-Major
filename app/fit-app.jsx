@@ -180,10 +180,12 @@
 
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
-    const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = !!(window.UserContext && window.UserContext.hasIdentity());
+    const uc = hasIdentity ? window.UserContext.load() : null;
+    const canEnterSurvey = !!(uc && uc.preLandingComplete && hasIdentity);
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!canEnterSurvey) { window.location.replace("start.html"); }
+    }, [canEnterSurvey]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,15 +209,19 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (canEnterSurvey) save({ phase, ctx, sectionIdx, answers });
+    }, [canEnterSurvey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
-    const toLanding = () => { window.location.href = "index.html"; };
+    const toResearch = () => { window.location.href = "research.html"; };
 
     const report = buildReport(ctx, answers);
 
+    if (!canEnterSurvey) return null;
+
     if (phase === "context")
-      return <StudentContext ctx={ctx} setCtx={setCtx} onContinue={() => go("quiz")} onBack={toLanding} />;
+      return <StudentContext ctx={ctx} setCtx={setCtx} onContinue={() => go("quiz")} onBack={toResearch} />;
 
     if (phase === "quiz")
       return <QuizRuntime
@@ -230,7 +236,14 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => {
+        wipe();
+        if (window.UserContext) window.UserContext.clear();
+        setAnswers({});
+        setSectionIdx(0);
+        setCtx(emptyCtx);
+        window.location.href = "start.html";
+      }}
     />;
   }
 
