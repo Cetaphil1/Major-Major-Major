@@ -13,7 +13,7 @@ function loadUserContext(initialStorage) {
 test("UserContext falls back to the empty shape when storage is missing or malformed", () => {
   const { UserContext } = loadUserContext({ "fbi-user-context-v1": "{bad json" });
 
-  assert.deepEqual(UserContext.load(), {
+  assert.deepEqual(JSON.parse(JSON.stringify(UserContext.load())), {
     displayName: null,
     selectedCollege: null,
     selectedMajor: null,
@@ -55,16 +55,16 @@ test("relatedMajorsFor prefers explicit related majors and otherwise falls back 
   ];
 
   assert.deepEqual(
-    UserContext.relatedMajorsFor(
+    Array.from(UserContext.relatedMajorsFor(
       { name: "Computer Science", category: "Computing", relatedMajors: ["Cognitive Science", "Math"] },
       majorDb,
       1
-    ),
+    )),
     ["Cognitive Science"]
   );
 
   assert.deepEqual(
-    UserContext.relatedMajorsFor({ name: "Computer Science", category: "Computing" }, majorDb, 2),
+    Array.from(UserContext.relatedMajorsFor({ name: "Computer Science", category: "Computing" }, majorDb, 2)),
     ["Data Science", "Information Science"]
   );
 });

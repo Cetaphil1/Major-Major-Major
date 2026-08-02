@@ -130,7 +130,7 @@ test("Research similar majors prefer curated data and label same-category fallba
   const { Research } = loadResearch();
   await Research.load();
 
-  assert.deepEqual(Research.similarMajorsFor("Psychology"), {
+  assert.deepEqual(JSON.parse(JSON.stringify(Research.similarMajorsFor("Psychology"))), {
     list: [{ name: "Cognitive Science", relation: "Shared mind and behavior focus." }],
     status: "Estimated",
     disclaimer: "Preview relation only.",
@@ -141,7 +141,7 @@ test("Research similar majors prefer curated data and label same-category fallba
   assert.equal(fallback.status, "Estimated");
   assert.equal(fallback.source, "category");
   assert.deepEqual(
-    fallback.list.map((major) => major.name),
+    Array.from(fallback.list, (major) => major.name),
     ["Data Science", "Information Science"]
   );
 });

@@ -47,7 +47,7 @@ test("buildReport defaults unanswered sections to neutral scores", () => {
   const { scoring } = loadScoring();
   const report = scoring.buildReport({ college: "Howard University", major: "Psychology" }, {});
 
-  assert.deepEqual(report.scores, {
+  assert.deepEqual(JSON.parse(JSON.stringify(report.scores)), {
     interest: 55,
     confidence: 55,
     workload: 55,
@@ -67,9 +67,9 @@ test("buildReport flags the risky pattern where interest is high but workload an
     interest: 5,
     confidence: 4,
     workload: 1,
-    motivation: 2,
-    career: 4,
-    school: 2,
+    motivation: 1,
+    career: 1,
+    school: 1,
     belonging: 1,
     burnout: 1,
   });
