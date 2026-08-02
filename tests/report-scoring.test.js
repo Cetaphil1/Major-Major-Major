@@ -89,7 +89,7 @@ test("buildReport flags the risky pattern where interest is high but workload an
   assert.ok(report.warningSigns.includes("dreading work you used to enjoy"));
   assert.ok(report.nextSteps.some((step) => /course load/i.test(step.t)));
   assert.deepEqual(
-    report.betterFit.map((fit) => fit.n).slice(0, 2),
+    Array.from(report.betterFit, (fit) => fit.n).slice(0, 2),
     ["Information Science", "Data Science"]
   );
 });
