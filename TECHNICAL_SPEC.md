@@ -19,10 +19,11 @@ links between `.html` files.
 ## 2. Current folder / page structure
 
 ```
-/ (repo root = quiz app)
-  index.html        # PUBLIC entry: immediately redirects to landing/index.html
+/ (repo root = static app + landing export)
+  landing/index.html # Public marketing entry; "Take the quiz" CTA -> ../start.html
+  index.html        # Legacy gated research entry; does not redirect to landing today
   start.html        # Quiz app step 1 — context flow (name → college → major → confirm)
-  research.html     # Quiz app step 2 — personalized school/major research page
+  research.html     # Quiz app step 2 — canonical personalized school/major research page
   survey.html       # Quiz app step 3+4 — survey + analyzing + report controller
   about.html        # explainer / about page
 
@@ -65,14 +66,14 @@ in Phase 1.
 
 ## 3. Landing page vs quiz app separation
 
-- **`/landing` is the public homepage** (marketing site). Visiting the site root
-  (`index.html`) immediately redirects to `landing/index.html` via `window.location.replace`
-  plus a `<meta http-equiv="refresh">` fallback.
+- **`/landing` is the public homepage** (marketing site). The current root `index.html` has
+  not yet been converted into a redirect; it still renders a legacy gated research page. Treat
+  root-to-landing redirect work as an implementation gap, not current behavior.
 - **The quiz app lives in the root `.html` files**: `start.html`, `research.html`,
   `survey.html` (plus `about.html`).
 - **The only doorway from landing into the quiz is the "Take the quiz" CTA**, which links to
-  `start.html`. The landing page must not deep-link into `research.html` or `survey.html`
-  (those assume context already exists).
+  `start.html` using a relative path for each landing page depth. The landing page must not
+  deep-link into `research.html` or `survey.html` (those assume context already exists).
 
 ## 4. Frontend structure
 
@@ -211,14 +212,17 @@ reload keeps context):
 
 ## 10. Routing / linking rules
 
-- Site root `index.html` → redirect to `landing/index.html` (homepage).
-- `landing/index.html` "Take the quiz" → `start.html` (the **only** entry into the quiz).
-- `start.html` (context confirmed) → `research.html`.
+- Current public marketing entry is `landing/index.html`; root `index.html` is still a legacy
+  gated research page, not a redirect.
+- Landing "Take the quiz" links route to `start.html` (for example, `landing/index.html` uses
+  `../start.html`, nested landing pages use deeper relative paths).
+- `start.html` (context confirmed or skipped) → `research.html`.
 - `research.html` (continue) → `survey.html`.
 - `survey.html` runs survey → analyzing → report in-page (no separate `results.html` file
   today; report is a screen state within the survey flow).
-- Guard: if `research.html`/`survey.html` load without `UserContext.hasIdentity()`, route the
-  user back to `start.html` rather than rendering empty.
+- Guard: `survey.html` routes back to `start.html` when `preLandingComplete` is missing.
+  `research.html` currently degrades to a labeled Swarthmore / Political Science preview when
+  context is missing.
 
 ## 11. External link rules
 
