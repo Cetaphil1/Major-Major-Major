@@ -8,7 +8,20 @@
   const STORE = "fbi-flow-v1";
 
   // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
+  function identityKey(uc) {
+    const name = ((uc && uc.displayName) || "").trim().toLowerCase();
+    const college = ((uc && uc.selectedCollege && uc.selectedCollege.name) || "").trim().toLowerCase();
+    const major = ((uc && uc.selectedMajor && uc.selectedMajor.name) || "").trim().toLowerCase();
+    return college && major ? JSON.stringify([name, college, major]) : "";
+  }
+  function load(currentIdentityKey) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+      return saved && saved.identityKey === currentIdentityKey ? saved : null;
+    } catch {
+      return null;
+    }
+  }
   function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
   function wipe() { try { localStorage.removeItem(STORE); } catch {} }
 
@@ -176,14 +189,15 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = !!(window.UserContext && window.UserContext.hasIdentity());
+    const currentIdentityKey = hasIdentity ? identityKey(uc) : "";
+    const saved = load(currentIdentityKey);
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!uc || !uc.preLandingComplete || !hasIdentity) { window.location.replace("start.html"); }
+    }, [uc, hasIdentity]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,7 +221,9 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (currentIdentityKey) { save({ phase, ctx, sectionIdx, answers, identityKey: currentIdentityKey }); }
+    }, [phase, ctx, sectionIdx, answers, currentIdentityKey]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
@@ -230,7 +246,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { wipe(); if (window.UserContext) window.UserContext.clear(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); window.location.href = "start.html"; }}
     />;
   }
 
