@@ -1,24 +1,29 @@
-# INITIAL_STATE.md — Fit Beyond Interest (as found)
+# INITIAL_STATE.md - Fit Beyond Interest (current implementation map)
 
-This documents the project **exactly as it currently is**, before any routing or design
-changes. It comes from the Claude Design handoff bundle (`College major` project) copied
-into this working directory. Nothing below has been changed yet.
+This document is the source-of-truth orientation map for the current repository. It describes
+what is implemented today, including the recently added `landing/` marketing export and the
+quiz flow handoff into `research.html`.
+
+For product intent, see `README.md` and `PRD.md`. For the static app architecture and scoring
+details, see `TECHNICAL_SPEC.md`.
 
 ---
 
-## 1. Current file structure
+## 1. Current file structure and live surfaces
 
 Top level (project root):
 
 ```
-start.html                     # context/start flow entry (name → college → major → confirm)
-index.html                     # research center (loads research.jsx + inline ResearchPage)
-research.html                  # DUPLICATE of index.html — same research center
-survey.html                    # survey + analyzing + report controller (loads fit-app.jsx)
-about.html                     # about/explainer page
-Landing (marketing backup).html  # marketing landing (backup)
-Landing (original).html          # older marketing landing
-Start flow (editable).html     # editable, self-contained version of the start flow
+landing/                       # current Framer-export marketing site
+start.html                     # quiz app entry: name -> college -> major -> confirm
+research.html                  # canonical personalized research page for the quiz app
+survey.html                    # survey + analyzing + report controller
+index.html                     # legacy gated research entry; not the public landing redirect
+about.html                     # older explainer page outside the landing export
+
+Landing (marketing backup).html  # older marketing backup
+Landing (original).html          # older marketing page
+Start flow (editable).html     # self-contained reference copy of the start flow
 Survey (dark).html             # dark-variant survey entry
 dimensions.html, models.html, model-iceberg.html, Elemental Text.html  # design/explainer scraps
 
@@ -47,45 +52,89 @@ app/                           # ← the real shared app source (light theme)
   flow.css, prelanding.css, report.css, research.css, kit.css, colors_and_type.css
 
 app-dark/                      # parallel DARK variant of the app (data/fit-app/screens/kit/...)
-uploads/                       # separate Framer → Vercel marketing build (.mjs, _redirects, vercel.json)
+uploads/                       # older Framer/Vercel export bundle (.mjs, _redirects, vercel.json)
 assets/                        # mark.svg, logos
 screenshots/                   # design reference PNGs (not used at runtime)
 ```
 
-> Note: `start.html` (the handoff entry the user had open) imports
-> `app/flow.css`, `app/prelanding.css`, `app/user-context.js`,
-> `app/college-snapshots.js`, `app/data.jsx`, `app/screens-context.jsx`,
-> `app/prelanding.jsx`. `Start flow (editable).html` is a flattened, self-contained
-> mirror of the same four-screen flow (Name → College → Major → Preview report) with its
-> CSS/JS inlined.
+`start.html` imports `app/flow.css`, `app/prelanding.css`, `app/user-context.js`,
+`app/college-snapshots.js`, `app/data.jsx`, `app/screens-context.jsx`, and
+`app/prelanding.jsx`. `Start flow (editable).html` is a flattened, self-contained mirror of
+that flow and is useful only as a static reference.
+
+### Landing export inventory
+
+The `landing/` directory is a static Framer export. Each page is generated HTML with embedded
+Framer hydration metadata. Treat it as a marketing artifact: small link/copy patches are OK,
+but do not move quiz app logic into these generated files.
+
+Current landing pages:
+
+```
+landing/index.html
+landing/about-page/index.html
+landing/contact/index.html
+landing/programs/index.html
+landing/programs/b-sc-in-computer-science/index.html
+landing/research-page/index.html
+landing/research-page/reading-belonging-and-career-clarity/index.html
+landing/research-page/school-effect-vs-subject-fit/index.html
+landing/news/index.html
+landing/news/climate-solutions/index.html
+landing/news/environmental-impact/index.html
+landing/news/renewable-resources/index.html
+landing/news/sustainable-development/index.html
+landing/news/technological-advancements/index.html
+landing/event-page/index.html
+landing/event-page/award-winning-student-play/index.html
+landing/event-page/international-fashion-parade/index.html
+landing/event-page/student-startup-pitch-competition/index.html
+```
+
+All landing pages currently include a depth-adjusted quiz CTA to `start.html`:
+
+- `landing/index.html` -> `../start.html`
+- one-level landing pages -> `../../start.html`
+- two-level article/program/event pages -> `../../../start.html`
 
 ---
 
 ## 2. Which file controls the start / context flow
 
 - **Entry:** `start.html`
-- **Logic:** `app/prelanding.jsx` (the four-step flow: name → college → major → confirm/preview)
+- **Logic:** `app/prelanding.jsx` (the four-step flow: name -> college -> major -> confirm/preview)
 - **Supporting:** `app/screens-context.jsx`, `app/data.jsx`, `app/college-snapshots.js`,
   `app/user-context.js`
-- **Self-contained editable mirror:** `Start flow (editable).html` (same screens, inlined —
+- **Self-contained editable mirror:** `Start flow (editable).html` (same screens, inlined -
   useful as a static reference, not wired to the shared `app/` modules)
+
+On finish or skip, `app/prelanding.jsx` sets `preLandingComplete` in `UserContext` and routes
+to `research.html`.
 
 ## 3. Which file controls the research page
 
-- **Entry:** `index.html` **and** `research.html` (currently **duplicates** of each other)
-- **Logic:** `app/research.jsx` — exports `ResearchCenter` and `DataStatusBadge`. Each HTML
-  shell defines a small inline `ResearchPage()` that reads the saved college/major and
-  renders `<ResearchCenter college={…} major={…} />`, falling back to a demo pairing
-  (Swarthmore College / Political Science) labeled **Preview** when no context is saved.
+- **Canonical quiz entry:** `research.html`
+- **Legacy duplicate:** `index.html` still renders a similar research page with a pre-landing
+  gate; it does not currently redirect to `landing/index.html`.
+- **Logic:** `app/research.jsx` exports `ResearchCenter` and `DataStatusBadge`. Each HTML
+  shell defines a small inline `ResearchPage()` that reads the saved college/major and renders
+  `<ResearchCenter college={...} major={...} />`, falling back to a Swarthmore College /
+  Political Science demo pairing labeled **Preview** when no context is saved.
 - **Data:** `app/research-data.js` (links + status labels), `researchSources.json`
+
+`research.html` is newer and has the clearer quiz continuation copy plus an end-of-page CTA
+to `survey.html`. Prefer updating `research.html` first if the research page needs behavior or
+copy changes, and decide deliberately whether the legacy `index.html` should be kept in sync.
 
 ## 4. Which file controls the landing page
 
-- **Marketing landing (backup):** `Landing (marketing backup).html` (uses `landing.css`,
-  `animations.jsx`)
-- **Older marketing landing:** `Landing (original).html`
-- There is currently **no plain "generic homepage."** `index.html` is the **research
-  center**, not a marketing/home page. (This is a likely source of confusion — see §10.)
+- **Current marketing site:** `landing/index.html` and the nested pages listed in section 1.
+  These are generated Framer-export HTML files.
+- **Older marketing backups:** `Landing (marketing backup).html`, `Landing (original).html`,
+  and the separate `uploads/` export.
+- **Root `index.html`:** still a legacy research-center shell guarded by `UserContext`.
+  Redirecting the site root to `landing/index.html` remains an implementation gap, not current
+  behavior.
 
 ## 5. Which file controls the survey
 
@@ -96,7 +145,7 @@ screenshots/                   # design reference PNGs (not used at runtime)
 
 ## 6. Which file controls the report / results
 
-- **Controller + scoring:** `app/fit-app.jsx` — computes dimension scores, overall fit,
+- **Controller + scoring:** `app/fit-app.jsx` - computes dimension scores, overall fit,
   switch risk, burnout risk, and builds the narrative report object.
 - **Report UI:** `app/screens-report.jsx`
 - Both are loaded by `survey.html`. The report is the final `phase` of the `fit-app.jsx`
@@ -107,19 +156,24 @@ screenshots/                   # design reference PNGs (not used at runtime)
 ## 7. How routing currently works
 
 - **Plain multi-page app.** Each screen is its own `.html` file. Navigation is done with
-  plain anchors and `window.location.href` / `window.location.replace` — **no React Router,
+  plain anchors and `window.location.href` / `window.location.replace` - **no React Router,
   no bundler, no hash routing.**
 - React + ReactDOM + Babel Standalone load from `unpkg` CDNs; `.jsx` is compiled in the
   browser via `<script type="text/babel">`.
-- **Pre-landing gate:** `index.html` (and `app/fit-app.jsx`) check
-  `UserContext.load().preLandingComplete`. If it is false, they
-  `window.location.replace('start.html')` to force the context flow first.
-- **Page-to-page links:**
-  - `start.html` (prelanding) → on finish → **`index.html`** (see §9).
-  - `index.html` / `research.html` → `start.html` ("Change college / major"),
-    `survey.html` ("Take the survey →").
-  - `survey.html` controller → `index.html` (back to landing/research) on restart;
-    internal `context → quiz → analyzing → report` is React state, not URLs.
+- **Marketing-to-quiz links:** every page in `landing/` links its quiz CTA to `start.html`
+  using a relative path appropriate for that page depth.
+- **Context handoff:** `app/prelanding.jsx` routes both finish and skip paths to
+  `research.html`.
+- **Research-to-survey links:** `research.html` links to `start.html` ("Change college /
+  major") and `survey.html` ("Take the survey").
+- **Survey gate:** `app/fit-app.jsx` checks `UserContext.load().preLandingComplete`. If it is
+  false, it `window.location.replace("start.html")`.
+- **Survey/report state:** inside `survey.html`, the `context -> quiz -> analyzing -> report`
+  flow is React state, not URLs.
+- **Restart gap:** `app/fit-app.jsx` still defines `toLanding()` as `window.location.href =
+  "index.html"`, so the report "Start over" path returns to the legacy root research shell
+  after wiping state. If the public-entry redirect is implemented later, update this together
+  with the root entry decision.
 - **External links** are plain `<a target="_blank" rel="noopener noreferrer">`, with an
   optional delegated `window.open` fallback. They are intentionally **not** routed through
   any internal mechanism.
@@ -128,7 +182,7 @@ screenshots/                   # design reference PNGs (not used at runtime)
 
 Two separate `localStorage` keys (no `sessionStorage`):
 
-- **`fbi-user-context-v1`** — managed by `app/user-context.js` (`window.UserContext`).
+- **`fbi-user-context-v1`** - managed by `app/user-context.js` (`window.UserContext`).
   Single source of truth for identity. Shape:
   ```
   {
@@ -139,9 +193,10 @@ Two separate `localStorage` keys (no `sessionStorage`):
     preLandingComplete: boolean
   }
   ```
-  Read/written by `start.html`/prelanding, `index.html`, `research.html`, `survey.html`.
+  Read/written by `start.html`/prelanding and read by `research.html`, `index.html`, and
+  `survey.html`.
 
-- **`fbi-flow-v1`** — managed by `app/fit-app.jsx`. Survey/report progress:
+- **`fbi-flow-v1`** - managed by `app/fit-app.jsx`. Survey/report progress:
   `{ phase, ctx, sectionIdx, answers }`. `fit-app.jsx` overlays the `UserContext` identity
   on top of this as the source of truth for name/college/major.
 
@@ -150,51 +205,51 @@ Other files also touch storage in scraps/variants: `app-dark/fit-app.jsx`,
 
 ## 9. What currently happens after the user enters name / college / major
 
-In `app/prelanding.jsx` (lines ~395–401), on finishing the context flow it:
+In `app/prelanding.jsx`, finishing the context flow:
 
 1. Calls `UserContext.update({ preLandingComplete: true, contextConfirmed: true })`.
-2. Runs `window.location.href = "index.html"`.
+2. Runs `window.location.href = "research.html"`.
 
-So today the user lands on **`index.html`**. Because `index.html` currently renders the
-**research center** (`ResearchCenter`), the user *does* effectively reach research — but
-only because `index.html` happens to be the research page, not because of an explicit
-"go to research" route. The `Start flow (editable).html` mirror's final CTA is even
-labeled "Continue to **main page**" → `index.html`, reinforcing the "index = home" mental
-model. This is the area most likely to drift from the intended flow (README §3 step 3).
+Skipping the intro calls `UserContext.update({ preLandingComplete: true })` and also routes
+to `research.html`.
 
-`app/fit-app.jsx` independently enforces the gate: on mount, if there's no `UserContext` or
-`!preLandingComplete`, it `window.location.replace("start.html")`.
+That means the implemented post-context path is now explicit:
+
+```
+landing/* -> start.html -> research.html -> survey.html -> report phase inside survey.html
+```
+
+`app/fit-app.jsx` independently enforces the survey gate: on mount, if there is no
+`UserContext` or `!preLandingComplete`, it sends the visitor back to `start.html`.
 
 ---
 
 ## 10. Risky or confusing areas in the current project
 
-1. **`index.html` vs `research.html` are duplicates.** Both render the same
-   `ResearchCenter`. It's unclear which is canonical. Changing one and not the other will
-   cause drift. A decision is needed (pick one as the research page; decide what — if
-   anything — `index.html` should be).
+1. **Root `index.html` is not the public landing redirect.** The spec now describes
+   `/landing` as the public homepage and says the root should redirect there, but the code
+   still renders a gated research page at `index.html`. Decide whether to implement the root
+   redirect or keep `index.html` as a legacy research entry.
 
-2. **"Homepage" is ambiguous.** There is no generic homepage; `index.html` *is* the
-   research center, while marketing lives in `Landing (marketing backup).html`. The product
-   rule "don't make the homepage the post-context destination" needs a concrete definition
-   of which file is the homepage before the route is changed.
+2. **`index.html` and `research.html` can drift.** `research.html` is the canonical
+   post-context research page and includes the clearer greeting/end CTA. `index.html` still
+   renders a similar page and should not be edited accidentally as the only research surface.
 
-3. **No distinct survey-intro step.** The intended flow has a "what the survey measures /
-   why it matters" screen (README §3 step 5). Today the survey jumps from research →
-   `survey.html`, whose controller starts at the `context` phase. The intro screen doesn't
-   exist as its own step yet.
+3. **Generated landing HTML is hard to maintain by hand.** The `landing/` files are Framer
+   exports with long single-line hydration blobs. Link patches are manageable; structural
+   redesigns should happen at the source/export level when possible.
 
-4. **Post-context route is hard-coded to `index.html` in two places**
-   (`app/prelanding.jsx`) and gated in a third (`app/fit-app.jsx`). Any change to "go to
-   research first" must be made consistently across these, not per-page.
+4. **No distinct survey-intro step.** The intended flow has a "what the survey measures /
+   why it matters" screen. Today `research.html` links directly to `survey.html`, whose
+   controller starts at the `context` phase before entering the quiz.
 
-5. **Three parallel codebases.** The live light app (`app/`), a dark variant (`app-dark/`),
-   and a separate Framer/Vercel marketing build (`uploads/`). Edits to `app/` do **not**
-   propagate to the others. It's unclear which is the deploy target.
+5. **Several parallel artifacts remain.** The live light app (`app/`), the current Framer
+   landing export (`landing/`), a dark variant (`app-dark/`), older marketing backups, and an
+   older `uploads/` export all coexist. Edits to one do **not** propagate to the others.
 
 6. **CDN + Babel-in-browser.** No build step or dependency lockfile; React/Babel are pinned
-   via SRI on `unpkg`. Offline or CDN outages break the app, and in-browser Babel compile
-   is slow/dev-only — fine for a prototype, not for production.
+   via SRI on `unpkg`. Offline or CDN outages break the app, and in-browser Babel compile is
+   slow/dev-only - acceptable for this prototype, not a production architecture.
 
 7. **Design-preview sandbox vs. real behavior.** External links and full page navigation
    misbehave inside the Claude/Design preview (`X-Frame-Options: DENY`). Don't diagnose
@@ -203,3 +258,19 @@ model. This is the area most likely to drift from the intended flow (README §3 
 8. **Demo/fallback data.** The research page falls back to Swarthmore / Political Science
    when no context is saved. It is labeled **Preview**, but any change must preserve that
    honesty labeling (README §6).
+
+## 11. Maintenance notes for future changes
+
+- For user-flow changes, verify the path in code before editing docs:
+  - `landing/**/index.html` for CTA hrefs,
+  - `app/prelanding.jsx` for the context handoff,
+  - `research.html` for the research-to-survey CTA,
+  - `app/fit-app.jsx` for the survey guard, phase machine, and restart destination,
+  - `app/screens-report.jsx` for report links back to research.
+- Keep `landing/` and the quiz app separate. Landing pages should send users to
+  `start.html`; they should not deep-link into `research.html` or `survey.html`.
+- Preserve data-honesty labels (`Preview`, `Estimated`, `Official source`, etc.) when
+  touching research or report surfaces.
+- If root `index.html` is changed to redirect to `landing/index.html`, update this file,
+  `README.md`, and `TECHNICAL_SPEC.md` in the same PR so agents do not follow stale routing
+  instructions.

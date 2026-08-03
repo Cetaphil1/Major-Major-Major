@@ -61,18 +61,19 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+> Current implementation note: the main quiz path now routes from `landing/` CTAs to
+> `start.html`, then `research.html`, then `survey.html`. Two gaps remain: there is no distinct
+> survey-intro screen yet, and root `index.html` is still a legacy gated research shell rather
+> than a redirect to `landing/index.html`. See `INITIAL_STATE.md §7` and §10 before changing
+> routing.
 
 ## 4. Major product rules
 
 - **Do not** turn this into a generic college-ranking website.
 - **Do not** make a generic homepage the main post-context destination.
 - After context entry, users go into **personalized school/major research first**.
-- A marketing landing page may still exist as a **backup** (`Landing (marketing backup).html`).
+- The current marketing landing site lives under `landing/`; older marketing backups still exist
+  as `Landing (marketing backup).html`, `Landing (original).html`, and `uploads/`.
 - **Do not delete** the name/college/major start flow (`start.html` + prelanding).
 - **Do not delete** the research page.
 - **Do not delete** the survey/report logic (`fit-app.jsx`, `screens-quiz.jsx`,
@@ -130,12 +131,16 @@ Rules:
   ```
   cd "Major Major Major"
   python3 -m http.server 8000
-  # then open http://localhost:8000/start.html
+  # public marketing entry:
+  # http://localhost:8000/landing/index.html
+  # quiz smoke test:
+  # http://localhost:8000/start.html
   ```
 - React, ReactDOM, and Babel Standalone load from `unpkg` CDNs (pinned versions with SRI
   hashes). `.jsx` files are compiled in the browser via `<script type="text/babel">`.
-- There is a parallel **dark** variant under `app-dark/` and a separate Framer/Vercel
-  marketing build under `uploads/`. Treat these as separate artifacts — see
+- There is a generated Framer marketing export under `landing/`, a parallel **dark** variant
+  under `app-dark/`, and an older Framer/Vercel marketing build under `uploads/`. Treat these
+  as separate artifacts — see
   `INITIAL_STATE.md`.
 - Test external links and the full page-to-page flow in a real browser tab, not the design
   preview.
