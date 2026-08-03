@@ -19,7 +19,7 @@ links between `.html` files.
 ## 2. Current folder / page structure
 
 ```
-/ (repo root = quiz app)
+/ (repo root = static app + landing export)
   landing/index.html # Public marketing entry; "Take the quiz" CTA -> ../start.html
   index.html        # Legacy gated research entry; does not redirect to landing today
   start.html        # Quiz app step 1 — context flow (name → college → major → confirm)

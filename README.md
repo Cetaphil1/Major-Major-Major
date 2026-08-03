@@ -129,7 +129,7 @@ Rules:
 - No build step. Open the `.html` files directly, or serve the project root over a static
   server so `localStorage` and relative paths behave like production:
   ```
-  cd "Major Major Major"
+  cd /path/to/Major-Major-Major
   python3 -m http.server 8000
   # public marketing entry:
   # http://localhost:8000/landing/index.html

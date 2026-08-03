@@ -32,6 +32,10 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 **Goal:** make `/landing` the public homepage and ensure the **only** way into the quiz is the
 "Take the quiz" CTA → `start.html`.
 
+**Current status:** the `landing/` export exists and its quiz CTAs point to `start.html`, but
+the root `index.html` redirect to `landing/index.html` is not implemented yet. Root
+`index.html` still renders a legacy gated research page.
+
 **Deliverables**
 - Site root `index.html` reliably redirects to `landing/index.html`.
 - `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
