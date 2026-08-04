@@ -12,6 +12,19 @@
   function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
   function wipe() { try { localStorage.removeItem(STORE); } catch {} }
 
+  function hasIdentity(uc) {
+    return !!(uc && uc.selectedCollege && uc.selectedCollege.name && uc.selectedMajor && uc.selectedMajor.name);
+  }
+
+  function identityKeyFor(uc) {
+    if (!hasIdentity(uc)) return "";
+    return [
+      uc.displayName || "",
+      uc.selectedCollege.name || "",
+      uc.selectedMajor.name || "",
+    ].map((v) => String(v).trim().toLowerCase()).join("|");
+  }
+
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
   // Dimension score is 0–100 where HIGH = healthy (high burnout score = resilient).
@@ -181,14 +194,16 @@
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const identityKey = identityKeyFor(uc);
+    const savedMatchesIdentity = !!(saved && identityKey && saved.identityKey === identityKey);
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!uc || !uc.preLandingComplete || !hasIdentity(uc)) { window.location.replace("start.html"); }
+    }, [uc]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
     const emptyCtx = { college: "", major: "", stage: "", enrollment: "", intent: "", displayName: "" };
-    const seeded = Object.assign({}, emptyCtx, saved?.ctx || {});
+    const seeded = Object.assign({}, emptyCtx, savedMatchesIdentity ? saved?.ctx || {} : {});
     // Pre-landing identity is the source of truth — always overlay it.
     if (uc) {
       seeded.displayName = uc.displayName || "";
@@ -202,12 +217,14 @@
       }
     }
 
-    const [phase, setPhase] = useState(saved?.phase || "context");
+    const [phase, setPhase] = useState(savedMatchesIdentity ? saved?.phase || "context" : "context");
     const [ctx, setCtx] = useState(seeded);
-    const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
-    const [answers, setAnswers] = useState(saved?.answers || {});
+    const [sectionIdx, setSectionIdx] = useState(savedMatchesIdentity ? saved?.sectionIdx || 0 : 0);
+    const [answers, setAnswers] = useState(savedMatchesIdentity ? saved?.answers || {} : {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (identityKey) save({ identityKey, phase, ctx, sectionIdx, answers });
+    }, [identityKey, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
@@ -230,7 +247,7 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => { wipe(); if (window.UserContext) window.UserContext.clear(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
     />;
   }
 
