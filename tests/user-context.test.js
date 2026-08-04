@@ -10,10 +10,14 @@ function loadUserContext(initialStorage = {}) {
   return { UserContext: context.window.UserContext, localStorage };
 }
 
+function hostValue(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 test("UserContext falls back to an empty context when localStorage is malformed", () => {
   const { UserContext } = loadUserContext({ "fbi-user-context-v1": "{not-json" });
 
-  assert.deepEqual(UserContext.load(), {
+  assert.deepEqual(hostValue(UserContext.load()), {
     displayName: null,
     selectedCollege: null,
     selectedMajor: null,
@@ -53,9 +57,9 @@ test("UserContext related majors prefer explicit data and otherwise fall back to
     { name: "Cybersecurity", category: "Computing" },
   ];
 
-  assert.deepEqual(UserContext.relatedMajorsFor(major, db, 1), ["Statistics"]);
+  assert.deepEqual(hostValue(UserContext.relatedMajorsFor(major, db, 1)), ["Statistics"]);
   assert.deepEqual(
-    UserContext.relatedMajorsFor({ name: "Data Science", category: "Computing" }, db, 3),
+    hostValue(UserContext.relatedMajorsFor({ name: "Data Science", category: "Computing" }, db, 3)),
     ["Information Science", "Cybersecurity"]
   );
 });
