@@ -397,9 +397,7 @@
       window.location.href = "research.html";
     };
     const skipIntro = () => {
-      // honest skip: mark complete, leave whatever's filled, go to landing
-      UC.update({ preLandingComplete: true });
-      window.location.href = "research.html";
+      window.location.href = "landing/index.html";
     };
 
     const builtCollege = college.trim() ? mapCollege(college.trim(), collegeMeta) : null;
