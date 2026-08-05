@@ -37,7 +37,7 @@ test("loads saved survey progress only for the same identity", () => {
 
   FlowState.save({ phase: "report", answers: { interest1: 5 } }, identity);
 
-  assert.deepEqual(FlowState.load(identity), {
+  assert.deepEqual(JSON.parse(JSON.stringify(FlowState.load(identity))), {
     identityKey: "hannah|swarthmore college|political science",
     phase: "report",
     answers: { interest1: 5 },
