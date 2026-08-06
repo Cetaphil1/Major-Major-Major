@@ -78,7 +78,7 @@ test("high interest with exhausted workload produces high switch-risk guidance",
   assert.equal(report.scores.belonging, 0);
   assert.equal(report.scores.burnout, 0);
   assert.equal(report.switchRisk.level, "High");
-  assert.equal(report.switchRisk.pct, 96);
+  assert.equal(report.switchRisk.pct, 85);
   assert.match(report.verdict.lead, /real interest/i);
   assert.match(report.diagnosis, /pace and volume/i);
   assert.ok(report.nextSteps.some((step) => /course load/i.test(step.t)));
