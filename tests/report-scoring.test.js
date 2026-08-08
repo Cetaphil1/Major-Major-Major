@@ -16,7 +16,6 @@ function loadScoring() {
 
   vm.runInNewContext(
     [
-      "const { DIMENSIONS, SECTIONS } = window;",
       source.slice(start, end),
       "Object.assign(window, { dimScore, riskLevel, buildReport });",
     ].join("\n"),

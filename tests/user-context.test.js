@@ -14,7 +14,7 @@ test("UserContext recovers from malformed persisted data", () => {
     "fbi-user-context-v1": "{not valid json",
   }));
 
-  assert.deepEqual(sandbox.UserContext.load(), {
+  assert.deepEqual(JSON.parse(JSON.stringify(sandbox.UserContext.load())), {
     displayName: null,
     selectedCollege: null,
     selectedMajor: null,
