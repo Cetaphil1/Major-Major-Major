@@ -47,6 +47,10 @@ function userContext(displayName, collegeName, collegeId, majorName, cipCode) {
   };
 }
 
+function plain(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 test("survey state is scoped to the saved name, college, and major", () => {
   const { FlowState } = loadFlowState();
   const firstIdentity = userContext("Sam", "Swarthmore College", "swarthmore", "Political Science", "45.1001");
@@ -60,7 +64,7 @@ test("survey state is scoped to the saved name, college, and major", () => {
   }, firstIdentity);
 
   assert.equal(FlowState.load(firstIdentity).phase, "report");
-  assert.deepEqual(FlowState.load(firstIdentity).answers, { interest1: 5 });
+  assert.deepEqual(plain(FlowState.load(firstIdentity).answers), { interest1: 5 });
   assert.equal(FlowState.load(secondIdentity), null);
 
   FlowState.save({
@@ -71,7 +75,7 @@ test("survey state is scoped to the saved name, college, and major", () => {
   }, secondIdentity);
 
   assert.equal(FlowState.load(secondIdentity).phase, "context");
-  assert.deepEqual(FlowState.load(secondIdentity).answers, {});
+  assert.deepEqual(plain(FlowState.load(secondIdentity).answers), {});
 });
 
 test("root index is only a public landing redirect", () => {
