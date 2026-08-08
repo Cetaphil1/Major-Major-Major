@@ -91,7 +91,7 @@ test("high interest with draining workload and burnout produces high switch-risk
   assert.equal(report.burnoutRisk.level, "High");
   assert.match(report.verdict.lead, /A real interest/);
   assert.match(report.diagnosis, /pace and volume, not the subject/);
-  assert.ok(report.nextSteps.some((step) => /advisor/.test(step.d)));
+  assert.ok(report.nextSteps.some((step) => /advisor/.test(step.t)));
   assert.ok(report.nextSteps.some((step) => /study group/.test(step.t)));
 });
 
@@ -115,7 +115,7 @@ test("switch and burnout risk percentages are clamped to display-safe bounds", (
   assert.equal(report.switchRisk.pct, 96);
   assert.equal(report.burnoutRisk.pct, 96);
   assert.deepEqual(
-    report.betterFit.map((fit) => fit.n),
+    Array.from(report.betterFit, (fit) => fit.n),
     ["An adjacent applied field", "A broader version of this field", "A more hands-on track"],
   );
 });
