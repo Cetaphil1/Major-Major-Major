@@ -115,3 +115,15 @@ test("skip intro does not unlock research or survey without identity", () => {
   assert.match(prelanding, /contextConfirmed: false/);
   assert.match(prelanding, /window\.location\.href = "landing\/index\.html"/);
 });
+
+test("blank context edits preserve prior identity until reconfirmed", () => {
+  const prelanding = read("app/prelanding.jsx");
+
+  assert.match(prelanding, /if \(college\.trim\(\)\) patch\.selectedCollege = mapCollege/);
+  assert.match(prelanding, /if \(major\.trim\(\)\) patch\.selectedMajor = enrichMajor/);
+  assert.doesNotMatch(prelanding, /selectedCollege:\s*college\.trim\(\)[^}]+:\s*null/s);
+  assert.doesNotMatch(prelanding, /selectedMajor:\s*major\.trim\(\)[^}]+:\s*null/s);
+  assert.match(prelanding, /preLandingComplete: confirmed && !!college\.trim\(\) && !!major\.trim\(\)/);
+  assert.match(prelanding, /setCollege\(n\);setCollegeMeta\(m\);setConfirmed\(false\);/);
+  assert.match(prelanding, /setMajor\(n\);setMajorMeta\(m\);setConfirmed\(false\);/);
+});
