@@ -379,13 +379,22 @@
     { cipCode: saved.selectedMajor.cipCode, category: saved.selectedMajor.category } : null);
     const [confirmed, setConfirmed] = useState(saved.contextConfirmed || false);
 
-    // persist whenever identity changes
+    // Persist whenever identity changes. During edits, a temporarily blank field
+    // should not erase the last saved college/major before the user confirms a replacement.
     useEffect(() => {
+      const previous = UC.load();
+      const selectedCollege = college.trim() ?
+        mapCollege(college.trim(), collegeMeta) :
+        previous.selectedCollege || null;
+      const selectedMajor = major.trim() ?
+        enrichMajor(major.trim(), majorMeta) :
+        previous.selectedMajor || null;
       UC.update({
         displayName: name.trim() ? name.trim() : null,
-        selectedCollege: college.trim() ? mapCollege(college.trim(), collegeMeta) : null,
-        selectedMajor: major.trim() ? enrichMajor(major.trim(), majorMeta) : null,
-        contextConfirmed: confirmed
+        selectedCollege: selectedCollege,
+        selectedMajor: selectedMajor,
+        contextConfirmed: confirmed,
+        preLandingComplete: confirmed && selectedCollege && selectedMajor ? previous.preLandingComplete : false
       });
     }, [name, college, collegeMeta, major, majorMeta, confirmed]);
 
@@ -397,9 +406,8 @@
       window.location.href = "research.html";
     };
     const skipIntro = () => {
-      // honest skip: mark complete, leave whatever's filled, go to landing
-      UC.update({ preLandingComplete: true });
-      window.location.href = "research.html";
+      // Honest skip: leave any partial draft saved, but do not unlock personalized pages.
+      window.location.href = "landing/index.html";
     };
 
     const builtCollege = college.trim() ? mapCollege(college.trim(), collegeMeta) : null;
@@ -419,6 +427,7 @@
             onSwitchMajor={(n) => {
               const db = window.__MAJORS || [];
               const rec = db.find((m) => m.name.toLowerCase() === n.toLowerCase());
+              setConfirmed(false);
               setMajor(n);
               setMajorMeta(rec ? { cipCode: rec.cipCode, category: rec.category } : null);
             }}
@@ -431,16 +440,16 @@
     let body, canNext;
     if (step === 0) {
       canNext = true;
-      body = <NameStep value={name} onChange={setName} onContinue={() => go(1)} onSkip={() => {setName("");go(1);}} />;
+      body = <NameStep value={name} onChange={(value) => {setConfirmed(false);setName(value);}} onContinue={() => go(1)} onSkip={() => {setConfirmed(false);setName("");go(1);}} />;
     } else if (step === 1) {
       canNext = !!college.trim();
       body = <CollegeStep college={college} collegeMeta={collegeMeta}
-      onPick={(n, m) => {setCollege(n);setCollegeMeta(m);}}
+      onPick={(n, m) => {setConfirmed(false);setCollege(n);setCollegeMeta(m);}}
       onContinue={() => college.trim() && go(2)} onBack={() => go(0)} />;
     } else {
       canNext = !!major.trim();
       body = <MajorStep major={major} majorMeta={majorMeta}
-      onPick={(n, m) => {setMajor(n);setMajorMeta(m);}}
+      onPick={(n, m) => {setConfirmed(false);setMajor(n);setMajorMeta(m);}}
       onContinue={() => major.trim() && go(3)} onBack={() => go(1)} />;
     }
 
