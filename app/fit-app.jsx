@@ -5,12 +5,13 @@
 
 (function () {
   const { useState, useEffect } = React;
-  const STORE = "fbi-flow-v1";
 
   // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
-  function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
-  function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  const FlowStore = window.FlowState || {
+    load: () => null,
+    save: () => {},
+    wipe: () => { try { localStorage.removeItem("fbi-flow-v1"); } catch {} },
+  };
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,14 +177,15 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
-    // If it's missing entirely, send the visitor through the pre-landing first.
+    // If it's missing or incomplete, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasIdentity = !!(uc && uc.preLandingComplete && window.UserContext && window.UserContext.hasIdentity());
+    const saved = hasIdentity ? FlowStore.load(uc) : null;
+
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
-    }, []);
+      if (!hasIdentity) { window.location.replace("start.html"); }
+    }, [hasIdentity]);
 
     const ucCollege = uc && uc.selectedCollege;
     const ucMajor = uc && uc.selectedMajor;
@@ -207,12 +209,16 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (hasIdentity) FlowStore.save(uc, { phase, ctx, sectionIdx, answers });
+    }, [hasIdentity, phase, ctx, sectionIdx, answers]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
-    const toLanding = () => { window.location.href = "index.html"; };
+    const toLanding = () => { window.location.href = "landing/index.html"; };
 
     const report = buildReport(ctx, answers);
+
+    if (!hasIdentity) return null;
 
     if (phase === "context")
       return <StudentContext ctx={ctx} setCtx={setCtx} onContinue={() => go("quiz")} onBack={toLanding} />;
@@ -230,7 +236,14 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => {
+        FlowStore.wipe();
+        if (window.UserContext) window.UserContext.clear();
+        setAnswers({});
+        setSectionIdx(0);
+        setCtx(emptyCtx);
+        window.location.href = "start.html";
+      }}
     />;
   }
 
