@@ -74,7 +74,7 @@ test("buildReport treats unanswered dimensions as neutral defaults", () => {
     intent: "first",
   }, {});
 
-  assert.deepEqual(report.scores, {
+  assert.deepEqual(JSON.parse(JSON.stringify(report.scores)), {
     interest: 55,
     confidence: 55,
     workload: 55,
@@ -117,7 +117,8 @@ test("high interest plus strained workload and burnout yields high switch guidan
   assert.equal(report.switchRisk.pct, 96);
   assert.equal(report.burnoutRisk.level, "High");
   assert.equal(report.verdict.lead, "A real interest \u2014");
-  assert.match(report.verdict.body, /running on a draining term/);
+  assert.equal(report.verdict.accent, "running on a draining term.");
+  assert.match(report.verdict.body, /well below your interest/);
   assert.ok(report.warningSigns.includes("dreading work you used to enjoy"));
   assert.ok(report.nextSteps.some((step) => /Protect recovery/.test(step.t)));
 });
