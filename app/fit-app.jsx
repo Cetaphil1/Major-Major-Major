@@ -180,7 +180,7 @@
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing or incomplete, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
-    const hasIdentity = !!(uc && uc.preLandingComplete && window.UserContext && window.UserContext.hasIdentity());
+    const hasIdentity = !!(uc && uc.preLandingComplete && uc.contextConfirmed && window.UserContext && window.UserContext.hasIdentity());
     const saved = hasIdentity ? FlowStore.load(uc) : null;
 
     React.useEffect(() => {

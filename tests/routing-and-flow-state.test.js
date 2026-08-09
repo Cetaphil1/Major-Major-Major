@@ -36,9 +36,16 @@ test("site root redirects to the public landing page", () => {
 test("research page redirects incomplete identities back to start", () => {
   const html = read("research.html");
 
-  assert.match(html, /UserContext\.load\(\)\.preLandingComplete/);
+  assert.match(html, /ctx\.preLandingComplete/);
+  assert.match(html, /ctx\.contextConfirmed/);
   assert.match(html, /UserContext\.hasIdentity\(\)/);
   assert.match(html, /window\.location\.replace\("start\.html"\)/);
+});
+
+test("survey controller requires a confirmed identity", () => {
+  const source = read("app/fit-app.jsx");
+
+  assert.match(source, /uc && uc\.preLandingComplete && uc\.contextConfirmed && window\.UserContext && window\.UserContext\.hasIdentity\(\)/);
 });
 
 test("skip intro does not unlock downstream personalized pages", () => {
@@ -48,6 +55,22 @@ test("skip intro does not unlock downstream personalized pages", () => {
   assert.ok(skipIntro, "skipIntro handler should exist");
   assert.doesNotMatch(skipIntro[0], /preLandingComplete:\s*true/);
   assert.match(skipIntro[0], /window\.location\.href = "landing\/index\.html"/);
+});
+
+test("blank edits preserve the last saved college and major until replacement", () => {
+  const source = read("app/prelanding.jsx");
+
+  assert.match(source, /previous\.selectedCollege \|\| null/);
+  assert.match(source, /previous\.selectedMajor \|\| null/);
+  assert.match(source, /preLandingComplete: confirmed && selectedCollege && selectedMajor \? previous\.preLandingComplete : false/);
+});
+
+test("editing identity fields invalidates prior confirmation", () => {
+  const source = read("app/prelanding.jsx");
+
+  assert.match(source, /onChange=\{\(value\) => \{setConfirmed\(false\);setName\(value\);\}\}/);
+  assert.match(source, /onPick=\{\(n, m\) => \{setConfirmed\(false\);setCollege\(n\);setCollegeMeta\(m\);\}\}/);
+  assert.match(source, /onPick=\{\(n, m\) => \{setConfirmed\(false\);setMajor\(n\);setMajorMeta\(m\);\}\}/);
 });
 
 test("survey loads identity-scoped state before the flow controller", () => {

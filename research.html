@@ -17,8 +17,10 @@
   <script>
     (function () {
       try {
-        var complete = window.UserContext &&
-          window.UserContext.load().preLandingComplete &&
+        var ctx = window.UserContext && window.UserContext.load();
+        var complete = ctx &&
+          ctx.preLandingComplete &&
+          ctx.contextConfirmed &&
           window.UserContext.hasIdentity();
         if (!complete) window.location.replace("start.html");
       } catch (e) {
