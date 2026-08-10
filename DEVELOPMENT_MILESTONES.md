@@ -14,10 +14,10 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 
 **Deliverables**
 - `PRD.md`, `TECHNICAL_SPEC.md`, `DEVELOPMENT_MILESTONES.md` (this set) committed.
-- An inventory separating **live files** from **scraps/backups/duplicates** (e.g.
-  `research.html` as a duplicate of the research center, `Landing (*).html`, `Start flow
+- An inventory separating **live files** from **scraps/backups/aliases** (e.g.
+  root `index.html` as the gated research alias, `Landing (*).html`, `Start flow
   (editable).html`, `Survey (dark).html`, `app-dark/`, design scrap `.html` files,
-  `screenshots/`, `uploads/`).
+  and `uploads/`).
 - A cleanup plan: which scraps to archive vs. delete (no deletion of `LICENSE`).
 
 **Done looks like**
@@ -29,18 +29,23 @@ the live flow (`landing/` + `start.html` → `research.html` → `survey.html`) 
 
 ## Phase 2 — Landing page as public entry
 
-**Goal:** make `/landing` the public homepage and ensure the **only** way into the quiz is the
-"Take the quiz" CTA → `start.html`.
+**Goal:** keep `/landing` as the public marketing surface and ensure the **only** way into the
+quiz from marketing is the "Take the quiz" CTA → `start.html`.
 
 **Deliverables**
-- Site root `index.html` reliably redirects to `landing/index.html`.
-- `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path).
+- `landing/index.html` is the documented public homepage for the static marketing export.
+- `landing/index.html` "Take the quiz" CTA points to `../start.html` (correct relative path
+  from the landing folder; nested landing pages need their own depth-correct paths).
+- Root `index.html` remains documented as a gated research alias unless it is intentionally
+  replaced or backed by a hosting-level redirect.
 - Confirm landing does **not** deep-link into `research.html`/`survey.html`.
 
 **Done looks like**
-- Visiting the site root lands on the marketing homepage.
+- Visiting `/landing/` lands on the marketing homepage.
 - Clicking "Take the quiz" — and only that — enters the quiz app at `start.html`.
 - No other landing link jumps past context entry.
+- If deployment requires `/` to be public marketing, that is handled deliberately and the root
+  `index.html` alias behavior is removed or redirected with docs updated in the same change.
 
 ---
 
@@ -77,7 +82,7 @@ college/major before the quiz.
   - a school-vs-major framing,
   - provenance labels (Official source / Research link / Estimated).
 - External links open in a real new tab per the external-link rules.
-- Guard: redirect to `start.html` if no identity.
+- Direct-open fallback: show a visibly labeled Preview demo when no identity is saved.
 - Continue → `survey.html`.
 
 **Done looks like**
@@ -115,8 +120,10 @@ college/major before the quiz.
   `UserContext` (honest `nameOr` fallback).
 - `screens-report.jsx` renders it: overall verdict, per-dimension 0–100, strongest/weakest,
   switch + burnout context, school-vs-major interpretation, next steps.
-- "Start over" clears both stores (identity + survey) and returns to `start.html`; report can be
-  re-rendered without recomputing.
+- "Re-take after midterms" clears survey answers while preserving identity; "Start over"
+  currently clears `fbi-flow-v1`, preserves `UserContext`, and returns to the gated research
+  alias. If the product needs a full identity reset, pair that change with `UserContext.clear()`
+  and update the docs.
 
 **Done looks like**
 - The report shows the correct student context and scores, names cause (workload vs. field),

@@ -1,8 +1,8 @@
-# INITIAL_STATE.md — Fit Beyond Interest (as found)
+# INITIAL_STATE.md — Fit Beyond Interest current map
 
-This documents the project **exactly as it currently is**, before any routing or design
-changes. It comes from the Claude Design handoff bundle (`College major` project) copied
-into this working directory. Nothing below has been changed yet.
+This documents the project as it exists now. The original Claude Design handoff is still
+visible in some backup files, but the live flow has since been wired as a static marketing
+export plus a root-level quiz app.
 
 ---
 
@@ -12,8 +12,8 @@ Top level (project root):
 
 ```
 start.html                     # context/start flow entry (name → college → major → confirm)
-index.html                     # research center (loads research.jsx + inline ResearchPage)
-research.html                  # DUPLICATE of index.html — same research center
+index.html                     # gated research alias; checks preLandingComplete first
+research.html                  # canonical personalized research page
 survey.html                    # survey + analyzing + report controller (loads fit-app.jsx)
 about.html                     # about/explainer page
 Landing (marketing backup).html  # marketing landing (backup)
@@ -47,9 +47,8 @@ app/                           # ← the real shared app source (light theme)
   flow.css, prelanding.css, report.css, research.css, kit.css, colors_and_type.css
 
 app-dark/                      # parallel DARK variant of the app (data/fit-app/screens/kit/...)
-uploads/                       # separate Framer → Vercel marketing build (.mjs, _redirects, vercel.json)
-assets/                        # mark.svg, logos
-screenshots/                   # design reference PNGs (not used at runtime)
+landing/                       # current static Framer marketing export, rebranded for FBI
+uploads/                       # older/separate Framer → Vercel export (.mjs, _redirects, vercel.json)
 ```
 
 > Note: `start.html` (the handoff entry the user had open) imports
@@ -72,20 +71,29 @@ screenshots/                   # design reference PNGs (not used at runtime)
 
 ## 3. Which file controls the research page
 
-- **Entry:** `index.html` **and** `research.html` (currently **duplicates** of each other)
+- **Canonical entry:** `research.html`
+- **Legacy/gated alias:** `index.html`
 - **Logic:** `app/research.jsx` — exports `ResearchCenter` and `DataStatusBadge`. Each HTML
   shell defines a small inline `ResearchPage()` that reads the saved college/major and
   renders `<ResearchCenter college={…} major={…} />`, falling back to a demo pairing
   (Swarthmore College / Political Science) labeled **Preview** when no context is saved.
-- **Data:** `app/research-data.js` (links + status labels), `researchSources.json`
+- **Data:** `app/research-data.js`, `researchSources.json`, `collegeProfiles.json`,
+  `collegeMajors.json`, `nearbyColleges.json`, and `colleges.json`
+
+Important difference: `index.html` runs a pre-landing gate before rendering research; if
+`UserContext.load().preLandingComplete` is false it redirects to `start.html`. `research.html`
+does not gate; direct opens render the visible Preview demo state.
 
 ## 4. Which file controls the landing page
 
-- **Marketing landing (backup):** `Landing (marketing backup).html` (uses `landing.css`,
-  `animations.jsx`)
-- **Older marketing landing:** `Landing (original).html`
-- There is currently **no plain "generic homepage."** `index.html` is the **research
-  center**, not a marketing/home page. (This is a likely source of confusion — see §10.)
+- **Current marketing landing:** `landing/index.html` and nested pages under `landing/`
+  (static Framer export). The quiz CTA should enter the root quiz at `start.html` with the
+  correct relative path for the page depth.
+- **Marketing backups:** `Landing (marketing backup).html`, `Landing (original).html`, and
+  the older `uploads/` export. Treat them as separate artifacts; edits to `landing/` or
+  `app/` do not propagate across these files.
+- Root `index.html` is **not** the public marketing homepage in the current source. It is a
+  gated research alias.
 
 ## 5. Which file controls the survey
 
@@ -111,15 +119,18 @@ screenshots/                   # design reference PNGs (not used at runtime)
   no bundler, no hash routing.**
 - React + ReactDOM + Babel Standalone load from `unpkg` CDNs; `.jsx` is compiled in the
   browser via `<script type="text/babel">`.
-- **Pre-landing gate:** `index.html` (and `app/fit-app.jsx`) check
-  `UserContext.load().preLandingComplete`. If it is false, they
-  `window.location.replace('start.html')` to force the context flow first.
+- **Marketing entry:** open `landing/index.html` over HTTP/HTTPS. Its quiz CTA should route
+  to `start.html` and must not skip context by deep-linking to `research.html`/`survey.html`.
+- **Pre-landing gate:** `index.html` and `app/fit-app.jsx` check
+  `UserContext.load().preLandingComplete`. If it is false, they redirect to `start.html`.
+  `research.html` intentionally renders a Preview demo when opened without context.
 - **Page-to-page links:**
-  - `start.html` (prelanding) → on finish → **`index.html`** (see §9).
-  - `index.html` / `research.html` → `start.html` ("Change college / major"),
-    `survey.html` ("Take the survey →").
-  - `survey.html` controller → `index.html` (back to landing/research) on restart;
-    internal `context → quiz → analyzing → report` is React state, not URLs.
+  - `landing/index.html` → `start.html` from the quiz CTA.
+  - `start.html` (prelanding) → on finish or skip → `research.html`.
+  - `research.html` → `start.html` ("Change college / major") or `survey.html`
+    ("Take the survey").
+  - `survey.html` controller → `index.html` on report "Start over"; internal
+    `context → quiz → analyzing → report` is React state, not URLs.
 - **External links** are plain `<a target="_blank" rel="noopener noreferrer">`, with an
   optional delegated `window.open` fallback. They are intentionally **not** routed through
   any internal mechanism.
@@ -147,50 +158,46 @@ Two separate `localStorage` keys (no `sessionStorage`):
 
 Other files also touch storage in scraps/variants: `app-dark/fit-app.jsx`,
 `dimensions.html`, `models.html`, `model-iceberg.html`, `iceberg.jsx`, `animations.jsx`.
+Do not use those as the source of truth for the live light app.
 
 ## 9. What currently happens after the user enters name / college / major
 
-In `app/prelanding.jsx` (lines ~395–401), on finishing the context flow it:
+In `app/prelanding.jsx`, on finishing the context flow it:
 
 1. Calls `UserContext.update({ preLandingComplete: true, contextConfirmed: true })`.
-2. Runs `window.location.href = "index.html"`.
+2. Runs `window.location.href = "research.html"`.
 
-So today the user lands on **`index.html`**. Because `index.html` currently renders the
-**research center** (`ResearchCenter`), the user *does* effectively reach research — but
-only because `index.html` happens to be the research page, not because of an explicit
-"go to research" route. The `Start flow (editable).html` mirror's final CTA is even
-labeled "Continue to **main page**" → `index.html`, reinforcing the "index = home" mental
-model. This is the area most likely to drift from the intended flow (README §3 step 3).
+The skip action also marks `preLandingComplete: true` and routes to `research.html`, even
+though some button copy still says "Skip intro" / "Skip to landing". The behavior is a route
+to the research page, not to the Framer marketing site.
 
-`app/fit-app.jsx` independently enforces the gate: on mount, if there's no `UserContext` or
-`!preLandingComplete`, it `window.location.replace("start.html")`.
+`app/fit-app.jsx` independently enforces the survey gate: on mount, if there's no
+`UserContext` or `!preLandingComplete`, it `window.location.replace("start.html")`.
 
 ---
 
 ## 10. Risky or confusing areas in the current project
 
-1. **`index.html` vs `research.html` are duplicates.** Both render the same
-   `ResearchCenter`. It's unclear which is canonical. Changing one and not the other will
-   cause drift. A decision is needed (pick one as the research page; decide what — if
-   anything — `index.html` should be).
+1. **`index.html` vs `research.html` can still drift.** `research.html` is canonical, but
+   `index.html` renders a similar research shell after the gate. If the research chrome or CTA
+   changes, update both or remove the alias intentionally.
 
-2. **"Homepage" is ambiguous.** There is no generic homepage; `index.html` *is* the
-   research center, while marketing lives in `Landing (marketing backup).html`. The product
-   rule "don't make the homepage the post-context destination" needs a concrete definition
-   of which file is the homepage before the route is changed.
+2. **"Homepage" is ambiguous unless named precisely.** The public marketing homepage is
+   `landing/index.html`. Root `index.html` is a gated research alias. Do not use "home",
+   "landing", and "research" interchangeably in code reviews or docs.
 
 3. **No distinct survey-intro step.** The intended flow has a "what the survey measures /
    why it matters" screen (README §3 step 5). Today the survey jumps from research →
    `survey.html`, whose controller starts at the `context` phase. The intro screen doesn't
    exist as its own step yet.
 
-4. **Post-context route is hard-coded to `index.html` in two places**
-   (`app/prelanding.jsx`) and gated in a third (`app/fit-app.jsx`). Any change to "go to
-   research first" must be made consistently across these, not per-page.
+4. **Post-context and reset routes live in different places.** `app/prelanding.jsx` sends
+   confirmed/skipped users to `research.html`; `app/fit-app.jsx` sends report "Start over"
+   to `index.html`. Any route change must account for both.
 
-5. **Three parallel codebases.** The live light app (`app/`), a dark variant (`app-dark/`),
-   and a separate Framer/Vercel marketing build (`uploads/`). Edits to `app/` do **not**
-   propagate to the others. It's unclear which is the deploy target.
+5. **Multiple parallel artifacts.** The live light app (`app/`), a dark variant
+   (`app-dark/`), the current `landing/` Framer export, and the older `uploads/` export are
+   separate. Edits to one do **not** propagate to the others.
 
 6. **CDN + Babel-in-browser.** No build step or dependency lockfile; React/Babel are pinned
    via SRI on `unpkg`. Offline or CDN outages break the app, and in-browser Babel compile
