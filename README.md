@@ -8,10 +8,15 @@ interesting. The app collects a small amount of context (name, college, major), 
 honest research about that specific college/major pairing, runs a short multi-dimension
 survey, and produces a guidance report.
 
-The current prototype is a **plain multi-page app**: a set of standalone `.html` entry
-points that load shared React components compiled in the browser with Babel Standalone.
-There is no bundler, no router library, and no build step. State is shared across pages
-through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
+The current prototype has two static surfaces:
+
+- a Framer-exported marketing site under `landing/`, and
+- a plain multi-page quiz app at the repo root (`start.html`, `research.html`,
+  `survey.html`, plus the gated `index.html` research alias).
+
+Each quiz page loads shared React components compiled in the browser with Babel
+Standalone. There is no bundler, no router library, and no build step. State is shared
+across pages through `localStorage`. See `INITIAL_STATE.md` for the exact file-by-file map.
 
 ## 2. Product purpose
 
@@ -35,13 +40,15 @@ fragile and what to do about it — it does not just hand back a score.
 
 ## 3. Intended user flow
 
-1. **Context entry** — first name, college, major.
-2. **Context confirmation** — the user confirms their college and major, and can edit if
+1. **Marketing entry** — the public Framer export (`landing/index.html`) introduces the
+   product and links the quiz CTA to `start.html`.
+2. **Context entry** — first name, college, major.
+3. **Context confirmation** — the user confirms their college and major, and can edit if
    anything is wrong.
-3. **Personalized research page** — after confirmation the user goes to the
-   **personalized school/major research page**. Not the generic homepage, not a random
-   demo page.
-4. **Research page content**
+4. **Personalized research page** — after confirmation `app/prelanding.jsx` writes
+   `preLandingComplete: true` and routes to `research.html`, the canonical school/major
+   research page.
+5. **Research page content**
    - college snapshot
    - official school / data links
    - College Scorecard / NCES links when available
@@ -49,10 +56,10 @@ fragile and what to do about it — it does not just hand back a score.
    - similar majors
    - school-vs-major context
    - a clear marker of what is official vs. preview/demo data
-5. **Survey intro** — explain what the survey measures, why the questions matter, and that
+6. **Survey intro** — explain what the survey measures, why the questions matter, and that
    it is guidance rather than a final verdict.
-6. **Survey** — the multi-dimension questionnaire.
-7. **Results / report page**
+7. **Survey** — the multi-dimension questionnaire.
+8. **Results / report page**
    - overall fit score
    - strongest signals
    - weakest signals
@@ -61,18 +68,18 @@ fragile and what to do about it — it does not just hand back a score.
    - similar major directions
    - next steps
 
-> ⚠️ The current prototype does **not yet** match step 3 cleanly. After context entry it
-> routes to `index.html`, and `index.html`/`research.html` are duplicate research pages
-> while the survey-intro step is not a distinct screen. These gaps are documented in
-> `INITIAL_STATE.md §10` and should be resolved with small, reviewed changes — not a
-> rewrite.
+Current route caveat: `research.html` is canonical, but root `index.html` still renders the
+same research experience after checking `preLandingComplete`. Treat it as a legacy/gated
+alias, not the public marketing homepage.
 
 ## 4. Major product rules
 
 - **Do not** turn this into a generic college-ranking website.
-- **Do not** make a generic homepage the main post-context destination.
+- **Do not** make a generic homepage the main post-context destination; post-context routing
+  should stay on `research.html`.
 - After context entry, users go into **personalized school/major research first**.
-- A marketing landing page may still exist as a **backup** (`Landing (marketing backup).html`).
+- Marketing lives under `landing/`; standalone `Landing (*).html` files are backups/reference
+  artifacts.
 - **Do not delete** the name/college/major start flow (`start.html` + prelanding).
 - **Do not delete** the research page.
 - **Do not delete** the survey/report logic (`fit-app.jsx`, `screens-quiz.jsx`,
@@ -125,18 +132,21 @@ Rules:
 
 ## 8. Development workflow
 
-- No build step. Open the `.html` files directly, or serve the project root over a static
-  server so `localStorage` and relative paths behave like production:
+- No build step. Serve the project root over a static server so `localStorage`, `fetch()`
+  for local JSON, and nested landing paths behave like production:
   ```
-  cd "Major Major Major"
+  cd /workspace
   python3 -m http.server 8000
-  # then open http://localhost:8000/start.html
+  # marketing: http://localhost:8000/landing/
+  # quiz:      http://localhost:8000/start.html
   ```
 - React, ReactDOM, and Babel Standalone load from `unpkg` CDNs (pinned versions with SRI
   hashes). `.jsx` files are compiled in the browser via `<script type="text/babel">`.
 - There is a parallel **dark** variant under `app-dark/` and a separate Framer/Vercel
   marketing build under `uploads/`. Treat these as separate artifacts — see
   `INITIAL_STATE.md`.
+- `landing/` is also a static Framer export. Verify its CTA links from a real HTTP URL,
+  especially from nested pages, because generated HTML is minified and route depth matters.
 - Test external links and the full page-to-page flow in a real browser tab, not the design
   preview.
 
@@ -153,6 +163,6 @@ Rules:
 5. **Don't introduce a router, bundler, or framework migration** unless the user explicitly
    asks. The app is intentionally a plain multi-page setup.
 6. **Ask before redesigning.** Visual/structural overhauls need explicit sign-off.
-7. When fixing the post-context route, change the destination in the **prelanding flow**
-   (`app/prelanding.jsx`) and the **survey controller** gate (`app/fit-app.jsx`) — see
-   `INITIAL_STATE.md §7` and §9 — rather than rewiring every page.
+7. When changing routing, update the route contract in `app/prelanding.jsx`,
+   `app/fit-app.jsx`, `index.html`, `research.html`, and these docs together. The current
+   post-context destination is `research.html`; `index.html` is only a gated research alias.

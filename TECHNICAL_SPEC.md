@@ -20,7 +20,7 @@ links between `.html` files.
 
 ```
 / (repo root = quiz app)
-  index.html        # PUBLIC entry: immediately redirects to landing/index.html
+  index.html        # gated research alias; redirects to start.html only when context gate fails
   start.html        # Quiz app step 1 — context flow (name → college → major → confirm)
   research.html     # Quiz app step 2 — personalized school/major research page
   survey.html       # Quiz app step 3+4 — survey + analyzing + report controller
@@ -49,7 +49,7 @@ links between `.html` files.
   nearbyColleges.json    # nearby-school suggestions
   researchSources.json   # outbound research link templates + provenance metadata
 
-  # Public homepage (marketing site)
+  # Public marketing export
   landing/
     index.html           # PUBLIC homepage; "Take the quiz" CTA -> ../start.html
     about-page/  contact/  event-page/  news/  programs/  research-page/
@@ -60,19 +60,21 @@ links between `.html` files.
 
 Note: the repo also contains design scraps and backups (`Landing (*).html`, `Start flow
 (editable).html`, `Survey (dark).html`, `dimensions.html`, `models.html`, `app-dark/`,
-`screenshots/`, `uploads/`). These are **not** part of the live flow and are slated for cleanup
-in Phase 1.
+`uploads/`). These are **not** part of the live flow and are slated for cleanup in Phase 1.
 
 ## 3. Landing page vs quiz app separation
 
-- **`/landing` is the public homepage** (marketing site). Visiting the site root
-  (`index.html`) immediately redirects to `landing/index.html` via `window.location.replace`
-  plus a `<meta http-equiv="refresh">` fallback.
+- **`/landing` is the public marketing site**. It is a static Framer export rebranded for Fit
+  Beyond Interest. Serve it over HTTP/HTTPS (`/landing/`) rather than opening nested pages via
+  `file://`, because generated modules and relative links are browser-sensitive.
 - **The quiz app lives in the root `.html` files**: `start.html`, `research.html`,
-  `survey.html` (plus `about.html`).
-- **The only doorway from landing into the quiz is the "Take the quiz" CTA**, which links to
-  `start.html`. The landing page must not deep-link into `research.html` or `survey.html`
-  (those assume context already exists).
+  `survey.html` (plus `about.html` and the gated `index.html` alias).
+- **Root `index.html` is not the marketing homepage in the current source.** It loads the
+  research page and first checks `UserContext.load().preLandingComplete`; a brand-new visitor is
+  sent to `start.html`, while a completed visitor sees the research center.
+- **The doorway from marketing into the quiz is a "Take the quiz" CTA to `start.html`.** Landing
+  pages must not deep-link into `research.html` or `survey.html` because those assume context
+  already exists or intentionally fall back to preview/demo content.
 
 ## 4. Frontend structure
 
@@ -148,15 +150,22 @@ reload keeps context):
    `relatedMajorsFor(major, db, n)`. Written by `start.html`, read by `research.html` and
    `survey.html`.
 
-2. **Survey/report store** — managed in `fit-app.jsx` (`load/save/wipe` around its own key).
-   Holds quiz `answers`, stated `intent/stage`, and the generated report so the report page can
-   re-render without recomputing.
+2. **`fbi-flow-v1` survey/report store** — managed in `fit-app.jsx` (`load/save/wipe` around
+   its own key). Holds in-survey controller state:
+   ```
+   { phase, ctx, sectionIdx, answers }
+   ```
+   `ctx` may contain stage/enrollment/intent plus copied college/major fields, but
+   `fit-app.jsx` overlays `UserContext` on every mount so identity from the start flow wins.
 
 **Rules:**
-- Identity is written once in `start.html`; downstream pages read it and never re-ask.
+- Identity is written in `start.html`; downstream pages read it and should not clobber it.
 - `sessionStorage` is not currently used; keep `localStorage` as the shared mechanism unless a
   page needs strictly per-tab state.
-- A "start over" action calls `UserContext.clear()` + survey `wipe()`.
+- Report **Re-take after midterms** clears answers/section progress and stays in the survey.
+- Report **Start over** currently clears only `fbi-flow-v1` and navigates to `index.html`; the
+  saved `UserContext` identity remains available, so the user lands back on the research alias
+  for the same college/major. To change identity, use `start.html` / "Change college / major".
 
 ## 7. Quiz scoring logic (`fit-app.jsx`)
 
@@ -211,14 +220,19 @@ reload keeps context):
 
 ## 10. Routing / linking rules
 
-- Site root `index.html` → redirect to `landing/index.html` (homepage).
-- `landing/index.html` "Take the quiz" → `start.html` (the **only** entry into the quiz).
-- `start.html` (context confirmed) → `research.html`.
+- `landing/index.html` is the marketing homepage; its quiz CTA should point to `start.html`
+  using the correct relative depth for the generated page.
+- Root `index.html` is a gated research alias:
+  - if `preLandingComplete` is false/missing, it redirects to `start.html`;
+  - otherwise it renders the same `ResearchCenter` content with a Swarthmore/Political Science
+    **Preview** fallback if identity is incomplete.
+- `start.html` (context confirmed or skip) → `research.html`.
 - `research.html` (continue) → `survey.html`.
 - `survey.html` runs survey → analyzing → report in-page (no separate `results.html` file
   today; report is a screen state within the survey flow).
-- Guard: if `research.html`/`survey.html` load without `UserContext.hasIdentity()`, route the
-  user back to `start.html` rather than rendering empty.
+- Guard: `survey.html` redirects to `start.html` when `preLandingComplete` is missing.
+  `research.html` does not redirect; it renders a visibly labeled **Preview** demo pairing when
+  no saved college exists.
 
 ## 11. External link rules
 
@@ -234,7 +248,9 @@ reload keeps context):
 
 - **Missing college/major** in datasets → manual-entry fallback (`isManual: true`); research
   page degrades gracefully to search links + "Estimated" labels.
-- **No context on a downstream page** → redirect to `start.html`.
+- **No context on `research.html`** → render the Swarthmore College / Political Science
+  **Preview** pairing with a CTA back to `start.html`.
+- **No context on `survey.html`** → redirect to `start.html` when `preLandingComplete` is false.
 - **Partial survey** → unanswered dimensions default to neutral (~55); ensure the report flags
   reduced confidence rather than presenting it as complete.
 - **`localStorage` unavailable / cleared mid-flow** → `UserContext` returns an empty object
@@ -243,20 +259,24 @@ reload keeps context):
   dimension.
 - **CDN/integrity failure** → page won't render; acceptable prototype risk, but don't remove the
   pinned versions/hashes.
-- **Re-take** → must clear prior answers (survey `wipe()`) without forcing re-entry of identity.
+- **Re-take** → clears prior answers/section progress without forcing re-entry of identity.
+- **Start over** → currently wipes only `fbi-flow-v1` and returns to `index.html`; it is not an
+  identity reset unless paired with a `UserContext.clear()` change.
 
 ## 13. Testing considerations
 
-- **Manual flow test (primary):** landing → "Take the quiz" → start → research → survey →
+- **Manual flow test (primary):** `/landing/` → "Take the quiz" → start → research → survey →
   report, verifying identity carries through unchanged at each step.
 - **Scoring sanity checks:** craft all-high, all-low, and mixed answer sets and confirm
   switch/burnout risk and strongest/weakest signals move in the expected direction; verify
   reverse items flip correctly.
 - **Provenance:** confirm official vs. estimated labels render on the research page.
 - **External links:** confirm new-tab behavior in a real browser; note preview-frame limitation.
-- **Persistence:** refresh mid-flow and confirm context survives; "start over" clears both
-  stores.
+- **Persistence:** refresh mid-flow and confirm context survives; "Re-take after midterms"
+  clears survey answers while "Start over" clears only `fbi-flow-v1` and preserves identity.
 - **Missing-data path:** test a college/major not in the datasets.
-- **Cross-page guards:** open `research.html`/`survey.html` directly with empty storage and
-  confirm redirect to `start.html`.
+- **Cross-page guards:** open `survey.html` with empty storage and confirm redirect to
+  `start.html`; open `research.html` with empty storage and confirm the Preview badge appears.
+- **Alias behavior:** with `preLandingComplete` false, `index.html` redirects to `start.html`;
+  with it true, `index.html` renders research content.
 - No automated test harness exists yet; testing is manual/observational in this phase.
