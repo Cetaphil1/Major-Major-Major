@@ -55,9 +55,12 @@
       // Falls back to a demo pairing so the page is never empty.
       const uc = (window.UserContext && window.UserContext.load()) || {};
       const name = (uc.displayName || "").trim();
-      const college = (uc.selectedCollege && uc.selectedCollege.name) || "Swarthmore College";
-      const major = (uc.selectedMajor && uc.selectedMajor.name) || "Political Science";
-      const isDemo = !(uc.selectedCollege && uc.selectedCollege.name);
+      const hasCollege = !!(uc.selectedCollege && uc.selectedCollege.name);
+      const hasMajor = !!(uc.selectedMajor && uc.selectedMajor.name);
+      const hasIdentity = hasCollege && hasMajor;
+      const college = hasIdentity ? uc.selectedCollege.name : "Swarthmore College";
+      const major = hasIdentity ? uc.selectedMajor.name : "Political Science";
+      const isDemo = !hasIdentity;
 
       return (
         <div className="rp" style={{ paddingTop: 28 }}>

@@ -397,9 +397,10 @@
       window.location.href = "research.html";
     };
     const skipIntro = () => {
-      // honest skip: mark complete, leave whatever's filled, go to landing
-      UC.update({ preLandingComplete: true });
-      window.location.href = "research.html";
+      // Honest skip: leave any typed draft in place, but do not unlock the
+      // personalized research/survey flow until both college and major exist.
+      UC.update({ preLandingComplete: false });
+      window.location.href = "landing/index.html";
     };
 
     const builtCollege = college.trim() ? mapCollege(college.trim(), collegeMeta) : null;
