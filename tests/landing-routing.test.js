@@ -21,5 +21,5 @@ test("research app remains available on its dedicated route", () => {
   const researchPage = read("research.html");
 
   assert.match(researchPage, /app\/research\.jsx/);
-  assert.match(researchPage, /preLandingComplete/);
+  assert.doesNotMatch(researchPage, /landing\/index\.html/);
 });
