@@ -8,9 +8,29 @@
   const STORE = "fbi-flow-v1";
 
   // ── persistence ───────────────────────────────────────────────
-  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch { return null; } }
-  function save(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch {} }
-  function wipe() { try { localStorage.removeItem(STORE); } catch {} }
+  function fallbackIdentityKey(ctx) {
+    const norm = (value) => (value || "").toString().trim().replace(/\s+/g, " ").toLowerCase();
+    const college = ctx && ctx.selectedCollege || {};
+    const major = ctx && ctx.selectedMajor || {};
+    return [norm(ctx && ctx.displayName), norm(college.name), norm(major.name)].join("|");
+  }
+  function load(identityKey) {
+    if (window.FlowState) return window.FlowState.load(identityKey);
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORE) || "null");
+      return parsed && parsed.identityKey === identityKey ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+  function save(s, identityKey) {
+    if (window.FlowState) return window.FlowState.save(s, identityKey);
+    try { localStorage.setItem(STORE, JSON.stringify(Object.assign({}, s, { identityKey }))); } catch {}
+  }
+  function wipe() {
+    if (window.FlowState) return window.FlowState.wipe();
+    try { localStorage.removeItem(STORE); } catch {}
+  }
 
   // ── scoring ───────────────────────────────────────────────────
   // Each section maps to one dimension. Answers are 1–5; reverse items flip.
@@ -176,13 +196,14 @@
 
   // ── controller ────────────────────────────────────────────────
   function FlowApp() {
-    const saved = load();
-
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
+    const hasCompleteIdentity = !!(uc && uc.preLandingComplete && uc.contextConfirmed && window.UserContext && window.UserContext.hasIdentity());
+    const identityKey = window.FlowState ? window.FlowState.identityKey(uc) : fallbackIdentityKey(uc);
+    const saved = hasCompleteIdentity ? load(identityKey) : null;
     React.useEffect(() => {
-      if (!uc || !uc.preLandingComplete) { window.location.replace("start.html"); }
+      if (!hasCompleteIdentity) { window.location.replace("start.html"); }
     }, []);
 
     const ucCollege = uc && uc.selectedCollege;
@@ -207,7 +228,9 @@
     const [sectionIdx, setSectionIdx] = useState(saved?.sectionIdx || 0);
     const [answers, setAnswers] = useState(saved?.answers || {});
 
-    useEffect(() => { save({ phase, ctx, sectionIdx, answers }); }, [phase, ctx, sectionIdx, answers]);
+    useEffect(() => {
+      if (hasCompleteIdentity) save({ phase, ctx, sectionIdx, answers }, identityKey);
+    }, [phase, ctx, sectionIdx, answers, hasCompleteIdentity, identityKey]);
 
     const go = (p) => { window.scrollTo({ top: 0, behavior: "auto" }); setPhase(p); };
     const toLanding = () => { window.location.href = "index.html"; };
@@ -230,7 +253,14 @@
 
     return <Report report={report}
       onRetake={() => { setAnswers({}); setSectionIdx(0); go("quiz"); }}
-      onRestart={() => { wipe(); setAnswers({}); setSectionIdx(0); setCtx(emptyCtx); toLanding(); }}
+      onRestart={() => {
+        wipe();
+        if (window.UserContext) window.UserContext.clear();
+        setAnswers({});
+        setSectionIdx(0);
+        setCtx(emptyCtx);
+        window.location.href = "start.html";
+      }}
     />;
   }
 
