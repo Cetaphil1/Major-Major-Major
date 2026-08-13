@@ -22,6 +22,7 @@ test("downstream app pages require a completed identity", () => {
 
   for (const page of [research, survey]) {
     assert.match(page, /preLandingComplete/);
+    assert.match(page, /contextConfirmed/);
     assert.match(page, /UserContext\.hasIdentity\(\)/);
     assert.match(page, /window\.location\.replace\("start\.html"\)/);
   }
@@ -41,6 +42,19 @@ test("skip intro exits to landing without completing identity", () => {
   assert.doesNotMatch(skipIntro[1], /preLandingComplete/);
 });
 
+test("prelanding blank edits do not erase saved college or major", () => {
+  const prelanding = read("app/prelanding.jsx");
+  const persistEffect = prelanding.match(/useEffect\(\(\) => \{([\s\S]*?)\n    \}, \[name, college, collegeMeta, major, majorMeta, confirmed\]\);/);
+
+  assert.ok(persistEffect, "identity persistence effect should exist");
+  assert.match(persistEffect[1], /if \(college\.trim\(\)\) patch\.selectedCollege/);
+  assert.match(persistEffect[1], /if \(major\.trim\(\)\) patch\.selectedMajor/);
+  assert.doesNotMatch(persistEffect[1], /selectedCollege:[^\n]*: null/);
+  assert.doesNotMatch(persistEffect[1], /selectedMajor:[^\n]*: null/);
+  assert.match(prelanding, /setCollege\(n\);setCollegeMeta\(m\);setConfirmed\(false\);/);
+  assert.match(prelanding, /setMajor\(n\);setMajorMeta\(m\);setConfirmed\(false\);/);
+});
+
 test("report start-over clears both stores and restarts context entry", () => {
   const fitApp = read("app/fit-app.jsx");
   const onRestart = fitApp.match(/onRestart=\{\(\) => \{([\s\S]*?)\n      \}\}/);
@@ -49,6 +63,7 @@ test("report start-over clears both stores and restarts context entry", () => {
   assert.match(onRestart[1], /wipe\(\)/);
   assert.match(onRestart[1], /window\.UserContext\.clear\(\)/);
   assert.match(onRestart[1], /window\.location\.href = "start\.html"/);
+  assert.match(fitApp, /uc\.contextConfirmed/);
 });
 
 test("flow state is scoped to the active user identity", () => {

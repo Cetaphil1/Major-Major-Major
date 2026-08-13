@@ -379,14 +379,16 @@
     { cipCode: saved.selectedMajor.cipCode, category: saved.selectedMajor.category } : null);
     const [confirmed, setConfirmed] = useState(saved.contextConfirmed || false);
 
-    // persist whenever identity changes
+    // Persist non-empty identity edits. Blank college/major values are treated
+    // as transient edit state so a closed tab does not erase the saved identity.
     useEffect(() => {
-      UC.update({
+      const patch = {
         displayName: name.trim() ? name.trim() : null,
-        selectedCollege: college.trim() ? mapCollege(college.trim(), collegeMeta) : null,
-        selectedMajor: major.trim() ? enrichMajor(major.trim(), majorMeta) : null,
         contextConfirmed: confirmed
-      });
+      };
+      if (college.trim()) patch.selectedCollege = mapCollege(college.trim(), collegeMeta);
+      if (major.trim()) patch.selectedMajor = enrichMajor(major.trim(), majorMeta);
+      UC.update(patch);
     }, [name, college, collegeMeta, major, majorMeta, confirmed]);
 
     const TOTAL = 4;
@@ -419,6 +421,7 @@
               const rec = db.find((m) => m.name.toLowerCase() === n.toLowerCase());
               setMajor(n);
               setMajorMeta(rec ? { cipCode: rec.cipCode, category: rec.category } : null);
+              setConfirmed(false);
             }}
             onContinue={finish} />
           
@@ -433,12 +436,12 @@
     } else if (step === 1) {
       canNext = !!college.trim();
       body = <CollegeStep college={college} collegeMeta={collegeMeta}
-      onPick={(n, m) => {setCollege(n);setCollegeMeta(m);}}
+      onPick={(n, m) => {setCollege(n);setCollegeMeta(m);setConfirmed(false);}}
       onContinue={() => college.trim() && go(2)} onBack={() => go(0)} />;
     } else {
       canNext = !!major.trim();
       body = <MajorStep major={major} majorMeta={majorMeta}
-      onPick={(n, m) => {setMajor(n);setMajorMeta(m);}}
+      onPick={(n, m) => {setMajor(n);setMajorMeta(m);setConfirmed(false);}}
       onContinue={() => major.trim() && go(3)} onBack={() => go(1)} />;
     }
 

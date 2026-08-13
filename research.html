@@ -18,7 +18,7 @@
     (function () {
       try {
         var c = window.UserContext && window.UserContext.load();
-        if (!c || !c.preLandingComplete || !window.UserContext.hasIdentity()) {
+        if (!c || !c.preLandingComplete || !c.contextConfirmed || !window.UserContext.hasIdentity()) {
           window.location.replace("start.html");
         }
       } catch (e) {

@@ -199,7 +199,7 @@
     // Identity comes from the pre-landing flow (window.UserContext / localStorage).
     // If it's missing entirely, send the visitor through the pre-landing first.
     const uc = (window.UserContext && window.UserContext.load()) || null;
-    const hasCompleteIdentity = !!(uc && uc.preLandingComplete && window.UserContext && window.UserContext.hasIdentity());
+    const hasCompleteIdentity = !!(uc && uc.preLandingComplete && uc.contextConfirmed && window.UserContext && window.UserContext.hasIdentity());
     const identityKey = window.FlowState ? window.FlowState.identityKey(uc) : fallbackIdentityKey(uc);
     const saved = hasCompleteIdentity ? load(identityKey) : null;
     React.useEffect(() => {
